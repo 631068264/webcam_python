@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 #
 
-__all__ = ["recruitment"]
+__all__ = []
