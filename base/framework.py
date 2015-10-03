@@ -4,11 +4,11 @@
 
 import random
 from functools import wraps, partial
-from urlparse import urlparse
 
 from attrdict import AttrDict
-from flask import Flask, make_response
+from flask import make_response
 from flask import request, redirect, abort
+
 from flask import url_for as base_url_for
 import flask
 
@@ -16,17 +16,14 @@ from base import constant as const
 from base import logger
 from base import smartpool
 from base import util
-from base.connection import redis_conn
-from base.util import safe_json_dumps, url_append, encode_unicode_json, to_unicode, gen_uobj, validate_signature
+from base.util import safe_json_dumps, url_append, encode_unicode_json, validate_signature, gen_uobj, to_unicode
 from base.xform import FormChecker
 from etc import config
-
 
 __all__ = [
     "general",
 
     "render_template",
-    "render_template_string",
 
     "Response",
     "JsonResponse",
@@ -46,26 +43,6 @@ __all__ = [
     "DjErrorResponse",
     "BdErrorResponse",
 ]
-
-
-def render_template(name, **data):
-    udata = {}
-    for k, v in data.iteritems():
-        udata[to_unicode(k, config.encoding)] = gen_uobj(v, config.encoding)
-
-    return flask.render_template(name, **udata)
-
-
-def render_template_string(template, **data):
-    utemplate = template
-    if not isinstance(utemplate, unicode):
-        utemplate = template.decode(config.encoding)
-
-    udata = {}
-    for k, v in data.iteritems():
-        udata[to_unicode(k, config.encoding)] = gen_uobj(v, config.encoding)
-
-    return flask.render_template_string(utemplate, **udata)
 
 
 class Response(object):
@@ -128,6 +105,20 @@ class TempResponse(Response):
 
     def _output(self):
         return render_template(self._template_name, **self._context)
+
+
+def render_template(name, **data):
+    """
+    转到模板 数据转Unicode
+    :param name:
+    :param data:
+    :return:
+    """
+    udata = {}
+    for k, v in data.iteritems():
+        udata[to_unicode(k, config.encoding)] = gen_uobj(v, config.encoding)
+
+    return flask.render_template(name, **udata)
 
 
 class InfoResponse(TempResponse, JsonResponse):
@@ -207,7 +198,9 @@ def db_conn(db_name_or_list_or_dict, dict_name="db_dict"):
 
             kwargs.update(params)
             return old_handler(*args, **kwargs)
+
         return new_handler
+
     return deco
 
 
@@ -243,7 +236,9 @@ def form_check(settings, var_name="safe_vars", strict_error=True, error_handler=
                 response.context_update(**{var_name: valid_data})
 
             return response
+
         return new_handler
+
     return new_deco
 
 
@@ -297,7 +292,9 @@ def json_check(settings, var_name="safe_vars", strict_error=True, error_handler=
                 response.context_update(**{var_name: valid_data})
 
             return response
+
         return new_handler
+
     return new_deco
 
 
@@ -327,13 +324,15 @@ def general(desc, validate_sign=False):
             if isinstance(resp, Response):
                 output = resp.output()
                 if config.debug:
-                    logger.get("response-log").debug(u"[%s] %s" % (util.to_unicode(request.url), util.to_unicode(output.data)))
+                    logger.get("response-log").debug(
+                        u"[%s] %s" % (util.to_unicode(request.url), util.to_unicode(output.data)))
                 return output
             return resp
 
         new_handler.desc = desc
         new_handler.is_handler = True
         return new_handler
+
     return deco
 
 

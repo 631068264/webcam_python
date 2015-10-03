@@ -25,10 +25,10 @@ static_url_path = static_path
 
 # MySQL配置
 db_config = {
-    "db_reader": {"host": "115.29.247.122", "port": 4206, "db": "djump",
-                  "user": "djump", "passwd": "qwer1234", "charset": encoding},
-    "db_writer": {"host": "115.29.247.122", "port": 4206, "db": "djump",
-                  "user": "djump", "passwd": "qwer1234", "charset": encoding},
+    "db_reader": {"host": "127.0.0.1", "port": 3306, "db": "webcap",
+                  "user": "root", "passwd": "wuyuxi08", "charset": encoding},
+    "db_writer": {"host": "127.0.0.1", "port": 3306, "db": "webcap",
+                  "user": "root", "passwd": "wuyuxi08", "charset": encoding},
 }
 
 # Flask配置

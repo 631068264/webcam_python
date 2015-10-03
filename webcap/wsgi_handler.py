@@ -39,5 +39,5 @@ for name in views.__all__:
 
 if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
-    app.run(host='0.0.0.0',
+    app.run(host='127.0.0.1',
             port=config.debug_port)

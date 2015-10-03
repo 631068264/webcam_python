@@ -14,9 +14,10 @@ import struct
 import urllib
 import urlparse
 import uuid
+from decimal import Decimal
 
 from attrdict import AttrDict
-from flask import request, session, current_app
+from flask import request, current_app
 from html2text import HTML2Text
 import jwt
 import simplejson as json
@@ -25,7 +26,6 @@ from base import constant as const
 from base import logger
 from base.cache import cache
 from etc import config
-from etc.config import sms_config
 
 
 def split_list(lst, n_part):
@@ -317,6 +317,13 @@ class UObj:
 
 
 def gen_uobj(obj, encoding="utf-8", fake_rop=False):
+    """
+    转成Unicode
+    :param obj:
+    :param encoding:
+    :param fake_rop:
+    :return:
+    """
     if isinstance(obj, str):
         return obj.decode(encoding, 'ignore')
 
@@ -525,7 +532,7 @@ def sha1OfFile(filepath):
     sha = hashlib.sha1()
     with open(filepath, 'rb') as f:
         while True:
-            block = f.read(2**10)  # Magic number: one-megabyte blocks.
+            block = f.read(2 ** 10)  # Magic number: one-megabyte blocks.
             if not block:
                 break
             sha.update(block)
