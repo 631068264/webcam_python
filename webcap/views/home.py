@@ -63,7 +63,7 @@ def register(db_writer, safe_vars):
         session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
         session.permanent = True
 
-        log.info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
+        log.get("auth").info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
         return OkResponse(redirect=url_for("home.index"))
 
 
@@ -87,7 +87,7 @@ def login(db_reader, safe_vars):
     session[const.SESSION.KEY_ADMIN_ID] = account.id
     session[const.SESSION.KEY_ROLE_ID] = account.role_id
     session.permanent = True
-    log.info("%s 登录成功 编号[%s]", safe_vars.username, account.id)
+    log.get("auth").info("%s 登录成功 编号[%s]", safe_vars.username, account.id)
     return OkResponse()
 
 

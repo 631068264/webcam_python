@@ -74,15 +74,10 @@ cache_page_timeout = 60 * 10
 log_config = [
     ["pool-log", "pool.log", "debug"],
     ["query-log", "query.log", "debug"],
-
     ["response-log", "response.log", "debug"],
     ["cgi-log", "cgi.log", "debug"],
-    ["root", "cgi.log", "debug"],
     ["auth", "auth.log", "debug"],
-    ["tools-log", "tools.log", "debug"],
     ["interface-log", "interface.log", "debug"],
-    ["sms-log", "sms.log", "debug"],
-    ["wechat-log", "wechat.log", "debug"],
 ]
 
 
