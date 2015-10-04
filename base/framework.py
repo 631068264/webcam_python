@@ -7,7 +7,8 @@ from functools import wraps, partial
 
 from attrdict import AttrDict
 from flask import make_response
-from flask import request, redirect, abort
+
+from flask import request, redirect
 
 from flask import url_for as base_url_for
 import flask
@@ -16,7 +17,7 @@ from base import constant as const
 from base import logger
 from base import smartpool
 from base import util
-from base.util import safe_json_dumps, url_append, encode_unicode_json, validate_signature, gen_uobj, to_unicode
+from base.util import safe_json_dumps, url_append, encode_unicode_json, gen_uobj, to_unicode
 from base.xform import FormChecker
 from etc import config
 
@@ -307,9 +308,6 @@ def general(desc, validate_sign=False):
     def deco(old_handler):
         @wraps(old_handler)
         def new_handler(*args, **kwargs):
-            if config.IS_VALIDATE_SIGNATURE and validate_sign and not validate_signature():
-                abort(403)
-
             resp = old_handler(*args, **kwargs)
             if isinstance(resp, TempResponse):
                 # 添加自定义变量

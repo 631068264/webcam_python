@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 #
 
-from base64 import b64encode
-from hashlib import sha1
 import datetime
 import hashlib
-import hmac
 import os
 import re
 import socket
@@ -17,12 +14,11 @@ import uuid
 from decimal import Decimal
 
 from attrdict import AttrDict
-from flask import request, current_app
+from flask import current_app
 from html2text import HTML2Text
 import jwt
 import simplejson as json
 
-from base import constant as const
 from base import logger
 from base.cache import cache
 from etc import config
@@ -489,45 +485,6 @@ def gen_recruitment_id(owner_id):
     return gen_user_id(str(uuid.uuid4()) + str(owner_id))
 
 
-def validate_signature():
-    salt = request.headers.get(const.SIGNATURE.KEY_SALT)
-    signature = request.headers.get(const.SIGNATURE.KEY_SIGNATURE)
-    if not salt or not signature:
-        return False
-
-    url = request.url
-    parse_result = urlparse.urlparse(url)
-    hostname = parse_result.hostname
-    if hostname is None:
-        return False
-
-    query = parse_result.query
-    body = request.data
-    path = parse_result.path
-    token = request.headers.get("Authorization")
-    session = decode_from_access_token(token)
-    uid = session.get(const.SESSION.KEY_USER_ID)
-
-    if uid is None:
-        uid = ""
-    if token is None:
-        token = ""
-
-    key = salt.encode(config.encoding) + config.URL_SIGN_KEY
-    string_to_sign = (
-        urllib.quote(path.encode(config.encoding)) +
-        request.full_path.split("?")[-1].encode(config.encoding) +
-        body +
-        str(uid) +
-        token.encode(config.encoding))
-
-    hash_value = hmac.new(key, string_to_sign, sha1)
-    computed_signature = b64encode(hash_value.digest())
-    if signature == computed_signature:
-        return True
-    return False
-
-
 def sha1OfFile(filepath):
     sha = hashlib.sha1()
     with open(filepath, 'rb') as f:
@@ -544,33 +501,6 @@ def get_static_file_version(full_filename):
     filename = os.path.join(current_app.static_folder, full_filename)
     sha1 = sha1OfFile(filename)
     return sha1
-
-
-def validate_referrer():
-    if (request.referrer and request.referrer.startswith(request.url_root) and
-            request.referrer != request.url):
-        return request.referrer
-
-
-def guess_source():
-    system_type = request.headers.get("X-SystemType")
-    app_type = request.headers.get("X-AppType")
-
-    if system_type == 'Android':
-        if app_type == 'user':
-            return const.SOURCE.ANDROID_USER
-        elif app_type == 'business':
-            return const.SOURCE.ANDROID_BUSINESS
-
-    if system_type == 'iOS':
-        if app_type == 'business':
-            return const.SOURCE.IOS_BUSINESS
-
-    if config.SOURCE == const.SOURCE.UNDEFINED:
-        logger.error(
-            "guess source failed, maybe you havn't configured it [url:%s]" %
-            request.url)
-    return config.SOURCE
 
 
 def get_weekname(dt):
