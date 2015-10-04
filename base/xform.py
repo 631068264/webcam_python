@@ -31,7 +31,6 @@ __all__ = [
     'F_urs',
     'F_mobile',
     'F_phone',
-    'F_idnum',
     'F_datetime',
 ]
 
@@ -281,17 +280,6 @@ class F_urs(F_email):
 
         value = value.lower()
         return self.is_email(value)
-
-
-class F_idnum(Input):
-    def _check(self, value):
-        from idnum import IsIdNum
-        valid = IsIdNum(value)
-        if valid:
-            data = value
-        else:
-            data = self._messages['default']
-        return valid, data
 
 
 class F_phone(Input):

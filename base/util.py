@@ -425,34 +425,6 @@ def convert_list_underscore2camelcase(l):
     return [convert_dict_key_underscore2camelcase(i) for i in l]
 
 
-def send_sms(mobile, content):
-    if not config.IS_SEND_SMS:
-        return True
-
-    # TODO 优化，将发送短信放到队列里面慢慢发
-    from py4j.java_gateway import JavaGateway, Py4JNetworkError
-
-    try:
-        gateway = JavaGateway(eager_load=True)
-        app = gateway.entry_point
-        ret = app.sendSms(mobile, content)
-
-        logger.get("sms-log").info("send to %s, data [%s], ret: %s", mobile, content, ret)
-
-        return ret
-    except Py4JNetworkError:
-        logger.get("interface-log").error("No JVM listening")
-    except Exception, e:
-        logger.get("interface-log").error(e)
-
-    return False
-
-
-def gen_sms_token(usage, mobile, captcha):
-    s = "DJ_CAPTCHA_%s_%s_%s" % (usage, mobile, captcha)
-    return md5(s)
-
-
 USER_ID_BIT_OFFSET = (
     131224, 5078, 129384, 26323, 1092954, 713412, 23862, 1796, 561224, 190246,
     628253, 874, 95, 22342, 10, 829283, 302532, 47, 56, 518721,

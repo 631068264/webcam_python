@@ -34,6 +34,7 @@ class SESSION(object):
     KEY_LOGIN = "login"
     KEY_ADMIN_ID = "id"
     KEY_ROLE_ID = "role_id"
+    KEY_CAPTCHA = "image_captcha"
 
 
 class COOKIES(object):

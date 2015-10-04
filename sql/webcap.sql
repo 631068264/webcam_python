@@ -21,7 +21,7 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `id` bigint(20) NOT NULL,
-  `nick` varchar(64) NOT NULL COMMENT '昵称',
+  `username` varchar(64) NOT NULL COMMENT '昵称',
   `password` varchar(64) NOT NULL COMMENT '密码',
   `name` varchar(32) default NULL COMMENT '姓名',
   `device` varchar(128) NOT NULL COMMENT '设备识别码',
