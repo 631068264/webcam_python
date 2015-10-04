@@ -11,7 +11,7 @@ from jinja2 import evalcontextfilter, Markup, escape
 from etc import config
 from base import smartpool, poolmysql
 from base.client_session import ItsdangerousSessionInterface
-from base.framework import url_for, DjErrorResponse
+from base.framework import url_for, ErrorResponse
 from base import logger
 from base.cache import cache
 
@@ -66,7 +66,7 @@ def init(app):
             return error
 
         msg = error_str if config.debug else "系统异常"
-        return DjErrorResponse(msg).output(), 200
+        return ErrorResponse(msg).output(), 200
 
     @app.errorhandler(Exception)
     def handle_exception(error):
@@ -81,15 +81,15 @@ def init(app):
             reraise(exc_type, exc_value, tb)
 
         msg = error_str if config.debug else "系统异常"
-        return DjErrorResponse(msg).output(), 200
+        return ErrorResponse(msg).output(), 200
 
     @app.errorhandler(404)
     def page_not_found(error):
-        return DjErrorResponse('Not Found').output(), 404
+        return ErrorResponse('Not Found').output(), 404
 
     @app.errorhandler(405)
     def method_not_allow(error):
-        return DjErrorResponse(str(error)).output(), 405
+        return ErrorResponse(str(error)).output(), 405
 
     _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 

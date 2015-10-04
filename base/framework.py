@@ -7,7 +7,6 @@ from functools import wraps, partial
 
 from attrdict import AttrDict
 from flask import make_response
-
 from flask import request, redirect
 
 from flask import url_for as base_url_for
@@ -31,7 +30,6 @@ __all__ = [
     "JsonpResponse",
     "TempResponse",
     "InfoResponse",
-    "ErrorResponse",
     "Redirect",
 
     "db_conn",
@@ -40,9 +38,8 @@ __all__ = [
 
     # for dianjiang
     "json_check",
-    "DjJsonResponse",
-    "DjErrorResponse",
-    "BdErrorResponse",
+    "ErrorResponse",
+    "OkResponse",
 ]
 
 
@@ -148,11 +145,6 @@ class InfoResponse(TempResponse, JsonResponse):
         return TempResponse._output(self)
 
 
-class ErrorResponse(InfoResponse):
-    __output_pat__ = "error.html"
-    __output_var__ = "error"
-
-
 class BdErrorResponse(InfoResponse):
     __output_pat__ = "bd/error.html"
     __output_var__ = "error"
@@ -207,7 +199,7 @@ def db_conn(db_name_or_list_or_dict, dict_name="db_dict"):
 
 def form_check(settings, var_name="safe_vars", strict_error=True, error_handler=None, error_var="form_errors"):
     if error_handler is None:
-        error_handler = DjErrorResponse
+        error_handler = ErrorResponse
 
     def new_deco(old_handler):
         @wraps(old_handler)
@@ -247,7 +239,7 @@ def json_check(settings, var_name="safe_vars", strict_error=True, error_handler=
     u'''仅支持扁平的json
     '''
     if error_handler is None:
-        error_handler = DjErrorResponse
+        error_handler = ErrorResponse
 
     def new_deco(old_handler):
         @wraps(old_handler)
@@ -337,7 +329,7 @@ def general(desc, validate_sign=False):
 app_general = partial(general, validate_sign=True)
 
 
-class DjOkResponse(JsonResponse):
+class OkResponse(JsonResponse):
     def __init__(self, **kwargs):
         JsonResponse.__init__(self)
 
@@ -348,7 +340,7 @@ class DjOkResponse(JsonResponse):
         self._json.update(kwargs)
 
 
-class DjErrorResponse(JsonResponse):
+class ErrorResponse(JsonResponse):
     def __init__(self, message, status=const.STATUS.FAIL):
         if isinstance(message, (list, tuple)):
             message = ", ".join(message)

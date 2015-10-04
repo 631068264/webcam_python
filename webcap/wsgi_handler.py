@@ -3,22 +3,22 @@
 #
 
 import os
-
-import redis
-
-project_home = os.path.realpath(__file__)
-project_home = os.path.split(project_home)[0]
-
 import sys
 
-sys.path.insert(0, os.path.split(project_home)[0])
-sys.path.insert(0, project_home)
+import redis
 
 from flask import Flask
 
 from etc import config
 from init_app import init
 from base.session import RedisSessionInterface
+import views
+
+project_home = os.path.realpath(__file__)
+project_home = os.path.split(project_home)[0]
+
+sys.path.insert(0, os.path.split(project_home)[0])
+sys.path.insert(0, project_home)
 
 app = Flask(__name__, static_url_path=config.static_path)
 init(app)
@@ -31,7 +31,7 @@ app.session_interface = RedisSessionInterface(redis.StrictRedis(
     )))
 
 # route setting
-import views
+
 
 for name in views.__all__:
     module = __import__('views.%s' % name, fromlist=[name])

@@ -33,10 +33,7 @@ class SESSION(object):
     # common
     KEY_LOGIN = "login"
     KEY_ADMIN_ID = "id"
-    KEY_ADMIN_NAME = "name"
     KEY_ROLE_ID = "role_id"
-
-    KEY_USER_ID = "user_id"
 
 
 class COOKIES(object):
@@ -79,6 +76,8 @@ class TASK_STATUS(object):
     DELETED = 1
 
 
-class SIGNATURE(object):
-    KEY_SALT = "X-Digest"
-    KEY_SIGNATURE = "X-Salt"
+class DEVICE(object):
+    # 接入设备
+    APP = "app"
+    PC = "pc"
+    ALL = (APP, PC)
