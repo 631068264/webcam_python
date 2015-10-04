@@ -64,7 +64,7 @@ def register(db_writer, safe_vars):
         session.permanent = True
 
         log.get("auth").info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
-        return OkResponse(redirect=url_for("home.index"))
+        return redirect(url_for("home.index"))
 
 
 @home.route("/login")
