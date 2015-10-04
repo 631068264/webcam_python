@@ -15,3 +15,19 @@ def get_account_by_username(db, username):
 
 def register(db, username, password):
     user_id = util.gen_user_id(username)
+    hash_pwd = util.hash_password(password, user_id)
+
+    QS(db).table(T.account).insert({
+        "id": user_id,
+        "username": username,
+        "password": hash_pwd,
+        "name": None,
+        "device": None,
+        "status": const.ACCOUNT_STATUS.NORMAL,
+        "role_id": const.ROLE.NORMAL_ACCOUNT,
+    })
+    msg = {
+        "user_id": user_id,
+        "role_id": const.ROLE.NORMAL_ACCOUNT,
+    }
+    return True, msg

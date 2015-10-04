@@ -7,7 +7,7 @@ from captcha.image import ImageCaptcha
 
 from flask import Blueprint, session, redirect, send_file
 
-from base import util, constant as const
+from base import logger as log, util, constant as const
 from base.framework import general, TempResponse, url_for, form_check, db_conn, ErrorResponse, OkResponse
 from base.logic import login_required
 from base import dao
@@ -40,19 +40,31 @@ def register_load():
 
 
 @home.route("/register/load", methods=['POST'])
-@general('注册页面')
+@general('注册')
 @db_conn('db_writer')
 @form_check({
     "username": F_str("用户名") & "strict" & "required",
     "password": F_str("密码") & "strict" & "required",
 })
 def register(db_writer, safe_vars):
-    # TODO:尚未考虑设备号
     account = dao.get_account_by_username(db_writer, safe_vars.username)
     if account:
         return ErrorResponse("您，已经注册了!")
     with transaction(db_writer) as trans:
+        # TODO:尚未考虑设备号
         is_ok, msg = dao.register(db_writer, safe_vars.username, safe_vars.password)
+        if not is_ok:
+            trans.finish()
+            ErrorResponse(msg)
+        trans.finish()
+
+        session[const.SESSION.KEY_LOGIN] = is_ok
+        session[const.SESSION.KEY_ADMIN_ID] = msg["user_id"]
+        session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
+        session.permanent = True
+
+        log.info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
+        return OkResponse(redirect=url_for("home.index"))
 
 
 @home.route("/login")
@@ -67,8 +79,16 @@ def login(db_reader, safe_vars):
     if not account:
         return ErrorResponse("用户不存在")
 
-    util.hash_password(safe_vars.password, )
-    pass
+    hash_pwd = util.hash_password(safe_vars.password, account.id)
+    if hash_pwd != account.password:
+        return ErrorResponse("密码错误")
+
+    session[const.SESSION.KEY_LOGIN] = True
+    session[const.SESSION.KEY_ADMIN_ID] = account.id
+    session[const.SESSION.KEY_ROLE_ID] = account.role_id
+    session.permanent = True
+    log.info("%s 登录成功 编号[%s]", safe_vars.username, account.id)
+    return OkResponse()
 
 
 @home.route("/captcha/image")
@@ -90,3 +110,11 @@ def check_image_captcha(safe_vars):
     if safe_vars.image_captcha == session.get(const.SESSION.KEY_CAPTCHA):
         return OkResponse()
     return ErrorResponse("图片验证码错误，请重新输入")
+
+
+@home.route("/logout")
+@general("注销")
+@login_required(const.ROLE.ALL)
+def logout():
+    session.clear()
+    return redirect(url_for("home.login_load"))
