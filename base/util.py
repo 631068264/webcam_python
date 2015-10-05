@@ -478,3 +478,10 @@ def get_static_file_version(full_filename):
 def get_weekname(dt):
     d = (u"周一", u"周二", u"周三", u"周四", u"周五", u"周六", u"周日")
     return d[dt.weekday()]
+
+
+if __name__ == '__main__':
+    id = gen_user_id('admin')
+    print(id)
+    password = hash_password('1234', id)
+    print(password)

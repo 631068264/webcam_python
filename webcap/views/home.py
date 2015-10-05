@@ -37,7 +37,7 @@ def register_load():
     return TempResponse("register.html")
 
 
-@home.route("/register/load", methods=['POST'])
+@home.route("/register", methods=['POST'])
 @general('注册')
 @db_conn('db_writer')
 @form_check({

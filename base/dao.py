@@ -22,7 +22,7 @@ def register(db, username, password):
         "username": username,
         "password": hash_pwd,
         "name": None,
-        "device": None,
+        "device": 0,
         "status": const.ACCOUNT_STATUS.NORMAL,
         "role_id": const.ROLE.NORMAL_ACCOUNT,
     })
