@@ -29,5 +29,6 @@ def register(db, username, password):
     msg = {
         "user_id": user_id,
         "role_id": const.ROLE.NORMAL_ACCOUNT,
+        "username": username,
     }
     return True, msg

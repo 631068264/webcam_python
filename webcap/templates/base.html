@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}首页{% endblock %}</title>
     <!-- Bootstrap -->
     <link href="{{ config.static_url_path }}/css/bootstrap.css?v={{ ver("css/bootstrap.css") }}" rel="stylesheet">
-    <link href="{{ config.static_url_path }}/css/docs.min.css?v={{ ver("css/docs.min.css") }}" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -18,12 +17,145 @@
     <![endif]-->
 </head>
 <body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for("home.index") }}">WebCap</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="{{ url_for("home.index") }}">首页</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" data-toggle="modal" data-target="#login">Log In</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#register">Sing Up</a></li>
+            </ul>
+        </div>
+        <!--/.navbar-collapse -->
+    </div>
+</nav>
+
+
+<!-- 登录弹框-->
+<div id="login" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login_dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="login_dialog"><strong>登录</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form action="{{ url_for("home.login") }}" method="post" id="form_login">
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                                   required autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">密码</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="请输入密码" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="image_captcha">验证码</label>
+
+                            <input type="text" class="form-control" id="image_captcha" name="image_captcha"
+                                   placeholder="请输入验证码" required>
+                            <img class="image" src="{{ url_for("home.get_image_captcha") }}"
+                                 style="height: 30px">
+                        </div>
+                        <a href="#" class="pull-right btn btn-primary disabled" id="btn_login">登录</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% block body %}{% endblock %}
 {% block tail_js %}
     <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver("js/jquery.min.js") }}"></script>
     <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver("js/bootstrap.min.js") }}"></script>
     <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver("js/jquery.form.js") }}"></script>
-    <script src="{{ config.static_url_path }}/js/docs.min.js?v={{ ver("js/docs.min.js") }}"></script>
+    <script>
+        $('#btn_login').click(function () {
+            $(this).addClass('disabled');
+            $('#form_login').submit();
+        });
+        $('#form_login').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_login').removeClass('disabled');
+                if (resp.status == 1) {
+
+                    alert("success");
+                } else {
+                    alert(resp.message);
+                }
+            },
+            error: function (resp) {
+                console.log(resp + "error");
+                $('#btn_login').removeClass('disabled');
+                alert('网络故障 请检查网络连接!')
+            }
+        });
+
+        //验证码
+        $('.image').click(function () {
+            $(this).attr('src', '{{ url_for("home.get_image_captcha") }}?random=' + Math.random());
+        });
+
+        $('#image_captcha').keyup(function () {
+            len = $(this).val().length;
+            if (len == 4) {
+                $.get(
+                        "{{ url_for("home.check_image_captcha") }}",
+                        {image_captcha: $(this).val()},
+                        function (resp) {
+                            console.log(resp);
+                            if (resp.status == 1) {
+                                $('#btn_login').removeClass('disabled');
+                            } else {
+                                $('#btn_login').addClass('disabled');
+                                alert(resp.message);
+                            }
+
+                        }).fail(function (e) {
+                            $('#btn_login').addClass('disabled');
+                            alert("系统错误,稍后再试");
+                        });
+            }else if(len < 4){
+                 $('#btn_login').addClass('disabled');
+            }
+
+        });
+
+
+    </script>
 {% endblock %}
 </body>
 </html>

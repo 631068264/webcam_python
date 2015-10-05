@@ -19,7 +19,6 @@ home = Blueprint("home", __name__)
 @home.route("/")
 @home.route("/index")
 @general("主页界面")
-@login_required(const.ROLE.ALL)
 def index():
     return TempResponse("index.html")
 
@@ -60,20 +59,25 @@ def register(db_writer, safe_vars):
         session[const.SESSION.KEY_LOGIN] = is_ok
         session[const.SESSION.KEY_ADMIN_ID] = msg["user_id"]
         session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
+        session[const.SESSION.KEY_ADMIN_NAME] = msg["username"]
         session.permanent = True
 
         log.get("auth").info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
         return redirect(url_for("home.index"))
 
 
-@home.route("/login")
+@home.route("/login", methods=['POST'])
 @general("登录")
 @db_conn("db_reader")
 @form_check({
     "username": F_str("用户名") & "strict" & "required",
     "password": F_str("密码") & "strict" & "required",
+    "image_captcha": F_str("图片验证码") & "strict" & "required",
 })
 def login(db_reader, safe_vars):
+    if safe_vars.image_captcha != session.get(const.SESSION.KEY_CAPTCHA):
+        return ErrorResponse("图片验证码错误，请重新输入")
+
     account = dao.get_account_by_username(db_reader, safe_vars.username)
     if not account:
         return ErrorResponse("用户不存在")
@@ -85,6 +89,7 @@ def login(db_reader, safe_vars):
     session[const.SESSION.KEY_LOGIN] = True
     session[const.SESSION.KEY_ADMIN_ID] = account.id
     session[const.SESSION.KEY_ROLE_ID] = account.role_id
+    session[const.SESSION.KEY_ADMIN_NAME] = account.username
     session.permanent = True
     log.get("auth").info("%s 登录成功 编号[%s]", safe_vars.username, account.id)
     return OkResponse()

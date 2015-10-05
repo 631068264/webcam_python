@@ -30,8 +30,9 @@ class STATUS(object):
 
 class SESSION(object):
     # common
-    KEY_LOGIN = "login"
+    KEY_LOGIN = "logined"
     KEY_ADMIN_ID = "id"
+    KEY_ADMIN_NAME = "username"
     KEY_ROLE_ID = "role_id"
     KEY_CAPTCHA = "image_captcha"
 
