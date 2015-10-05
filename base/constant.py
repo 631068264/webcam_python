@@ -26,7 +26,6 @@ class ROLE(object):
 class STATUS(object):
     SUCCESS = 1
     FAIL = 0
-    NOT_LOGINED = 401
 
 
 class SESSION(object):

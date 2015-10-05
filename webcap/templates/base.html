@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Bootstrap -->
+    <link href="{{ config.static_url_path }}/css/bootstrap.css?v={{ ver("css/bootstrap.css") }}" rel="stylesheet">
+    <link href="{{ config.static_url_path }}/css/docs.min.css?v={{ ver("css/docs.min.css") }}" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+{% block body %}{% endblock %}
+{% block tail_js %}
+    <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver("js/jquery.min.js") }}"></script>
+    <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver("js/bootstrap.min.js") }}"></script>
+    <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver("js/jquery.form.js") }}"></script>
+    <script src="{{ config.static_url_path }}/js/docs.min.js?v={{ ver("js/docs.min.js") }}"></script>
+{% endblock %}
+</body>
+</html>

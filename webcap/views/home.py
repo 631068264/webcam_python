@@ -4,7 +4,6 @@
 import random
 
 from captcha.image import ImageCaptcha
-
 from flask import Blueprint, session, redirect, send_file
 
 from base import logger as log, util, constant as const
@@ -19,10 +18,10 @@ home = Blueprint("home", __name__)
 
 @home.route("/")
 @home.route("/index")
-@general("主页")
+@general("主页界面")
 @login_required(const.ROLE.ALL)
 def index():
-    return TempResponse(const.DEVICE.PC + "/index.html")
+    return TempResponse("index.html")
 
 
 @home.route("/login/load")
@@ -30,13 +29,13 @@ def index():
 def login_load():
     if session.get(const.SESSION.KEY_LOGIN):
         return redirect(url_for("home.index"))
-    return TempResponse(const.DEVICE.PC + "/login.html")
+    return TempResponse("login.html")
 
 
 @home.route("/register/load")
 @general('注册页面')
 def register_load():
-    return TempResponse(const.DEVICE.PC + "/register.html")
+    return TempResponse("register.html")
 
 
 @home.route("/register/load", methods=['POST'])
@@ -118,3 +117,9 @@ def check_image_captcha(safe_vars):
 def logout():
     session.clear()
     return redirect(url_for("home.login_load"))
+
+
+@home.route("/base")
+@general("base")
+def base():
+    return TempResponse("base.html")
