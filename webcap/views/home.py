@@ -23,20 +23,6 @@ def index():
     return TempResponse("index.html")
 
 
-@home.route("/login/load")
-@general("登录界面")
-def login_load():
-    if session.get(const.SESSION.KEY_LOGIN):
-        return redirect(url_for("home.index"))
-    return TempResponse("login.html")
-
-
-@home.route("/register/load")
-@general('注册页面')
-def register_load():
-    return TempResponse("register.html")
-
-
 @home.route("/register", methods=['POST'])
 @general('注册')
 @db_conn('db_writer')
@@ -63,7 +49,7 @@ def register(db_writer, safe_vars):
         session.permanent = True
 
         log.get("auth").info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
-        return redirect(url_for("home.index"))
+        return OkResponse()
 
 
 @home.route("/login", methods=['POST'])
@@ -72,15 +58,11 @@ def register(db_writer, safe_vars):
 @form_check({
     "username": F_str("用户名") & "strict" & "required",
     "password": F_str("密码") & "strict" & "required",
-    "image_captcha": F_str("图片验证码") & "strict" & "required",
 })
 def login(db_reader, safe_vars):
-    if safe_vars.image_captcha != session.get(const.SESSION.KEY_CAPTCHA):
-        return ErrorResponse("图片验证码错误，请重新输入")
-
     account = dao.get_account_by_username(db_reader, safe_vars.username)
     if not account:
-        return ErrorResponse("用户不存在")
+        return ErrorResponse("用户尚未注册")
 
     hash_pwd = util.hash_password(safe_vars.password, account.id)
     if hash_pwd != account.password:
@@ -121,10 +103,4 @@ def check_image_captcha(safe_vars):
 @login_required(const.ROLE.ALL)
 def logout():
     session.clear()
-    return redirect(url_for("home.login_load"))
-
-
-@home.route("/base")
-@general("base")
-def base():
-    return TempResponse("base.html")
+    return redirect(url_for("home.index"))

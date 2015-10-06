@@ -46,17 +46,37 @@
                     </ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#" data-toggle="modal" data-target="#login">Log In</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#register">Sing Up</a></li>
-            </ul>
+            {% if session[const.SESSION.KEY_LOGIN] %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <p class="navbar-text" style="color:#ffffff"><span class="glyphicon glyphicon-user"
+                                                                           aria-hidden="true"></span>
+                            {{ session[const.SESSION.KEY_ADMIN_NAME] }}</p>&nbsp;&nbsp;
+                    </li>
+                    <li>
+                        <button id="logout" class="btn btn-danger navbar-btn">Log Out</button>
+                    </li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button type="button" class="btn btn-success navbar-btn" data-toggle="modal"
+                                data-target="#login">Log In
+                        </button>
+                        &nbsp;&nbsp;
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-warning navbar-btn" data-toggle="modal"
+                                data-target="#register">Sing Up
+                        </button>
+                    </li>
+                </ul>
+            {% endif %}
+
         </div>
         <!--/.navbar-collapse -->
     </div>
 </nav>
-{% block body %}
-
-{% endblock %}
 
 <!-- 登录弹框-->
 <div id="login" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login_dialog">
@@ -83,9 +103,10 @@
                         <div class="form-group">
                             <label for="image_captcha">验证码</label>
 
-                            <input type="text" class="form-control" id="image_captcha" name="image_captcha"
+                            <input type="text" class="form-control image_captcha" id="image_captcha"
+                                   name="image_captcha"
                                    placeholder="请输入验证码" required>
-                            <img class="image" src="{{ url_for("home.get_image_captcha") }}"
+                            <img class="image" src="{{ url_for("home.get_image_captcha",r=random.random()) }}"
                                  style="height: 30px">
                         </div>
                         <a href="#" class="pull-right btn btn-primary disabled" id="btn_login">登录</a>
@@ -95,13 +116,59 @@
         </div>
     </div>
 </div>
+<!-- 注册弹框-->
+<div id="register" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="register_dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="register_dialog"><strong>注册</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form action="{{ url_for("home.register") }}" method="post" id="form_register">
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                                   required autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">密码</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="请输入密码" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="image_captcha">验证码</label>
+
+                            <input type="text" class="form-control image_captcha" id="image_captcha"
+                                   name="image_captcha"
+                                   placeholder="请输入验证码" required>
+                            <img class="image" src="{{ url_for("home.get_image_captcha",r=random.random()) }}"
+                                 style="height: 30px">
+                        </div>
+                        <a href="#" class="pull-right btn btn-primary disabled" id="btn_register">注册</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block body %}
+
+{% endblock %}
+
 
 
 {% block tail_js %}
     <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver("js/jquery.min.js") }}"></script>
     <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver("js/bootstrap.min.js") }}"></script>
     <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver("js/jquery.form.js") }}"></script>
+    <script src="{{ config.static_url_path }}/js/util.js?v={{ ver("js/util.js") }}"></script>
     <script>
+        //登录
         $('#btn_login').click(function () {
             $(this).addClass('disabled');
             $('#form_login').submit();
@@ -111,15 +178,37 @@
                 console.log(resp);
                 $('#btn_login').removeClass('disabled');
                 if (resp.status == 1) {
-
-                    alert("success");
+                    $("#login").modal('hide');
+                    location.reload();
+                    alert("登录成功");
                 } else {
                     alert(resp.message);
                 }
             },
             error: function (resp) {
-                console.log(resp + "error");
                 $('#btn_login').removeClass('disabled');
+                alert('网络故障 请检查网络连接!')
+            }
+        });
+        // 注册
+        $('#btn_register').click(function () {
+            $(this).addClass('disabled');
+            $('#form_register').submit();
+        });
+        $('#form_register').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_register').removeClass('disabled');
+                if (resp.status == 1) {
+                    $("#register").modal('hide');
+                    location.reload();
+                    alert("注册成功");
+                } else {
+                    alert(resp.message);
+                }
+            },
+            error: function (resp) {
+                $('#btn_register').removeClass('disabled');
                 alert('网络故障 请检查网络连接!')
             }
         });
@@ -128,8 +217,8 @@
         $('.image').click(function () {
             $(this).attr('src', '{{ url_for("home.get_image_captcha") }}?random=' + Math.random());
         });
-
-        $('#image_captcha').keyup(function () {
+        //检验验证码
+        $('.image_captcha').keyup(function () {
             len = $(this).val().length;
             if (len == 4) {
                 $.get(
@@ -139,21 +228,29 @@
                             console.log(resp);
                             if (resp.status == 1) {
                                 $('#btn_login').removeClass('disabled');
+                                $('#btn_register').removeClass('disabled');
                             } else {
                                 $('#btn_login').addClass('disabled');
+                                $('#btn_register').addClass('disabled');
                                 alert(resp.message);
                             }
 
                         }).fail(function (e) {
                             $('#btn_login').addClass('disabled');
+                            $('#btn_register').addClass('disabled');
                             alert("系统错误,稍后再试");
                         });
             } else if (len < 4) {
                 $('#btn_login').addClass('disabled');
+                $('#btn_register').addClass('disabled');
             }
 
         });
 
+        //退出
+        $('#logout').click(function () {
+            window.location.href = '{{ url_for("home.logout") }}';
+        });
 
     </script>
 {% endblock %}
