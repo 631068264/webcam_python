@@ -9,6 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 from base.framework import db_conn
+from base import constant as const
 
 
 def daily_task():
@@ -21,7 +22,9 @@ def daily_task():
 def do_daily_task(db_writer):
     date = get_today_range()
     tasks = QS(db_writer).table(T.task).where(
-        (F.create_time >= date["start"]) & (F.create_time <= date["end"])).order_by("create_time").select(
+        (F.create_time >= date["start"]) & (F.create_time <= date["end"]) &
+        (F.status == const.TASK_STATUS.NORMAL)
+    ).order_by("create_time").select(
         for_update=True)
     for task in tasks:
         device = QS(db_writer).table(T.account).where(F.id == task.account_id).select_one("device")
