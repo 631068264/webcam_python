@@ -45,8 +45,8 @@ def do_task(device, task, db):
     video = 'ffmpeg -i rtsp://' + ip + device + '.sdp -c copy -t ' + task.duration + src
     thumb = 'ffmpeg -i rtsp://' + ip + device + '.sdp -f image2 -t 0.001 -s 352x240' + thumbnail
 
-    subprocess.Popen(shlex.split(video), shell=True)
     subprocess.Popen(shlex.split(thumb), shell=True)
+    subprocess.Popen(shlex.split(video), shell=True)
 
     QS(db).table(T.task).where(F.id == task.id).update({
         "src": src,
