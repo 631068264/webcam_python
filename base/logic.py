@@ -17,7 +17,7 @@ def login_required(roles=None):
             logined = session.get(const.SESSION.KEY_LOGIN)
             if logined:
                 role_id = session.get(const.SESSION.KEY_ROLE_ID)
-                if roles is None or role_id in roles or (isinstance(roles, str) and role_id == roles):
+                if roles is None or role_id in roles or (isinstance(roles, int) and role_id == roles):
                     return old_handler(*args, **kwargs)
             else:
                 return Redirect(url_for("home.login_load"))

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50096
 File Encoding         : 65001
 
-Date: 2015-10-04 12:33:19
+Date: 2015-10-09 23:41:18
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,11 +24,11 @@ CREATE TABLE `account` (
   `username` varchar(64) NOT NULL COMMENT '昵称',
   `password` varchar(64) NOT NULL COMMENT '密码',
   `name` varchar(32) default NULL COMMENT '姓名',
-  `device` varchar(128) NOT NULL COMMENT '设备识别码',
+  `device` varchar(128) NOT NULL default '0' COMMENT '设备识别码',
   `role_id` bigint(20) NOT NULL default '1' COMMENT '角色',
   `status` tinyint(4) NOT NULL default '0' COMMENT '0: normal, 1: deleted',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `nick` (`nick`),
+  UNIQUE KEY `username` (`username`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `account_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账号表';
@@ -36,6 +36,7 @@ CREATE TABLE `account` (
 -- ----------------------------
 -- Records of account
 -- ----------------------------
+INSERT INTO `account` VALUES ('150328239', 'admin', 'c3e01e2715dd95ee3e97475276b2f74b', null, '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for role

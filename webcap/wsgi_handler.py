@@ -13,7 +13,7 @@ from etc import config
 from init_app import init
 from base.session import RedisSessionInterface
 import views
-from webcap.views.task import daily_task
+from webcap.logic.shed import daily_task
 
 project_home = os.path.realpath(__file__)
 project_home = os.path.split(project_home)[0]
