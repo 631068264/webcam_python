@@ -20,6 +20,7 @@ def login_required(roles=None):
                 if roles is None or role_id in roles or (isinstance(roles, int) and role_id == roles):
                     return old_handler(*args, **kwargs)
             else:
+                # TODO:登录 注册页面
                 return Redirect(url_for("home.login_load"))
 
         return new_handler

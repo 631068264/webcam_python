@@ -100,7 +100,7 @@ def check_image_captcha(safe_vars):
 
 @home.route("/logout")
 @general("注销")
-@login_required(const.ROLE.ALL)
+@login_required()
 def logout():
     session.clear()
     return redirect(url_for("home.index"))

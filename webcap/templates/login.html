@@ -1,0 +1,37 @@
+<div id="login" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login_dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="login_dialog"><strong>登录</strong></h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form action="{{ url_for("home.login") }}" method="post" id="form_login">
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">密码</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="请输入密码" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="image_captcha">验证码</label>
+
+                            <input type="text" class="form-control image_captcha" id="image_captcha"
+                                   name="image_captcha"
+                                   placeholder="请输入验证码" required>
+                            <img class="image" src="{{ url_for("home.get_image_captcha",r=random.random()) }}"
+                                 style="height: 30px">
+                        </div>
+                        <a href="#" class="pull-right btn btn-primary disabled" id="btn_login">登录</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
