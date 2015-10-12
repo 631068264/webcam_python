@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
+import os
 import random
 
 from captcha.image import ImageCaptcha
-from flask import Blueprint, session, redirect, send_file
+
+from flask import Blueprint, session, redirect, send_file, send_from_directory
 
 from base import logger as log, util, constant as const
 from base.framework import general, TempResponse, url_for, form_check, db_conn, ErrorResponse, OkResponse
@@ -101,6 +103,14 @@ def get_image_captcha():
     return send_file(image)
 
 
+@home.route("/download/client")
+@general("采集客户端下载")
+def download():
+    path = os.path.join(os.path.dirname(home.root_path), 'upload')
+    print(path)
+    return send_from_directory(path, 'EasyDSS_v7.0.2.rar', as_attachment=True)
+
+
 @home.route("/captcha/image/check")
 @general("图片验证码验证")
 @form_check({
@@ -116,5 +126,6 @@ def check_image_captcha(safe_vars):
 @general("注销")
 @login_required()
 def logout():
+    log.get("auth").info("%s 注销 编号[%s]", session[const.SESSION.KEY_ADMIN_NAME], session[const.SESSION.KEY_ADMIN_ID])
     session.clear()
     return redirect(url_for("home.index"))
