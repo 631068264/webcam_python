@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50096
 File Encoding         : 65001
 
-Date: 2015-10-09 23:41:18
+Date: 2015-10-12 23:49:17
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -36,7 +36,7 @@ CREATE TABLE `account` (
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('150328239', 'admin', 'c3e01e2715dd95ee3e97475276b2f74b', null, '0', '1', '0');
+INSERT INTO `account` VALUES ('150328239', 'admin', 'c3e01e2715dd95ee3e97475276b2f74b', null, 'd1cc4dfcd4145a0a2ecd44cb3', '1', '0');
 
 -- ----------------------------
 -- Table structure for role
@@ -64,8 +64,8 @@ CREATE TABLE `task` (
   `src` varchar(200) default NULL COMMENT '资源——url',
   `thumbnail` varchar(200) default NULL COMMENT '缩略图——url',
   `create_time` datetime default NULL COMMENT '任务创建时间 按日期算',
-  `duration` datetime default NULL COMMENT '持续时间',
-  `interval` datetime default NULL COMMENT '时间间隔',
+  `duration` bigint(20) default NULL COMMENT '持续时间',
+  `interval` bigint(20) default NULL COMMENT '时间间隔',
   `size` bigint(20) default NULL COMMENT '资源大小',
   `account_id` bigint(20) NOT NULL COMMENT '用户id',
   `status` tinyint(4) NOT NULL default '0' COMMENT '0: normal, 1: deleted',
@@ -77,3 +77,4 @@ CREATE TABLE `task` (
 -- ----------------------------
 -- Records of task
 -- ----------------------------
+INSERT INTO `task` VALUES ('1', 'Default', null, null, '2015-10-12 22:21:29', '3', '2', null, '150328239', '0');
