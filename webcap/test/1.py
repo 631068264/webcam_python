@@ -1,31 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
-import threading
-import time
-
-import schedule
 
 
-def job(name, j):
-    print("I'm running on thread %s" % threading.current_thread() + name)
-    print(6 + j)
-
-
-def run_threaded(func, parm):
-    threading.Thread(target=func, args=parm).start()
-
-
-args = ("123", 6)
-kw = {
-    "func": job,
-    "parm": args,
-}
-schedule.every(5).seconds.do(run_threaded, **kw)
-
-while 1:
-    schedule.run_pending()
-    time.sleep(1)
+# def job(name, j):
+#     print("I'm running on thread %s" % threading.current_thread() + name)
+#     print(6 + j)
+#
+#
+# def run_threaded(func, parm):
+#     threading.Thread(target=func, args=parm).start()
+#
+#
+# args = ("123", 6)
+# kw = {
+#     "func": job,
+#     "parm": args,
+# }
+# schedule.every(5).seconds.do(run_threaded, **kw)
+#
+# while 1:
+#     schedule.run_pending()
+#     time.sleep(1)
 
 # import time
 #
@@ -91,8 +87,6 @@ while 1:
 # while 1:
 #     schedule.run_pending()
 #     time.sleep(1)
-
-
 
 import base64
 import hashlib
@@ -167,11 +161,12 @@ def mac(content):
 
 
 def uu():
-    s = str(uuid.uuid4())
+    s = str(uuid.uuid4()).replace('-', '/')
     print(s)
     return s.split('-')
 
-#TODO:uuid - ==> / ==>device
+
+# TODO:uuid - ==> / ==>device
 def mm():
     s = str(uuid.uuid4()).split('-')[4]
     print(s)
@@ -180,11 +175,13 @@ def mm():
     return s + m
 
 
-print(md5('12'))
-print(sha1('12'))
-print(b64('12'))
-print(b32('12'))
-print(b16('12'))
-print(mac('12'))
+# print(md5('12'))
+# print(sha1('12'))
+# print(b64('12'))
+# print(b32('12'))
+# print(b16('12'))
+# print(mac('12'))
 print(uu())
 print(mm())
+
+print(md5('12')[:28])

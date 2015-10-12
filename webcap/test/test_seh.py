@@ -3,7 +3,6 @@
 # __author__ = 'wuyuxi'
 import os
 import shlex
-import socket
 import time
 import datetime
 import subprocess
@@ -24,7 +23,8 @@ db = MySQLdbConnection(**config.db_config["db_writer"])
 def daily_task():
     date = get_today_range()
     tasks = QS(db).table((T.task__t * T.account__a).on(F.a__id == F.t__account_id)).where(
-        (F.create_time >= date["start"]) & (F.create_time <= date["end"]) & (F.status == const.TASK_STATUS.NORMAL)
+        (F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"]) & (
+            F.t__status == const.TASK_STATUS.NORMAL)
     ).order_by("create_time").select("t.*,a.device", for_update=True)
 
     for task in tasks:
@@ -37,8 +37,7 @@ def daily_task():
 
 
 def get_real_device(device):
-    ip = socket.gethostbyname(socket.gethostname())
-    return ip + ':554/' + device
+    return const.LOCAL.IP + device + const.LOCAL.SUFFIX
 
 
 def do_task(db, task):
@@ -47,9 +46,9 @@ def do_task(db, task):
     src = os.path.join(path, 'dump.mp4')
     thumbnail = os.path.join(path, 'dump.jpg')
 
-    video = 'ffmpeg -i rtsp://' + real_device + '.sdp -c copy -t ' + task.duration + ' ' + src
-    thumb = 'ffmpeg -i rtsp://' + real_device + '.sdp -f image2 -t 0.001 -s 352x240 ' + thumbnail
-
+    video = 'ffmpeg -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
+    thumb = 'ffmpeg -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
+    # TODO:网速好慢啊
     kill(subprocess.Popen(shlex.split(thumb), shell=True))
     kill(subprocess.Popen(shlex.split(video), shell=True))
 
@@ -63,7 +62,7 @@ def do_task(db, task):
 
 
 def start():
-    schedule.every().day.at_time("00:00").do(daily_task)
+    schedule.every().day.at("22:51").do(daily_task)
     while 1:
         schedule.run_pending()
         time.sleep(1)

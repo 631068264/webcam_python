@@ -20,7 +20,7 @@ task = Blueprint("task", __name__)
 @login_required()
 @db_conn("db_reader")
 def play(db_reader):
-    # TODO:页面修改参数 美化 设备识别码不能过长
+    # TODO: 设备识别码不能过长
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     device = QS(db_reader).table(T.account).where(F.id == account_id).select_one("device").device
     return TempResponse("play_load.html", device=device)

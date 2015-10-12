@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import socket
 
 
 class ACCOUNT_STATUS(object):
@@ -82,3 +83,11 @@ class DEVICE(object):
     APP = "app"
     PC = "pc"
     ALL = (APP, PC)
+
+
+class LOCAL(object):
+    ip = socket.gethostbyname(socket.gethostname())
+    port = 554
+    protocol = 'rtsp://'
+    SUFFIX = '.sdp'
+    IP = protocol + ip + ':' + str(port) + "/"
