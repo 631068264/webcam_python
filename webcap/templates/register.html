@@ -2,10 +2,10 @@
 {% block title %}登录页{% endblock %}
 {% block body %}
 <div class="container" style="padding: 70px">
-    <form class="form-horizontal" action="{{url_for('home.login')}}" method="post" id="form_login">
+    <form class="form-horizontal" action="{{url_for('home.register')}}" method="post" id="form_register">
         <fieldset>
             <div id="legend" class="">
-                <legend class="">用户登录</legend>
+                <legend class="">用户注册</legend>
             </div>
 
             <div class="form-group">
@@ -38,7 +38,7 @@
 
             </div>
             <div class="form-group">
-                <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_login">登录</a>
+                <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_register">登录</a>
             </div>
 
 
@@ -50,25 +50,25 @@
 {% block tail_js %}
 {{ super() }}
 <script>
-    //登录
-    $('#btn_login').click(function () {
+    // 注册
+    $('#btn_register').click(function () {
         $(this).addClass('disabled');
-        $('#form_login').submit();
+        $('#form_register').submit();
     });
-    $('#form_login').ajaxForm({
+    $('#form_register').ajaxForm({
         success: function (resp) {
             console.log(resp);
-            $('#btn_login').removeClass('disabled');
+            $('#btn_register').removeClass('disabled');
             if (resp.status == 1) {
-                $("#login").modal('hide');
+                $("#register").modal('hide');
                 location.reload();
-                alert("登录成功");
+                alert("注册成功");
             } else {
                 alert(resp.message);
             }
         },
         error: function (resp) {
-            $('#btn_login').removeClass('disabled');
+            $('#btn_register').removeClass('disabled');
             alert('网络故障 请检查网络连接!')
         }
     });

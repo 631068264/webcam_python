@@ -23,6 +23,20 @@ def index():
     return TempResponse("index.html")
 
 
+@home.route("/login/load")
+@general("登录界面")
+def login_load():
+    if session.get(const.SESSION.KEY_LOGIN):
+        return redirect(url_for("home.index"))
+    return TempResponse("login.html")
+
+
+@home.route("/register/load")
+@general('注册页面')
+def register_load():
+    return TempResponse("register.html")
+
+
 @home.route("/register", methods=['POST'])
 @general('注册')
 @db_conn('db_writer')

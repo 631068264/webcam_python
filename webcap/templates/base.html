@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <title>{% block title %}首页{% endblock %}</title>
     <!-- Bootstrap -->
-    <link href="{{ config.static_url_path }}/css/bootstrap.css?v={{ ver("css/bootstrap.css") }}" rel="stylesheet">
+    <link href="{{ config.static_url_path }}/css/bootstrap.css?v={{ ver('css/bootstrap.css') }}" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -28,14 +28,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for("home.index") }}">WebCap</a>
+            <a class="navbar-brand" href="{{ url_for('home.index') }}">WebCap</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="{{ url_for("home.index") }}">首页</a></li>
-                <li><a href="{{ url_for("task.play") }}">查看直播</a></li>
-                <li><a href="{{ url_for("task.task_set_load") }}">任务设置</a></li>
-                <li><a href="{{ url_for("task.src_list") }}">内容管理</a></li>
+                <li class="active"><a href="{{ url_for('home.index') }}">首页</a></li>
+                <li><a href="{{ url_for('task.play') }}">查看直播</a></li>
+                <li><a href="{{ url_for('task.task_set_load') }}">任务设置</a></li>
+                <li><a href="{{ url_for('task.src_list') }}">内容管理</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -64,15 +64,11 @@
             {% else %}
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <button type="button" class="btn btn-success navbar-btn" data-toggle="modal"
-                                data-target="#login">Log In
-                        </button>
+                        <button id="login" class="btn btn-success navbar-btn">Log In</button>
                         &nbsp;&nbsp;
                     </li>
                     <li>
-                        <button type="button" class="btn btn-warning navbar-btn" data-toggle="modal"
-                                data-target="#register">Sing Up
-                        </button>
+                        <button id="register" class="btn btn-warning navbar-btn">Sing Up</button>
                     </li>
                 </ul>
             {% endif %}
@@ -81,85 +77,6 @@
         <!--/.navbar-collapse -->
     </div>
 </nav>
-
-<!-- 登录弹框-->
-<div id="login" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login_dialog">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content" role="document">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="login_dialog"><strong>登录</strong></h4>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <form action="{{ url_for("home.login") }}" method="post" id="form_login">
-                        <div class="form-group">
-                            <label for="username">用户名</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                            <label for="username">密码</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="请输入密码" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="image_captcha">验证码</label>
-
-                            <input type="text" class="form-control image_captcha" id="image_captcha"
-                                   name="image_captcha"
-                                   placeholder="请输入验证码" required>
-                            <img class="image" src="{{ url_for("home.get_image_captcha",r=random.random()) }}"
-                                 style="height: 30px">
-                        </div>
-                        <a href="#" class="pull-right btn btn-primary disabled" id="btn_login">登录</a>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 注册弹框-->
-<div id="register" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="register_dialog">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content" role="document">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="register_dialog"><strong>注册</strong></h4>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <form action="{{ url_for("home.register") }}" method="post" id="form_register">
-                        <div class="form-group">
-                            <label for="username">用户名</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
-                                   required autofocus>
-                        </div>
-                        <div class="form-group">
-                            <label for="username">密码</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="请输入密码" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="image_captcha">验证码</label>
-
-                            <input type="text" class="form-control image_captcha" id="image_captcha"
-                                   name="image_captcha"
-                                   placeholder="请输入验证码" required>
-                            <img class="image" src="{{ url_for("home.get_image_captcha",r=random.random()) }}"
-                                 style="height: 30px">
-                        </div>
-                        <a href="#" class="pull-right btn btn-primary disabled" id="btn_register">注册</a>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 {% block body %}
 
 {% endblock %}
@@ -167,56 +84,11 @@
 
 
 {% block tail_js %}
-    <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver("js/jquery.min.js") }}"></script>
-    <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver("js/bootstrap.min.js") }}"></script>
-    <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver("js/jquery.form.js") }}"></script>
-    <script src="{{ config.static_url_path }}/js/util.js?v={{ ver("js/util.js") }}"></script>
+<script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver('js/jquery.min.js') }}"></script>
+<script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver('js/bootstrap.min.js') }}"></script>
+<script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver('js/jquery.form.js') }}"></script>
+<script src="{{ config.static_url_path }}/js/util.js?v={{ ver('js/util.js') }}"></script>
     <script>
-        //登录
-        $('#btn_login').click(function () {
-            $(this).addClass('disabled');
-            $('#form_login').submit();
-        });
-        $('#form_login').ajaxForm({
-            success: function (resp) {
-                console.log(resp);
-                $('#btn_login').removeClass('disabled');
-                if (resp.status == 1) {
-                    $("#login").modal('hide');
-                    location.reload();
-                    alert("登录成功");
-                } else {
-                    alert(resp.message);
-                }
-            },
-            error: function (resp) {
-                $('#btn_login').removeClass('disabled');
-                alert('网络故障 请检查网络连接!')
-            }
-        });
-        // 注册
-        $('#btn_register').click(function () {
-            $(this).addClass('disabled');
-            $('#form_register').submit();
-        });
-        $('#form_register').ajaxForm({
-            success: function (resp) {
-                console.log(resp);
-                $('#btn_register').removeClass('disabled');
-                if (resp.status == 1) {
-                    $("#register").modal('hide');
-                    location.reload();
-                    alert("注册成功");
-                } else {
-                    alert(resp.message);
-                }
-            },
-            error: function (resp) {
-                $('#btn_register').removeClass('disabled');
-                alert('网络故障 请检查网络连接!')
-            }
-        });
-
         //验证码
         $('.image').click(function () {
             $(this).attr('src', '{{ url_for("home.get_image_captcha") }}?random=' + Math.random());
@@ -226,7 +98,7 @@
             len = $(this).val().length;
             if (len == 4) {
                 $.get(
-                        "{{ url_for("home.check_image_captcha") }}",
+                        "{{ url_for('home.check_image_captcha') }}",
                         {image_captcha: $(this).val()},
                         function (resp) {
                             console.log(resp);
@@ -254,6 +126,14 @@
         //退出
         $('#logout').click(function () {
             window.location.href = '{{ url_for("home.logout") }}';
+        });
+        //登录
+        $('#login').click(function () {
+            window.location.href = '{{ url_for("home.login_load") }}';
+        });
+        //注册
+        $('#register').click(function () {
+            window.location.href = '{{ url_for("home.register_load") }}';
         });
 
     </script>
