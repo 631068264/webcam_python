@@ -18,6 +18,9 @@ from base.smartsql import Table as T, Field as F, QuerySet as QS
 db = MySQLdbConnection(**config.db_config["db_writer"])
 
 
+# TODO:联机调试shed
+# TODO:多线程并行
+# TODO:大改数据库结构
 def daily_task():
     date = get_today_range()
     tasks = QS(db).table((T.task__t * T.account__a).on(F.a__id == F.t__account_id)).where(
