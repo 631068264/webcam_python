@@ -49,7 +49,7 @@ alias grb='git fetch && git rebase origin/develop'
 ```
 
 ## 测试开发的时候运行
-去相应的项目目录，运行`python wsgi_handler.py`。
+去相应的项目目录，运行`python wsgi_handler.py`, 还有开启redis服务器。
 
 默认是启动调试模式，只要保存文件，就会自动reload代码。
 
