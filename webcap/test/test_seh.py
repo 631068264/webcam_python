@@ -41,16 +41,16 @@ def get_real_device(device):
 
 
 def do_task(db, task):
-    real_device = get_real_device(task.device)
+    real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
     path = get_src_path(task.device)
     src = os.path.join(path, 'dump.mp4')
     thumbnail = os.path.join(path, 'dump.jpg')
 
-    video = 'ffmpeg -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
-    thumb = 'ffmpeg -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
-    # TODO:网速好慢啊
-    kill(subprocess.Popen(shlex.split(thumb), shell=True))
-    kill(subprocess.Popen(shlex.split(video), shell=True))
+    video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
+    thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
+
+    kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))
+    kill(subprocess.Popen(shlex.split(video, posix=False), shell=True))
 
     with transaction(db) as trans:
         QS(db).table(T.task).where(F.id == task.id).update({
@@ -62,7 +62,7 @@ def do_task(db, task):
 
 
 def start():
-    schedule.every().day.at("22:51").do(daily_task)
+    schedule.every().day.at("10:46").do(daily_task)
     while 1:
         schedule.run_pending()
         time.sleep(1)
