@@ -128,18 +128,6 @@ def safe_strpdate(data):
     return None if parsed is None else parsed.date()
 
 
-def safe_strftime(data, format="%Y-%m-%d %H:%M:%S"):
-    try:
-        return datetime.datetime.strftime(data, format)
-    except:
-        return None
-
-
-def safe_strfdate(data):
-    parsed = safe_strftime(data, "%Y-%m-%d")
-    return None if parsed is None else parsed
-
-
 def url_append(url, nodup=True, **kwargs):
     old_params = urlparse.urlparse(url)[4]
     if nodup and old_params:
@@ -378,8 +366,18 @@ def md5(content):
     return hashlib.md5(content).hexdigest()
 
 
-def hash_password(password, user_id):
-    return hashlib.md5("%s%s%s" % (user_id, password, user_id)).hexdigest()
+def hash_password(password, username):
+    return hashlib.md5("%s%s%s" % (username, password, username)).hexdigest()
+
+
+def get_device():
+    u4 = str(uuid.uuid4()).split('-')[4]
+    m = md5(u4)
+    return u4 + m
+
+
+def get_file_name():
+    return str(uuid.uuid4()).replace('-', '/')
 
 
 def gen_access_token(user_id):

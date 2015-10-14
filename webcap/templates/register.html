@@ -1,76 +1,75 @@
 {% extends "base.html" %}
 {% block title %}登录页{% endblock %}
 {% block body %}
-<div class="container" style="padding: 70px">
-    <form class="form-horizontal" action="{{url_for('home.register')}}" method="post" id="form_register">
-        <fieldset>
-            <div id="legend" class="">
-                <legend class="">用户注册</legend>
-            </div>
-
-            <div class="form-group">
-                <label for="username" class="col-lg-2 control-label">用户名</label>
-
-                <div class="col-lg-5">
-                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
-                           required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="password" class="col-lg-2 control-label">密&nbsp;&nbsp;&nbsp;码</label>
-
-                <div class="col-lg-5">
-                    <input type="password" class="form-control" id="password" name="password"
-                           placeholder="请输入密码" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="image_captcha" class="col-lg-2 control-label">验证码</label>
-
-                <div class="col-lg-2">
-                    <input type="text" class="form-control image_captcha" id="image_captcha" name="image_captcha"
-                           placeholder="请输入验证码" required>
-                </div>
-                <div class="col-lg-2">
-                    <img class="image" src="{{ url_for('home.get_image_captcha',r=random.random()) }}"
-                         style="height: 40px">
+    <div class="container" style="padding: 70px">
+        <form class="form-horizontal" action="{{ url_for('home.register') }}" method="post" id="form_register">
+            <fieldset>
+                <div id="legend" class="">
+                    <legend class="">用户注册</legend>
                 </div>
 
-            </div>
-            <div class="form-group">
-                <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_register">登录</a>
-            </div>
+                <div class="form-group">
+                    <label for="username" class="col-lg-2 control-label">用户名</label>
+
+                    <div class="col-lg-5">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                               required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-lg-2 control-label">密&nbsp;&nbsp;&nbsp;码</label>
+
+                    <div class="col-lg-5">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="请输入密码" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="image_captcha" class="col-lg-2 control-label">验证码</label>
+
+                    <div class="col-lg-2">
+                        <input type="text" class="form-control image_captcha" id="image_captcha" name="image_captcha"
+                               placeholder="请输入验证码" required>
+                    </div>
+                    <div class="col-lg-2">
+                        <img class="image" src="{{ url_for('home.get_image_captcha',r=random.random()) }}"
+                             style="height: 40px">
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_register">登录</a>
+                </div>
 
 
-        </fieldset>
-    </form>
+            </fieldset>
+        </form>
 
-</div>
+    </div>
 {% endblock body %}
 {% block tail_js %}
-{{ super() }}
-<script>
-    // 注册
-    $('#btn_register').click(function () {
-        $(this).addClass('disabled');
-        $('#form_register').submit();
-    });
-    $('#form_register').ajaxForm({
-        success: function (resp) {
-            console.log(resp);
-            $('#btn_register').removeClass('disabled');
-            if (resp.status == 1) {
-                $("#register").modal('hide');
-                location.reload();
-                alert("注册成功");
-            } else {
-                alert(resp.message);
+    {{ super() }}
+    <script>
+        // 注册
+        $('#btn_register').click(function () {
+            $(this).addClass('disabled');
+            $('#form_register').submit();
+        });
+        $('#form_register').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_register').removeClass('disabled');
+                if (resp.status == 1) {
+                    alert("注册成功");
+                     window.location.href = '{{ url_for("home.index") }}';
+                } else {
+                    alert(resp.message);
+                }
+            },
+            error: function (resp) {
+                $('#btn_register').removeClass('disabled');
+                alert('网络故障 请检查网络连接!')
             }
-        },
-        error: function (resp) {
-            $('#btn_register').removeClass('disabled');
-            alert('网络故障 请检查网络连接!')
-        }
-    });
-</script>
+        });
+    </script>
 {% endblock tail_js %}

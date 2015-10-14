@@ -13,16 +13,43 @@ def get_account_by_username(db, username):
     ).select_one()
 
 
-def register(db, username, password):
-    user_id = util.gen_user_id(username)
-    hash_pwd = util.hash_password(password, user_id)
+def get_account_by_id(db, account_id):
+    return QS(db).table(T.account).where(
+        (F.id == account_id) & (F.status == const.ACCOUNT_STATUS.NORMAL)
+    ).select_one()
 
-    QS(db).table(T.account).insert({
-        "id": user_id,
+
+def get_task_ids_by_account_id(db, account_id):
+    task_ids = QS(db).table(T.task).where(
+        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL)).select()
+    return [t.id for t in task_ids]
+
+
+def get_src_ids_by_account_id(db, account_id):
+    src_ids = QS(db).table(T.src).where(
+        (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)).select()
+    return [s.id for s in src_ids]
+
+
+def get_task_by_account_id(db, account_id):
+    return QS(db).table(T.task).where(
+        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL)
+    ).order_by(F.create_time, desc=True).select()
+
+
+def get_src_by_account_id(db, account_id):
+    return QS(db).table(T.src).where(
+        (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)
+    ).order_by(F.create_time, desc=True).select()
+
+
+def register(db, username, password):
+    hash_pwd = util.hash_password(password, username)
+
+    user_id = QS(db).table(T.account).insert({
         "username": username,
         "password": hash_pwd,
         "name": None,
-        "device": 0,
         "status": const.ACCOUNT_STATUS.NORMAL,
         "role_id": const.ROLE.NORMAL_ACCOUNT,
     })

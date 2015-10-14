@@ -3,7 +3,7 @@
 {% block body %}
     <div class="container" style="text-align:center">
         <object type='application/x-vlc-plugin' id='vlc' events='True' width="720" height="540">
-            <param name='mrl' value='{{ const.LOCAL.IP+device+const.LOCAL.SUFFIX }}'/>
+            <param name='mrl' value='{{ const.LOCAL.IP+device.id+const.LOCAL.SUFFIX }}'/>
             <param name='volume' value='50'/>
             <param name='autoplay' value='true'/>
             <param name='loop' value='false'/>

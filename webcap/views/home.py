@@ -80,7 +80,7 @@ def login(db_reader, safe_vars):
     if not account:
         return ErrorResponse("用户尚未注册")
 
-    hash_pwd = util.hash_password(safe_vars.password, account.id)
+    hash_pwd = util.hash_password(safe_vars.password, safe_vars.username)
     if hash_pwd != account.password:
         return ErrorResponse("密码错误")
 

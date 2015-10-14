@@ -60,9 +60,8 @@
             console.log(resp);
             $('#btn_login').removeClass('disabled');
             if (resp.status == 1) {
-                $("#login").modal('hide');
-                location.reload();
                 alert("登录成功");
+                window.location.href = '{{ url_for("home.index") }}';
             } else {
                 alert(resp.message);
             }

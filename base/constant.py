@@ -21,6 +21,11 @@ class ROLE(object):
         NORMAL_ACCOUNT: "普通用户",
     }
 
+    SIZE = {
+        ADMIN: 52428800,  # 50M
+        NORMAL_ACCOUNT: 20971520,  # 20M
+    }
+
     ALL = NAME_DICT.keys()
 
 
@@ -43,13 +48,6 @@ class COOKIES(object):
     KEY_REGISTER_OK_REDIRECT = "REGISTEROKRE"
     KEY_PASSWORD_OK_REDIRECT = "PASSWORDOKRE"
     KEY_VIEW_JOB_DETAIL_REDIRECT = "VIEWJOBREDIRECT"
-
-
-class CAPTCHA_USAGE(object):
-    REGISTER = "REGISTER"
-    RESET_PWD = "RESET_PWD"
-
-    ALL = (REGISTER, RESET_PWD)
 
 
 class PASSWORD_ACTION(object):
@@ -78,6 +76,20 @@ class TASK_STATUS(object):
     DELETED = 1
 
 
+class SRC_STATUS(object):
+    # 正常状态
+    NORMAL = 0
+    # 账号删除
+    DELETED = 1
+
+
+class DEVICE_STATUS(object):
+    # 正常状态
+    NORMAL = 0
+    # 账号删除
+    DELETED = 1
+
+
 class DEVICE(object):
     # 接入设备
     APP = "app"
@@ -91,3 +103,9 @@ class LOCAL(object):
     protocol = 'rtsp://'
     SUFFIX = '.sdp'
     IP = protocol + ip + ':' + str(port) + "/"
+
+
+class IS_NOW(object):
+    NOW = 1
+    NOT_NOW = 0
+    ALL = (NOW, NOT_NOW)
