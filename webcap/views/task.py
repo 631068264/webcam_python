@@ -75,44 +75,13 @@ def task_set(db_writer, safe_vars):
 })
 def task_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    if safe_vars.task_id not in dao.get_task_ids_by_account_id(db_writer, account_id):
+    task = dao.update_task_by_account_id(db_writer, account_id, safe_vars.task_id)
+    if not task:
         return ErrorResponse("该任务不是你的")
 
     with transaction(db_writer) as trans:
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
             "status": const.TASK_STATUS.DELETED,
-        })
-        trans.finish()
-    return OkResponse()
-
-
-@task.route("/src/list")
-@general("资源列表")
-@login_required()
-@db_conn("db_reader")
-def src_list(db_reader):
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    # TODO:新增字段完成时间
-    srcs = dao.get_src_by_account_id(db_reader, account_id)
-    return TempResponse("src_list.html", srcs=srcs)
-
-
-@task.route("/src/cancel")
-@general("资源删除")
-@login_required()
-@db_conn("db_writer")
-@form_check({
-    "src_id": F_int("资源ID") & "strict" & "required",
-})
-def src_cancel(db_writer, safe_vars):
-    # TODO:时间限制
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    if safe_vars.src_id not in dao.get_src_ids_by_account_id(db_writer, account_id):
-        return ErrorResponse("该资源不是你的")
-
-    with transaction(db_writer) as trans:
-        QS(db_writer).table(T.src).where(F.id == safe_vars.src_id).update({
-            "status": const.SRC_STATUS.DELETED,
         })
         trans.finish()
     return OkResponse()

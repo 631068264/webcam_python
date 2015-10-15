@@ -19,16 +19,16 @@ def get_account_by_id(db, account_id):
     ).select_one()
 
 
-def get_task_ids_by_account_id(db, account_id):
-    task_ids = QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL)).select()
-    return [t.id for t in task_ids]
+def update_task_by_account_id(db, account_id, task_id):
+    return QS(db).table(T.task).where(
+        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == task_id)
+    ).select_one(for_update=True)
 
 
-def get_src_ids_by_account_id(db, account_id):
-    src_ids = QS(db).table(T.src).where(
-        (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)).select()
-    return [s.id for s in src_ids]
+def update_src_by_account_id(db, account_id, src_id):
+    return QS(db).table(T.src).where(
+        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == src_id)
+    ).select_one(for_update=True)
 
 
 def get_task_by_account_id(db, account_id):
