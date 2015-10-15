@@ -13,7 +13,7 @@
 
                     <div class="col-lg-5">
                         <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
-                               required>
+                               required autofocus>
                     </div>
                 </div>
                 <div class="form-group">
@@ -61,7 +61,7 @@
                 $('#btn_register').removeClass('disabled');
                 if (resp.status == 1) {
                     alert("注册成功");
-                     window.location.href = '{{ url_for("home.index") }}';
+                    window.location.href = '{{ url_for("home.index") }}';
                 } else {
                     alert(resp.message);
                 }

@@ -82,12 +82,11 @@
 {% endblock %}
 
 
-
 {% block tail_js %}
-<script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver('js/jquery.min.js') }}"></script>
-<script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver('js/bootstrap.min.js') }}"></script>
-<script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver('js/jquery.form.js') }}"></script>
-<script src="{{ config.static_url_path }}/js/util.js?v={{ ver('js/util.js') }}"></script>
+    <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver('js/jquery.min.js') }}"></script>
+    <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver('js/bootstrap.min.js') }}"></script>
+    <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver('js/jquery.form.js') }}"></script>
+    <script src="{{ config.static_url_path }}/js/util.js?v={{ ver('js/util.js') }}"></script>
     <script>
         //验证码
         $('.image').click(function () {
