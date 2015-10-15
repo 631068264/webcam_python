@@ -46,7 +46,7 @@ def task_set_load(db_reader):
     "interval": F_int("时间间隔") & "strict" & "required",
 })
 def task_set(db_writer, safe_vars):
-    # TODO:时间限制 任务多样性(起始时间，时间多样性)
+    # TODO:时间限制 任务多样性(起始时间，时间多样性) 任务状态是否正在工作
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     size = dao.get_account_by_id(db_writer, account_id).size
     if const.ROLE.SIZE[session[const.SESSION.KEY_ROLE_ID]] <= size:

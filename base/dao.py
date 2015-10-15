@@ -59,3 +59,15 @@ def register(db, username, password):
         "username": username,
     }
     return True, msg
+
+
+def get_device_by_account_id(db, account_id):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.status == const.DEVICE_STATUS.NORMAL)
+    ).select()
+
+
+def update_device_by_account_id(db, account_id, device_id):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.id == device_id) & (F.status == const.DEVICE_STATUS.NORMAL)
+    ).select_one(for_update=True)

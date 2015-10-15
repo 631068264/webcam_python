@@ -20,6 +20,7 @@ src = Blueprint("src", __name__)
 @login_required()
 @db_conn("db_reader")
 def src_list(db_reader):
+    # TODO:资源类型
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     srcs = dao.get_src_by_account_id(db_reader, account_id)
     return TempResponse("src_list.html", srcs=srcs)

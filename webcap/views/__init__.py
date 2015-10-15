@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
 
-__all__ = ["home", "task", "src", "test"]
+__all__ = ["home", "task", "src", "device", "test"]
