@@ -423,38 +423,6 @@ def convert_list_underscore2camelcase(l):
     return [convert_dict_key_underscore2camelcase(i) for i in l]
 
 
-USER_ID_BIT_OFFSET = (
-    131224, 5078, 129384, 26323, 1092954, 713412, 23862, 1796, 561224, 190246,
-    628253, 874, 95, 22342, 10, 829283, 302532, 47, 56, 518721,
-    62, 50, 15623427, 82374827, 4710235, 2384789, 645743, 46, 312315, 2745,
-    26, 37, 812, 79239482, 503, 376, 901, 28374627, 403, 204,
-    12, 30, 271872361, 460, 157872732, 480, 103, 704, 747, 885,
-    456, 207, 823423489, 3904828, 94172112, 229, 578, 780, 24, 494,
-    193, 734, 559, 714, 937, 255, 199, 751, 156, 840,
-    30, 576492, 37620, 64, 212417, 3241322, 92528, 77, 91, 49,
-    726, 7512893, 5273646, 32763485, 177, 9020, 216, 682, 426, 675,
-    32861763, 22, 102912, 1723620, 882977, 59, 189, 161, 41223, 154,
-    2374982, 4958, 15, 2349085, 6172, 453, 6, 123847, 8603, 1234718)
-
-
-def gen_user_id(username):
-    if username is None or len(username.strip()) == 0:
-        return 0
-
-    user_id = 0
-    length = len(username)
-    offset_size = len(USER_ID_BIT_OFFSET)
-
-    for i in xrange(length):
-        offset = USER_ID_BIT_OFFSET[i % offset_size]
-        user_id += ord(username[i]) * offset
-    return user_id
-
-
-def gen_recruitment_id(owner_id):
-    return gen_user_id(str(uuid.uuid4()) + str(owner_id))
-
-
 def sha1OfFile(filepath):
     sha = hashlib.sha1()
     with open(filepath, 'rb') as f:
@@ -471,11 +439,6 @@ def get_static_file_version(full_filename):
     filename = os.path.join(current_app.static_folder, full_filename)
     sha1 = sha1OfFile(filename)
     return sha1
-
-
-def get_weekname(dt):
-    d = (u"周一", u"周二", u"周三", u"周四", u"周五", u"周六", u"周日")
-    return d[dt.weekday()]
 
 
 if __name__ == '__main__':

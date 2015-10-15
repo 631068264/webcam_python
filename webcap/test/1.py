@@ -166,7 +166,6 @@ def uu():
     return s.split('-')
 
 
-# TODO:uuid - ==> / ==>device
 def mm():
     s = str(uuid.uuid4()).split('-')[4]
     print(s)

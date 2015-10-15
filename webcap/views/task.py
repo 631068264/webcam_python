@@ -21,7 +21,6 @@ task = Blueprint("task", __name__)
 @login_required()
 @db_conn("db_reader")
 def play(db_reader):
-    # TODO: 设备识别码不能过长
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     device = QS(db_reader).table(T.device).where(F.account_id == account_id).select_one()
     return TempResponse("play_load.html", device=device)

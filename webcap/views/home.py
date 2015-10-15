@@ -5,7 +5,6 @@ import os
 import random
 
 from captcha.image import ImageCaptcha
-
 from flask import Blueprint, session, redirect, send_file, send_from_directory
 
 from base import logger as log, util, constant as const
@@ -51,7 +50,6 @@ def register(db_writer, safe_vars):
     if account:
         return ErrorResponse("您，已经注册了!")
     with transaction(db_writer) as trans:
-        # TODO:尚未考虑设备号
         is_ok, msg = dao.register(db_writer, safe_vars.username, safe_vars.password)
         if not is_ok:
             trans.finish()
