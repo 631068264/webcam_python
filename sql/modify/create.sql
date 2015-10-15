@@ -25,7 +25,7 @@ CREATE TABLE `account` (
 ) AUTO_INCREMENT = 18620749654 COMMENT = '账号表';
 
 CREATE TABLE `device` (
-	`id` BIGINT (20) NOT NULL COMMENT '设备ID',
+	`id` BIGINT (20) NOT NULL UNIQUE COMMENT '设备ID',
 	`name` VARCHAR (64) NOT NULL COMMENT '设备名',
 	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
 	`account_id` BIGINT (20) NOT NULL COMMENT '账号ID',
@@ -34,7 +34,7 @@ CREATE TABLE `device` (
 ) COMMENT = '设备表';
 
 CREATE TABLE `task` (
-	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '设备ID',
+	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
 	`create_time` datetime DEFAULT NULL COMMENT '任务创建时间',
 	`duration` BIGINT (20) DEFAULT NULL COMMENT '持续时间',
 	`interval` BIGINT (20) DEFAULT NULL COMMENT '时间间隔',
@@ -46,7 +46,7 @@ CREATE TABLE `task` (
 ) COMMENT = '任务表';
 
 CREATE TABLE `src` (
-	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '设备ID',
+	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '资源ID',
 	`create_time` datetime DEFAULT NULL COMMENT '资源创建时间,即任务完成时间',
 	`src_path` VARCHAR (200) DEFAULT NULL COMMENT '资源——url',
 	`thumbnail` VARCHAR (200) DEFAULT NULL COMMENT '缩略图——url',
