@@ -15,14 +15,14 @@ from base.xform import F_int, F_str
 device = Blueprint("device", __name__)
 
 
-@device.route("/device/set/load")
+@device.route("/device/list/load")
 @general("设备列表页面")
 @login_required()
 @db_conn("db_reader")
-def device_set_load(db_reader):
+def device_list_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     devices = dao.get_device_by_account_id(db_reader, account_id)
-    return TempResponse("device_set.html", devices=devices)
+    return TempResponse("device_list.html", devices=devices)
 
 
 @device.route("/device/set")

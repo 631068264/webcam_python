@@ -26,7 +26,7 @@ def play(db_reader):
     return TempResponse("play_load.html", device=device)
 
 
-@task.route("/task/set/load")
+@task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
 @db_conn("db_reader")

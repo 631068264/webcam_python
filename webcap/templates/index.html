@@ -17,7 +17,15 @@
     <div class="container">
         <!-- Example row of columns -->
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <h2>获取设备号</h2>
+
+                <p>获取唯一的设备号,<strong>一个PC客户端对应一个设配号。</strong>一个人可以有多个设备。要使用客户端请先申请一个设备号，然后按照说明填写设备号</p>
+
+                <p><a class="btn btn-default" href="{{ url_for('device.device_list_load') }}"
+                      role="button">获取设备号 &raquo;</a></p>
+            </div>
+            <div class="col-md-3 col-md-offset-1">
                 <h2>Heading</h2>
 
                 <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
@@ -26,16 +34,7 @@
 
                 <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
             </div>
-            <div class="col-md-4">
-                <h2>Heading</h2>
-
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
-                    mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
-                    mollis euismod. Donec sed odio dui. </p>
-
-                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-3 col-md-offset-1">
                 <h2>Heading</h2>
 
                 <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
