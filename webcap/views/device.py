@@ -8,7 +8,7 @@ from base import dao, util
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
 from base.logic import login_required
 from base.poolmysql import transaction
-from base.smartsql import Table as T, Field as F, QuerySet as QS
+from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
 from base.xform import F_int, F_str
 
@@ -25,24 +25,32 @@ def device_list_load(db_reader):
     return TempResponse("device_list.html", devices=devices)
 
 
-@device.route("/device/set")
+@device.route("/device/add", methods=['POST'])
 @general("设备设置")
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "name": F_str("设备名") & "strict" & "required",
+    "device_name": F_str("设备名") & "strict" & "required",
 })
-def device_set(db_writer, safe_vars):
-    # TODO:设备个数限制
+def device_add(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
+
+    device_num = dao.get_account_by_id(db_writer, account_id).device_num
+    if device_num >= const.ROLE.DEVICE[session[const.SESSION.KEY_ROLE_ID]]:
+        return ErrorResponse("用户设备过多,不能再增加")
 
     with transaction(db_writer) as trans:
         QS(db_writer).table(T.device).insert({
             "id": util.get_device(),
-            "name": safe_vars.name,
+            "name": safe_vars.device_name,
             "status": const.DEVICE_STATUS.NORMAL,
             "account_id": account_id,
         })
+
+        QS(db_writer).table(T.account).where(F.id == account_id).update({
+            "device_num": E("device_num + 1"),
+        })
+
         trans.finish()
     return OkResponse()
 
@@ -52,7 +60,7 @@ def device_set(db_writer, safe_vars):
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "device_id": F_int("设备ID") & "strict" & "required",
+    "device_id": F_str("设备ID") & "strict" & "required",
 })
 def device_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
@@ -63,6 +71,10 @@ def device_cancel(db_writer, safe_vars):
     with transaction(db_writer) as trans:
         QS(db_writer).table(T.device).where(F.id == safe_vars.device_id).update({
             "status": const.DEVICE_STATUS.DELETED,
+        })
+
+        QS(db_writer).table(T.account).where(F.id == account_id).update({
+            "device_num": E("if(device_num - 1 < 0, 0 ,device_num - 1)"),
         })
         trans.finish()
     return OkResponse()

@@ -372,7 +372,7 @@ def hash_password(password, username):
 
 def get_device():
     u4 = str(uuid.uuid4()).split('-')[4]
-    m = md5(u4)
+    m = md5(u4)[:13]
     return u4 + m
 
 

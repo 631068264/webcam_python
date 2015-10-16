@@ -20,13 +20,18 @@ class ROLE(object):
         ADMIN: "管理员",
         NORMAL_ACCOUNT: "普通用户",
     }
+    ALL = NAME_DICT.keys()
 
+    # 用户限制
     SIZE = {
         ADMIN: 52428800,  # 50M
         NORMAL_ACCOUNT: 20971520,  # 20M
     }
 
-    ALL = NAME_DICT.keys()
+    DEVICE = {
+        ADMIN: 10,  # 50M
+        NORMAL_ACCOUNT: 2,  # 20M
+    }
 
 
 class STATUS(object):
@@ -88,6 +93,12 @@ class DEVICE_STATUS(object):
     NORMAL = 0
     # 账号删除
     DELETED = 1
+
+    NAME_DICT = {
+        NORMAL: "正常",
+        DELETED: "禁用",
+    }
+    ALL = NAME_DICT.keys()
 
 
 class DEVICE(object):

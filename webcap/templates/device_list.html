@@ -1,9 +1,110 @@
 {% extends "base.html" %}
-{% block title %}�豸�б�{% endblock %}
-{% block body %}{% endblock body %}
-{% block tail_js %}
-{{ super() }}
-<script>
+{% block title %}设备列表{% endblock %}
+{% block body %}
 
-</script>
+    <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#deviece_add">申请设备<span
+            class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+    <table class="table table-striped table-hover table-condensed ">
+        <caption><strong><h3>{{ session[const.SESSION.KEY_ADMIN_NAME] }}__设备表</h3></strong></caption>
+        <tr>
+            <th>设备ID</th>
+            <th>设备名称</th>
+            <th>设备状态</th>
+            <th>操作</th>
+        </tr>
+        {% for d in devices %}
+            <tr>
+                <td>{{ d.id }}</td>
+                <td>{{ d.name }}</td>
+                <td>{{ const.DEVICE_STATUS.NAME_DICT[d.status] }}</td>
+                <td><a href="#" type="button" btn_type="delete" class="btn btn-primary" device_id="{{ d.id }}">删除<span
+                        class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
+
+            </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <div id="deviece_add" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deviece_add_dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" role="document">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="deviece_add_dialog"><strong>设备申请</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <form action="{{ url_for("device.device_add") }}" method="post" id="form_deviece_add">
+                            <div class="form-group">
+                                <label for="device_name">设备名</label>
+                                <input type="text" class="form-control" id="device_name" name="device_name"
+                                       placeholder="请输入设备名" required>
+
+
+                            </div>
+                            <a href="#" class="pull-right btn btn-primary" id="btn_add">申请</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+{% block tail_js %}
+    {{ super() }}
+    <script>
+        //申请
+        $('#btn_add').click(function () {
+            $(this).addClass('disabled');
+            $('#form_deviece_add').submit();
+        });
+        $('#form_deviece_add').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_add').removeClass('disabled');
+                if (resp.status == 1) {
+                    $("#deviece_add").modal('hide');
+                    location.reload();
+                    alert("申请成功");
+                } else {
+                    alert(resp.message);
+                }
+            },
+            error: function (resp) {
+                $('#btn_add').removeClass('disabled');
+                alert('网络故障 请检查网络连接!')
+            }
+        });
+
+        //删除
+        $('a[btn_type="delete"]').click(function () {
+            var device_id = $(this).attr("device_id");
+            var r = confirm("真的要删除?");
+            if (r == true) {
+                $(this).addClass('disabled');
+                console.log(device_id);
+                $.get(
+                        "/webcap/device/cancel",
+                        {device_id: device_id},
+                        function (resp) {
+                            if (resp.status == 1) {
+                                location.reload();
+                                $(this).removeClass('disabled');
+                                alert('删除成功');
+                            } else {
+                                alert(resp.message);
+                            }
+                        }
+                ).fail(function () {
+                            $(this).removeClass('disabled');
+                            alert('网络故障 请检查网络连接!');
+                        });
+            }
+
+
+        });
+
+    </script>
 {% endblock tail_js %}
