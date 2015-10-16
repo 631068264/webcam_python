@@ -18,18 +18,19 @@ CREATE TABLE `account` (
 	`password` VARCHAR (64) NOT NULL COMMENT '密码',
 	`name` VARCHAR (32) DEFAULT NULL COMMENT '姓名',
 	`size` BIGINT (20) NOT NULL DEFAULT '0' COMMENT '用户资源总大小',
+	`device_num` BIGINT (3) NOT NULL DEFAULT '0' COMMENT '设备个数',
 	`role_id` BIGINT (20) NOT NULL DEFAULT '1' COMMENT '角色',
 	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
 ) AUTO_INCREMENT = 18620749654 COMMENT = '账号表';
+INSERT INTO `account` VALUES ('18620749654', 'admin', '20966d46a6446a610bce72e00eccd954', null, '0', '0', '1', '0');
 
 CREATE TABLE `device` (
-	`id` BIGINT (20) NOT NULL UNIQUE COMMENT '设备ID',
+	`id` VARCHAR (50) NOT NULL UNIQUE COMMENT '设备ID',
 	`name` VARCHAR (64) NOT NULL COMMENT '设备名',
 	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
 	`account_id` BIGINT (20) NOT NULL COMMENT '账号ID',
-	PRIMARY KEY (`id`),
 	FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) COMMENT = '设备表';
 

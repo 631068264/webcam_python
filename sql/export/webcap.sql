@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50096
 File Encoding         : 65001
 
-Date: 2015-10-14 00:07:28
+Date: 2015-10-17 00:19:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,28 +25,30 @@ CREATE TABLE `account` (
   `password` varchar(64) NOT NULL COMMENT '密码',
   `name` varchar(32) default NULL COMMENT '姓名',
   `size` bigint(20) NOT NULL default '0' COMMENT '用户资源总大小',
+  `device_num` bigint(3) NOT NULL default '0' COMMENT '设备个数',
   `role_id` bigint(20) NOT NULL default '1' COMMENT '角色',
   `status` tinyint(4) NOT NULL default '0' COMMENT '0: normal, 1: deleted',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `account_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18620749654 DEFAULT CHARSET=utf8 COMMENT='账号表';
+) ENGINE=InnoDB AUTO_INCREMENT=18620749655 DEFAULT CHARSET=utf8 COMMENT='账号表';
 
 -- ----------------------------
 -- Records of account
 -- ----------------------------
+INSERT INTO `account` VALUES ('18620749654', 'admin', '20966d46a6446a610bce72e00eccd954', null, '0', '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for device
 -- ----------------------------
 DROP TABLE IF EXISTS `device`;
 CREATE TABLE `device` (
-  `id` bigint(20) NOT NULL COMMENT '设备ID',
+  `id` varchar(50) NOT NULL COMMENT '设备ID',
   `name` varchar(64) NOT NULL COMMENT '设备名',
   `status` tinyint(4) NOT NULL default '0' COMMENT '0: normal, 1: deleted',
   `account_id` bigint(20) NOT NULL COMMENT '账号ID',
-  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id` (`id`),
   KEY `account_id` (`account_id`),
   CONSTRAINT `device_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='设备表';
@@ -54,6 +56,8 @@ CREATE TABLE `device` (
 -- ----------------------------
 -- Records of device
 -- ----------------------------
+INSERT INTO `device` VALUES ('658954410d5602858abdc10fb', '13245', '1', '18620749654');
+INSERT INTO `device` VALUES ('ae7baebe67436105985b28722', '1233', '1', '18620749654');
 
 -- ----------------------------
 -- Table structure for role
@@ -76,7 +80,7 @@ INSERT INTO `role` VALUES ('1', '普通用户');
 -- ----------------------------
 DROP TABLE IF EXISTS `src`;
 CREATE TABLE `src` (
-  `id` bigint(20) NOT NULL auto_increment COMMENT '设备ID',
+  `id` bigint(20) NOT NULL auto_increment COMMENT '资源ID',
   `create_time` datetime default NULL COMMENT '资源创建时间,即任务完成时间',
   `src_path` varchar(200) default NULL COMMENT '资源——url',
   `thumbnail` varchar(200) default NULL COMMENT '缩略图——url',
@@ -98,7 +102,7 @@ CREATE TABLE `src` (
 -- ----------------------------
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
-  `id` bigint(20) NOT NULL auto_increment COMMENT '设备ID',
+  `id` bigint(20) NOT NULL auto_increment COMMENT '任务ID',
   `create_time` datetime default NULL COMMENT '任务创建时间',
   `duration` bigint(20) default NULL COMMENT '持续时间',
   `interval` bigint(20) default NULL COMMENT '时间间隔',
