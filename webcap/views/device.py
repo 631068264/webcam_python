@@ -15,9 +15,7 @@ from base.xform import F_str
 device = Blueprint("device", __name__)
 
 
-# TODO:可能会修改设备名
-# TODO：页面增加任务设置
-# TODO: 页面增加直播
+# TODO:设备封禁
 @device.route("/device/list/load")
 @general("设备列表页面")
 @login_required()
@@ -54,6 +52,25 @@ def device_add(db_writer, safe_vars):
             "device_num": E("device_num + 1"),
         })
 
+        trans.finish()
+    return OkResponse()
+
+
+@device.route("/device/edit")
+@general("设备改名")
+@login_required()
+@db_conn("db_writer")
+@form_check({
+    "device_id": F_str("设备ID") & "strict" & "required",
+    "device_name": F_str("设备名") & "strict" & "required",
+})
+def device_edit(db_writer, safe_vars):
+    device = dao.update_device_by_account_id(db_writer, session[const.SESSION.KEY_ADMIN_ID], safe_vars.device_id)
+    if not device:
+        return ErrorResponse("没有权限修改该设备")
+    device.name = safe_vars.device_name
+    with transaction(db_writer)as trans:
+        QS(db_writer).table(T.device).update(device)
         trans.finish()
     return OkResponse()
 
