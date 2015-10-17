@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50521
 File Encoding         : 65001
 
-Date: 2015-10-17 16:40:08
+Date: 2015-10-17 17:58:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -37,7 +37,7 @@ CREATE TABLE `account` (
 -- ----------------------------
 -- Records of account
 -- ----------------------------
-INSERT INTO `account` VALUES ('18620749654', 'admin', '20966d46a6446a610bce72e00eccd954', null, '0', '1', '1', '0');
+INSERT INTO `account` VALUES ('18620749654', 'admin', '20966d46a6446a610bce72e00eccd954', null, '0', '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for device
@@ -85,16 +85,22 @@ CREATE TABLE `src` (
   `thumbnail` varchar(200) DEFAULT NULL COMMENT '缩略图——url',
   `size` bigint(20) DEFAULT NULL COMMENT '资源大小',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
-  `device_id` bigint(20) NOT NULL COMMENT '设备ID',
+  `device_id` varchar(50) NOT NULL COMMENT '设备ID',
   `account_id` bigint(20) NOT NULL COMMENT '账号ID',
   PRIMARY KEY (`id`),
   KEY `account_id` (`account_id`),
   CONSTRAINT `src_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='资源表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='资源表';
 
 -- ----------------------------
 -- Records of src
 -- ----------------------------
+INSERT INTO `src` VALUES ('1', '2015-10-17 17:49:07', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\15066f35f12143c18ae2a7135865ebd8.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\3e9a08445e8a47468d7946fa9fd4093f.jpg', '152116', '0', '0d0b0e608af645a0590d0c425', '18620749654');
+INSERT INTO `src` VALUES ('2', '2015-10-17 17:49:24', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\7c4ccef8d0ef49318ed0849aead3f3fd.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\d1bff05ef9b140759d34afff361a57c2.jpg', '66295', '0', '0d0b0e608af645a0590d0c425', '18620749654');
+INSERT INTO `src` VALUES ('3', '2015-10-17 17:49:38', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\3fe7a5b168eb45f6a649a24edf707b24.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\dfa4cfb4086e4318b8f29eeabc474735.jpg', '120279', '0', '0d0b0e608af645a0590d0c425', '18620749654');
+INSERT INTO `src` VALUES ('4', '2015-10-17 17:49:38', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\6b707e305c984e5e92dd924089345a20.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\5dbc88a3ed754f3d8f7f12eafc93121e.jpg', '120279', '0', '0d0b0e608af645a0590d0c425', '18620749654');
+INSERT INTO `src` VALUES ('5', '2015-10-17 17:49:48', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\6806f09916f340bfaf2aadabbcdeeacb.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\412a7fe32ea940a6b71a85c7fdcf0243.jpg', '59071', '0', '0d0b0e608af645a0590d0c425', '18620749654');
+INSERT INTO `src` VALUES ('6', '2015-10-17 17:49:48', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\f47c98b81957496b9a1ebfdcc78e4651.mp4', 'D:\\wyx\\workspace\\video\\download\\0d0b0e608af645a0590d0c425\\90efe23a74ca4aa8983ba747a06d8d90.jpg', '59071', '0', '0d0b0e608af645a0590d0c425', '18620749654');
 
 -- ----------------------------
 -- Table structure for task
@@ -110,7 +116,6 @@ CREATE TABLE `task` (
   `device_id` varchar(50) NOT NULL COMMENT '设备ID',
   `account_id` bigint(20) NOT NULL COMMENT '账号ID',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `device_id` (`device_id`),
   KEY `account_id` (`account_id`),
   CONSTRAINT `task_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='任务表';

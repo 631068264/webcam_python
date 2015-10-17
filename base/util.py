@@ -20,7 +20,9 @@ import jwt
 import simplejson as json
 
 from base import logger
+
 from base.cache import cache
+
 from etc import config
 
 
@@ -376,32 +378,8 @@ def get_device():
     return u4 + m
 
 
-def get_file_path(file_suffix):
-    return str(uuid.uuid4()).replace('-', os.sep) + file_suffix
-
-
-def gen_access_token(user_id):
-    payload = {
-        'user_id': user_id,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=365),
-        'nbf': datetime.datetime.utcnow(),
-    }
-
-    try:
-        return jwt.encode(payload, config.JWT_SECRET, algorithm='HS256')
-    except Exception, e:
-        logger.error(e)
-        return ""
-
-
-def decode_from_access_token(encoded):
-    d = {}
-    if encoded:
-        try:
-            d = jwt.decode(encoded, config.JWT_SECRET, algorithms=['HS256'])
-        except Exception, e:
-            logger.get("auth").error(e)
-    return AttrDict(d if d else {})
+def get_file_name(file_suffix):
+    return str(uuid.uuid4()).replace('-', '') + file_suffix
 
 
 def convert_underscore2camelcase(word):
@@ -432,6 +410,29 @@ def sha1OfFile(filepath):
                 break
             sha.update(block)
         return sha.hexdigest()
+
+def gen_access_token(user_id):
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=365),
+        'nbf': datetime.datetime.utcnow(),
+    }
+
+    try:
+        return jwt.encode(payload, config.JWT_SECRET, algorithm='HS256')
+    except Exception, e:
+        logger.error(e)
+        return ""
+
+
+def decode_from_access_token(encoded):
+    d = {}
+    if encoded:
+        try:
+            d = jwt.decode(encoded, config.JWT_SECRET, algorithms=['HS256'])
+        except Exception, e:
+            logger.get("auth").error(e)
+    return AttrDict(d if d else {})
 
 
 @cache.memoize(config.cache_memorized_timeout)

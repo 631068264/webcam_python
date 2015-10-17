@@ -9,19 +9,16 @@ import subprocess
 
 import schedule
 
-from base import util
 from base import smartpool
+from base import util
 from base import constant as const
 from base.poolmysql import transaction
-from base.smartsql import Table as T, Field as F, QuerySet as QS
+from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 
 db = smartpool.ConnectionProxy("db_writer")
-# db = MySQLdbConnection(**config.db_config["db_writer"])
 
 
 # TODO:video速度超级慢
-
-
 def daily_task():
     date = get_today_range()
     # 检验设备合法性
@@ -48,8 +45,8 @@ def do_task(db, task):
     real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
     # real_device = get_real_device(task.device_id)
     path = get_src_path(task.device_id)
-    src = os.path.join(path, util.get_file_path('.mp4'))
-    thumbnail = os.path.join(path, util.get_file_path('.jpg'))
+    src = os.path.join(path, util.get_file_name('.mp4'))
+    thumbnail = os.path.join(path, util.get_file_name('.jpg'))
 
     video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
     thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
@@ -57,17 +54,25 @@ def do_task(db, task):
     kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))
     kill(subprocess.Popen(shlex.split(video, posix=False), shell=True))
 
+    size = os.path.getsize(src)
     with transaction(db) as trans:
-        QS(db).table(T.task).where(F.id == task.id).update({
-            "src": src,
+        QS(db).table(T.src).where(F.id == task.id).insert({
+            "create_time": datetime.datetime.now(),
+            "src_path": src,
             "thumbnail": thumbnail,
-            "size": os.path.getsize(src),
+            "size": size,
+            "device_id": task.device_id,
+            "account_id": task.account_id,
+        })
+        # TODO:用户size限制 怎么停
+        QS(db).table(T.account).where(F.id == task.account_id).update({
+            "size": E("size + %d" % size),
         })
         trans.finish()
 
 
-def start():
-    schedule.every().day.at("10:46").do(daily_task)
+def start(task_time):
+    schedule.every().day.at(task_time).do(daily_task)
     while 1:
         schedule.run_pending()
         time.sleep(1)
@@ -96,7 +101,7 @@ def get_src_path(device_id):
     :param device_id:
     :return:
     """
-    root_path = os.path.dirname(os.path.dirname(os.getcwd()))
+    root_path = os.path.dirname(os.getcwd())
     download_path = os.path.join(root_path, "download")
     device_path = os.path.join(download_path, device_id)
 
