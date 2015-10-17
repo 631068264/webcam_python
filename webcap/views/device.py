@@ -10,10 +10,13 @@ from base.logic import login_required
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
-from base.xform import F_int, F_str
+from base.xform import F_str
 
 device = Blueprint("device", __name__)
 
+
+# TODO:可能会修改设备名
+# TODO：页面增加任务设置
 
 @device.route("/device/list/load")
 @general("设备列表页面")

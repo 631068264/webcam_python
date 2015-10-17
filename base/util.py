@@ -376,8 +376,8 @@ def get_device():
     return u4 + m
 
 
-def get_file_name():
-    return str(uuid.uuid4()).replace('-', '/')
+def get_file_path(file_suffix):
+    return str(uuid.uuid4()).replace('-', os.sep) + file_suffix
 
 
 def gen_access_token(user_id):
@@ -442,7 +442,4 @@ def get_static_file_version(full_filename):
 
 
 if __name__ == '__main__':
-    id = gen_user_id('admin')
-    print(id)
-    password = hash_password('1234', id)
-    print(password)
+    print(get_file_name(".mp4"))

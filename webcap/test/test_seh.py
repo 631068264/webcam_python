@@ -9,43 +9,47 @@ import subprocess
 
 import schedule
 
+from base import util
 from base import smartpool
 from base import constant as const
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 
-
-
-# db = MySQLdbConnection(**config.db_config["db_writer"])
 db = smartpool.ConnectionProxy("db_writer")
+# db = MySQLdbConnection(**config.db_config["db_writer"])
 
-# TODO:多线程并行
+
 # TODO:video速度超级慢
+
+
 def daily_task():
     date = get_today_range()
-    tasks = QS(db).table((T.task__t * T.account__a).on(F.a__id == F.t__account_id)).where(
-        (F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"]) & (
-            F.t__status == const.TASK_STATUS.NORMAL)
-    ).order_by("create_time").select("t.*,a.device", for_update=True)
+    # 检验设备合法性
+    tasks = QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
+        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK_STATUS.NORMAL) & (
+            F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"])
+    ).order_by("t.create_time").select(for_update=True)
 
+    # TODO:多线程并行 线程池
     for task in tasks:
-        if task.device and task.device != 0:
-            kw = {
+        kw = {
                 "task": task,
                 "db": db,
             }
-            schedule.every(task.interval).seconds.do(do_task, **kw)
+        # TODO：可能只做一遍 interval为空
+        schedule.every(task.interval).seconds.do(do_task, **kw)
 
 
-def get_real_device(device):
-    return const.LOCAL.IP + device + const.LOCAL.SUFFIX
+def get_real_device(device_id):
+    return const.LOCAL.get_device_src(device_id)
 
 
 def do_task(db, task):
     real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-    path = get_src_path(task.device)
-    src = os.path.join(path, 'dump.mp4')
-    thumbnail = os.path.join(path, 'dump.jpg')
+    # real_device = get_real_device(task.device_id)
+    path = get_src_path(task.device_id)
+    src = os.path.join(path, util.get_file_path('.mp4'))
+    thumbnail = os.path.join(path, util.get_file_path('.jpg'))
 
     video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
     thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
@@ -86,20 +90,20 @@ def get_today_range(today=None):
     return data
 
 
-def get_src_path(device):
+def get_src_path(device_id):
     """
     创建个人目录
-    :param device:
+    :param device_id:
     :return:
     """
     root_path = os.path.dirname(os.path.dirname(os.getcwd()))
     download_path = os.path.join(root_path, "download")
-    personal_path = os.path.join(download_path, device)
+    device_path = os.path.join(download_path, device_id)
 
-    if not os.path.exists(personal_path):
-        os.makedirs(personal_path)
+    if not os.path.exists(device_path):
+        os.makedirs(device_path)
 
-    return personal_path
+    return device_path
 
 
 def kill(proc):

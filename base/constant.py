@@ -113,10 +113,20 @@ class LOCAL(object):
     port = 554
     protocol = 'rtsp://'
     SUFFIX = '.sdp'
-    IP = protocol + ip + ':' + str(port) + "/"
+    PREFIX = protocol + ip + ':' + str(port) + "/"
+
+    @staticmethod
+    def get_device_src(device_id):
+        if not isinstance(device_id, str):
+            device_id = str(device_id)
+        return LOCAL.PREFIX + device_id + LOCAL.SUFFIX
 
 
 class IS_NOW(object):
     NOW = 1
     NOT_NOW = 0
     ALL = (NOW, NOT_NOW)
+
+
+if __name__ == '__main__':
+    print(LOCAL.get_device_src(123))
