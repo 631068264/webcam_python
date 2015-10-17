@@ -11,19 +11,9 @@ from base.logic import login_required
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 from base import constant as const
-from base.xform import F_int
+from base.xform import F_int, F_str
 
 task = Blueprint("task", __name__)
-
-
-@task.route("/task/play")
-@general("直播页面")
-@login_required()
-@db_conn("db_reader")
-def play(db_reader):
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    device = QS(db_reader).table(T.device).where(F.account_id == account_id).select_one()
-    return TempResponse("play_load.html", device=device)
 
 
 @task.route("/task/list/load")
@@ -32,7 +22,7 @@ def play(db_reader):
 @db_conn("db_reader")
 def task_set_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    tasks = dao.get_task_by_account_id(db_reader, account_id)
+    tasks = dao.get_tasks_by_account_id(db_reader, account_id)
     return TempResponse("task_list.html", tasks=tasks)
 
 

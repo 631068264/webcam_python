@@ -19,6 +19,18 @@ def get_account_by_id(db, account_id):
     ).select_one()
 
 
+def get_devices_by_account_id(db, account_id):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.status == const.DEVICE_STATUS.NORMAL)
+    ).select()
+
+
+def update_device_by_account_id(db, account_id, device_id):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.id == device_id) & (F.status == const.DEVICE_STATUS.NORMAL)
+    ).select_one(for_update=True)
+
+
 def update_task_by_account_id(db, account_id, task_id):
     return QS(db).table(T.task).where(
         (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == task_id)
@@ -31,13 +43,19 @@ def update_src_by_account_id(db, account_id, src_id):
     ).select_one(for_update=True)
 
 
-def get_task_by_account_id(db, account_id):
+def get_device_by_account_id(db, account_id, device_id):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.id == device_id) & (F.status == const.DEVICE_STATUS.NORMAL)
+    ).select_one()
+
+
+def get_tasks_by_account_id(db, account_id):
     return QS(db).table(T.task).where(
         (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL)
     ).order_by(F.create_time, desc=True).select()
 
 
-def get_src_by_account_id(db, account_id):
+def get_srcs_by_account_id(db, account_id):
     return QS(db).table(T.src).where(
         (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)
     ).order_by(F.create_time, desc=True).select()
@@ -60,14 +78,3 @@ def register(db, username, password):
     }
     return True, msg
 
-
-def get_device_by_account_id(db, account_id):
-    return QS(db).table(T.device).where(
-        (F.account_id == account_id) & (F.status == const.DEVICE_STATUS.NORMAL)
-    ).select()
-
-
-def update_device_by_account_id(db, account_id, device_id):
-    return QS(db).table(T.device).where(
-        (F.account_id == account_id) & (F.id == device_id) & (F.status == const.DEVICE_STATUS.NORMAL)
-    ).select_one(for_update=True)
