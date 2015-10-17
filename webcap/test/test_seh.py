@@ -9,13 +9,15 @@ import subprocess
 
 import schedule
 
+from base import smartpool
 from base import constant as const
-from webcap.etc import config
-from base.poolmysql import MySQLdbConnection, transaction
+from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 
-db = MySQLdbConnection(**config.db_config["db_writer"])
 
+
+# db = MySQLdbConnection(**config.db_config["db_writer"])
+db = smartpool.ConnectionProxy("db_writer")
 
 # TODO:多线程并行
 # TODO:video速度超级慢

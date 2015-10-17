@@ -102,7 +102,6 @@ def getlock(old_handler):
                 return old_handler(*args, **kwargs)
             finally:
                 lock.release()
-
     return new_handler
 
 
@@ -299,7 +298,6 @@ def lazy(db_name, local, name):
                 conn.__dead__()
             else:
                 local["conn"] = conn
-
     return wrap_func
 
 
@@ -313,7 +311,6 @@ class ConnectionProxy(object):
 
 
 # #######################  free to use  ########################
-
 
 def getconn(db_name):
     return pools[db_name].get()
