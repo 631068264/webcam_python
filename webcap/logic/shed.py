@@ -58,12 +58,14 @@ def do_task(device, task, db):
         trans.finish()
 
 
-def get_today_range(today=datetime.date.today()):
+def get_today_range(today=None):
     """
     获取一天界限
     :param today:
     :return:
     """
+    if today is None:
+        today = datetime.date.today()
     today_start = today
     today_end = today + datetime.timedelta(1)
     data = {
