@@ -7,6 +7,24 @@ from base import constant as const
 from base import util
 
 
+def register(db, username, password):
+    hash_pwd = util.hash_password(password, username)
+
+    user_id = QS(db).table(T.account).insert({
+        "username": username,
+        "password": hash_pwd,
+        "name": None,
+        "status": const.ACCOUNT_STATUS.NORMAL,
+        "role_id": const.ROLE.NORMAL_ACCOUNT,
+    })
+    msg = {
+        "user_id": user_id,
+        "role_id": const.ROLE.NORMAL_ACCOUNT,
+        "username": username,
+    }
+    return True, msg
+
+
 def get_account_by_username(db, username):
     return QS(db).table(T.account).where(
         (F.username == username) & (F.status == const.ACCOUNT_STATUS.NORMAL)
@@ -61,20 +79,7 @@ def get_srcs_by_account_id(db, account_id):
     ).order_by(F.create_time, desc=True).select()
 
 
-def register(db, username, password):
-    hash_pwd = util.hash_password(password, username)
-
-    user_id = QS(db).table(T.account).insert({
-        "username": username,
-        "password": hash_pwd,
-        "name": None,
-        "status": const.ACCOUNT_STATUS.NORMAL,
-        "role_id": const.ROLE.NORMAL_ACCOUNT,
-    })
-    msg = {
-        "user_id": user_id,
-        "role_id": const.ROLE.NORMAL_ACCOUNT,
-        "username": username,
-    }
-    return True, msg
-
+def get_tasks_by_account_and_device(db, account_id, device_id):
+    return QS(db).table(T.task).where(
+        (F.account_id == account_id) & (F.device_id == device_id) & (F.status == const.TASK_STATUS.NORMAL)
+    ).select()

@@ -16,6 +16,7 @@ from base.xform import F_int, F_str
 task = Blueprint("task", __name__)
 
 
+# TODO：任务字段有待考虑
 @task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
@@ -24,6 +25,21 @@ def task_set_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     tasks = dao.get_tasks_by_account_id(db_reader, account_id)
     return TempResponse("task_list.html", tasks=tasks)
+
+
+@task.route("/task/device/list")
+@general("特定设备任务页面")
+@login_required()
+@db_conn("db_reader")
+@form_check({
+    "device_id": F_str("设备ID") & "strict" & "required",
+    "device_name": F_str("设备名") & "strict" & "required",
+})
+def device_list(db_reader, safe_vars):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
+    return TempResponse("task_device_list.html", tasks=tasks, device_name=safe_vars.device_name,
+                        device_id=safe_vars.device_id)
 
 
 @task.route("/task/set")
