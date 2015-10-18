@@ -21,7 +21,7 @@ task = Blueprint("task", __name__)
 @general("任务列表页面")
 @login_required()
 @db_conn("db_reader")
-def task_set_load(db_reader):
+def task_list_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     tasks = dao.get_tasks_by_account_id(db_reader, account_id)
     return TempResponse("task_list.html", tasks=tasks)

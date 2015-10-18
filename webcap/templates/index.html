@@ -23,7 +23,7 @@
                 <p>获取唯一的设备号,<strong>一个PC客户端对应一个设配号。</strong>一个人可以有多个设备。要使用客户端请先申请一个设备号，然后按照说明填写设备号</p>
 
                 <p><a class="btn btn-default" href="{{ url_for('device.device_list_load') }}"
-                      role="button">获取设备号 &raquo;</a></p>
+                      role="button" id="get_device">获取设备号 &raquo;</a></p>
             </div>
             <div class="col-md-3 col-md-offset-1">
                 <h2>Heading</h2>
@@ -50,4 +50,38 @@
 {% endblock body %}
 {% block tail_js %}
     {{ super() }}
+    <script>
+
+        //用户提示
+        {% if session[const.SESSION.KEY_LOGIN] %}
+             var is_show = false;
+        {% else %}
+             var is_show = true;
+        {% endif %}
+        if (is_show) {
+            $('#login').grumble({
+                text: '1 请先登录或注册',
+                angle: 180,
+                distance: 12,
+                showAfter: 1000,
+                hideAfter: 5000,
+            });
+
+            $('#download').grumble({
+                text: '2 下载PC客户端',
+                angle: 200,
+                distance: 12,
+                showAfter: 2000,
+                hideAfter: 5000,
+            });
+
+            $('#get_device').grumble({
+                text: '3 获取设备号',
+                angle: 150,
+                distance: 12,
+                showAfter: 3000,
+                hideAfter: 5000,
+            });
+        }
+    </script>
 {% endblock tail_js %}
