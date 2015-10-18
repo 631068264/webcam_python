@@ -38,8 +38,6 @@ def do_daily_task(db_writer):
 
 
 def do_task(device, task, db):
-    # TODO: src待定 时间判定 IP在配置里面 src与thumbnail 文件名一致 文件名自动生成
-    # TODO: 结合 test/test_seh.py
     ip = socket.gethostbyname(socket.gethostname())
     src = ""
     thumbnail = ""

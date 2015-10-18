@@ -19,6 +19,9 @@ db = smartpool.ConnectionProxy("db_writer")
 
 
 # TODO:video速度超级慢
+# TODO:video保存在static下 保存 download\\0d0b0e608af645a0590d0c425\\3967ee185b844ec5825d2cea9903b2f9.mp4
+# TODO:video 转格式
+# TODO：video 花屏
 def daily_task():
     date = get_today_range()
     # 检验设备合法性
@@ -30,9 +33,9 @@ def daily_task():
     # TODO:多线程并行 线程池
     for task in tasks:
         kw = {
-                "task": task,
-                "db": db,
-            }
+            "task": task,
+            "db": db,
+        }
         # TODO：可能只做一遍 interval为空
         schedule.every(task.interval).seconds.do(do_task, **kw)
 

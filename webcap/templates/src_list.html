@@ -1,9 +1,37 @@
 {% extends "base.html" %}
 {% block title %}资源管理{% endblock %}
-{% block body %}{% endblock body %}
-{% block tail_js %}
-{{ super() }}
-<script>
+{% block css %}
+    <style type="text/css">
+        #list {
+            position: relative;
+        }
 
-</script>
+        #list li {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <ul id="list">
+        {% for s in srcs %}
+            <li><img src="{{ config.static_path +"/"+ s.thumbnail.replace('\\','/') }}" width="200" height="300">
+
+                <p>{{ s.create_time }}</p></li>
+            <li>
+                <video src="{{ config.static_path +"/"+s.src_path.replace('\\','/') }}" width="200" height="300"  controls>454646464</video>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock body %}
+{% block tail_js %}
+    {{ super() }}
+    <script src="{{ config.static_url_path }}/js/jquery.wookmark.js?v={{ ver('js/jquery.wookmark.js') }}"></script>
+
+    <script>
+        $('#list li').wookmark({
+            container: $('#list'),
+            offset: 10,
+            itemWidth: 200
+        });
+    </script>
 {% endblock tail_js %}
