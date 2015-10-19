@@ -9,6 +9,7 @@ import subprocess
 
 import schedule
 
+from etc import config
 from base import smartpool
 from base import util
 from base import constant as const
@@ -47,22 +48,28 @@ def get_real_device(device_id):
 def do_task(db, task):
     real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
     # real_device = get_real_device(task.device_id)
-    path = get_src_path(task.device_id)
-    src = os.path.join(path, util.get_file_name('.mp4'))
-    thumbnail = os.path.join(path, util.get_file_name('.jpg'))
+    path, url = get_src_path(task.device_id)
+
+    mp4_name = util.get_file_name('.mp4')
+    jpg_name = util.get_file_name('.jpg')
+
+    src = os.path.join(path, mp4_name)
+    thumbnail = os.path.join(path, jpg_name)
 
     video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
     thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
+    change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
     kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))
     kill(subprocess.Popen(shlex.split(video, posix=False), shell=True))
+    kill(subprocess.Popen(shlex.split(change_format, posix=False), shell=True))
 
     size = os.path.getsize(src)
     with transaction(db) as trans:
         QS(db).table(T.src).where(F.id == task.id).insert({
             "create_time": datetime.datetime.now(),
-            "src_path": src,
-            "thumbnail": thumbnail,
+            "src_path": os.path.join(url, mp4_name),
+            "thumbnail": os.path.join(url, jpg_name),
             "size": size,
             "device_id": task.device_id,
             "account_id": task.account_id,
@@ -105,13 +112,14 @@ def get_src_path(device_id):
     :return:
     """
     root_path = os.path.dirname(os.getcwd())
-    download_path = os.path.join(root_path, "download")
+    save_root_path = os.path.join("webcap", config.static_path.replace('/', '') + os.sep + "download")
+    download_path = os.path.join(root_path, save_root_path)
     device_path = os.path.join(download_path, device_id)
-
+    url_path = os.path.join(os.path.join(config.static_path, "download"), device_id).replace('\\', '/')
     if not os.path.exists(device_path):
         os.makedirs(device_path)
 
-    return device_path
+    return device_path, url_path
 
 
 def kill(proc):

@@ -14,11 +14,11 @@
 {% block body %}
     <ul id="list">
         {% for s in srcs %}
-            <li><img src="{{ config.static_path +"/"+ s.thumbnail.replace('\\','/') }}" width="200" height="300">
+            <li><img src="{{  s.thumbnail}}" width="200" height="300">
 
                 <p>{{ s.create_time }}</p></li>
             <li>
-                <video src="{{ config.static_path +"/"+s.src_path.replace('\\','/') }}" width="200" height="300"  controls>454646464</video>
+                <video src="{{ s.src_path }}" width="200" height="300"  controls>454646464</video>
             </li>
         {% endfor %}
     </ul>
