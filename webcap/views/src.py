@@ -23,7 +23,7 @@ def src_list(db_reader):
     # TODO:资源类型
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     srcs = dao.get_srcs_by_account_id(db_reader, account_id)
-    return TempResponse("src_list.html", srcs=srcs)
+    return TempResponse("src_list2.html", srcs=srcs)
 
 
 @src.route("/src/cancel")

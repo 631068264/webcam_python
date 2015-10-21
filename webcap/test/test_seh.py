@@ -20,9 +20,8 @@ db = smartpool.ConnectionProxy("db_writer")
 
 
 # TODO:video速度超级慢
-# TODO:video保存在static下 保存 download\\0d0b0e608af645a0590d0c425\\3967ee185b844ec5825d2cea9903b2f9.mp4
-# TODO:video 转格式
-# TODO：video 花屏
+# TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
+# TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():
     date = get_today_range()
     # 检验设备合法性
@@ -56,8 +55,8 @@ def do_task(db, task):
     src = os.path.join(path, mp4_name)
     thumbnail = os.path.join(path, jpg_name)
 
-    video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration) + ' ' + src
-    thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
+    video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration + config.lazy) + ' ' + src
+    thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + thumbnail
     change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
     kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))

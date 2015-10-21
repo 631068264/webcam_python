@@ -4,7 +4,6 @@
 
 IS_SEND_SMS = False
 DEFAULT_CAPTCHA = "1234"
-CAPTCHA_SEND_INTERVAL_SECONDS = 60
 PAGE_SIZE = 20
 
 URL_SIGN_KEY = "debug-key"
@@ -16,6 +15,7 @@ debug = True
 encoding = 'utf8'
 
 debug_port = 5000
+lazy = 20  # 为保持清晰度延迟20秒
 
 app_path = ''
 static_path = '/static'
