@@ -21,6 +21,8 @@ src = Blueprint("src", __name__)
 @db_conn("db_reader")
 def src_list(db_reader):
     # TODO:资源类型
+    # TODO: 统一css 按view细看 lightbox功能
+    # TODO：任务设定开始时间 持续时间 -重复
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     srcs = dao.get_srcs_by_account_id(db_reader, account_id)
     return TempResponse("src_list2.html", srcs=srcs)
