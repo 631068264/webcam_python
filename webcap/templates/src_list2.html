@@ -1,56 +1,56 @@
 {% extends "base.html" %}
 {% block title %}资源管理{% endblock %}
 {% block css %}
-{{super()}}
-<link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
-<link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
 
 {% endblock %}
 {% block body %}
-<div role="main" class="main">
-    <div class="filter">
-        <em class="filterName">Filter</em>
-        <a class="all selected" href="#">所有</a>
-        <a class="video" href="#">视频</a>
-        <a class="photography" href="#">图片</a>
-        <a class="text" href="#">文字</a>
-        <a class="audio" href="#">音频</a>
+    <div role="main" class="main">
+        <div class="filter">
+            <em class="filterName">Filter</em>
+            <a class="all selected" href="#">所有</a>
+            <a class="video" href="#">视频</a>
+            <a class="photography" href="#">图片</a>
+            <a class="text" href="#">文字</a>
+            <a class="audio" href="#">音频</a>
+        </div>
     </div>
-</div>
-<div class="postExcerpts">
-    {% for s in srcs %}
+    <div class="postExcerpts">
+        {% for s in srcs %}
 
-    <div class="postExcerpt video">
-        <div class="postExcerptInner">
-            <div class="titleAndCat">
-                <h2>{{ s.create_time }}</h2>
-                <em class="cat">Video</em>
+            <div class="postExcerpt video">
+                <div class="postExcerptInner">
+                    <div class="titleAndCat">
+                        <h2>{{ s.create_time }}</h2>
+                        <em class="cat">Video</em>
+                    </div>
+                    <a class="playVideo" href="#"></a>
+                </div>
             </div>
-            <a class="playVideo" href="#"></a>
-        </div>
+            <div class="postExcerpt photography">
+                <div class="postExcerptInner">
+                    <div class="titleAndCat">
+                        <h2>{{ s.create_time }}</h2>
+                        <em class="cat">Photography</em>
+                    </div>
+                    <div class="imgWrap">
+                        <img src="{{ s.thumbnail }}">
+                    </div>
+                    <a class="view" href="#">View</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    <div class="postExcerpt photography">
-        <div class="postExcerptInner">
-            <div class="titleAndCat">
-                <h2>{{ s.create_time }}</h2>
-                <em class="cat">Photography</em>
-            </div>
-            <div class="imgWrap">
-                <img src="{{s.thumbnail}}">
-            </div>
-            <a class="view" href="#">View</a>
-        </div>
-    </div>
-    {% endfor%}
-</div>
 
 
 {% endblock body %}
 {% block tail_js %}
-{{super()}}
+    {{ super() }}
 
-<script src="/static/js/test1/audioPlayer.js"></script>
-<script src="/static/js/test1//sort.js"></script>
+    <script src="/static/js/src/audioPlayer.js"></script>
+    <script src="/static/js/src/sort.js"></script>
 
 
 {% endblock tail_js %}
