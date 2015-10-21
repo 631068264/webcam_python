@@ -2,37 +2,82 @@
 {% block title %}资源管理{% endblock %}
 {% block css %}
     <style type="text/css">
+        #main {
+            overflow: hidden;
+        }
+
         #list {
             position: relative;
         }
 
         #list li {
             display: none;
-            list-style-type:none;
+            list-style-type: none;
+        }
+
+        #list li {
+            -webkit-transition: all 0.3s ease-out;
+            -moz-transition: all 0.3s ease-out;
+            -o-transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out;
+        }
+
+        .wookmark-placeholder {
+            -webkit-transition: all 0.3s ease-out;
+            -moz-transition: all 0.3s ease-out;
+            -o-transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out;
+>>>>>>> 资源页修改2
         }
     </style>
 {% endblock %}
 {% block body %}
-    <ul id="list">
-        {% for s in srcs %}
-            <li><img src="{{  s.thumbnail}}" width="200" height="300">
+    <div id="filters" class="btn-group" role="group">
+        <a role="button" class="btn btn-default" data-filter="all">All</a>
+        <a role="button" class="btn btn-default" data-filter="video">Video</a>
+        <a role="button" class="btn btn-default" data-filter="picture">Picture</a>
+    </div>
+    <div id="main">
+        <ul id="list">
+            {% for s in srcs %}
+                <li data-filter-class="['picture']"><img src="{{ s.thumbnail }}">
 
-                <p>{{ s.create_time }}</p></li>
-            <li>
-                <video src="{{ s.src_path }}" width="200" height="300"  controls>454646464</video>
-            </li>
-        {% endfor %}
-    </ul>
+                    <p>{{ s.create_time }}</p></li>
+                <li data-filter-class="['video']">
+                    <video src="{{ s.src_path }}" controls>454646464</video>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock body %}
 {% block tail_js %}
     {{ super() }}
     <script src="{{ config.static_url_path }}/js/jquery.wookmark.js?v={{ ver('js/jquery.wookmark.js') }}"></script>
-
+    <script src="{{ config.static_url_path }}/js/jquery.imagesloaded.js?v={{ ver('js/jquery.imagesloaded.js') }}"></script>
     <script>
-        $('#list li').wookmark({
-            container: $('#list'),
-            offset: 10,
-            itemWidth: 200
+        $('#list').imagesLoaded(function () {
+            var options = {
+                autoResize: true, // This will auto-update the layout when the browser window is resized.
+                container: $('#list'), // Optional, used for some extra CSS styling
+                offset: 10, // Optional, the distance between grid items
+                fillEmptySpace: true // Optional, fill the bottom of each column with widths of flexible height
+            };
+            $('#list li').wookmark(options);
         });
+
+        $('#filters').on('click.wookmark-filter', 'a', function (e) {
+            var $item = $(e.currentTarget), activeFilters = [], filterType = $item.data('filter');
+            if (filterType === 'all') {
+                $('#filters a').removeClass('active');
+            } else {
+                $item.toggleClass('active');
+                $('#filters a').filter('.active').each(function () {
+                    activeFilters.push($(this).data('filter'));
+                });
+            }
+            $('#list li').wookmarkInstance.filter(activeFilters, 'or');
+        });
+
+
     </script>
 {% endblock tail_js %}

@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 {% block title %}资源管理{% endblock %}
 {% block css %}
-{{super()}}
-<link rel="stylesheet" type="text/css" href="/static/css/test/normalize.css"/>
-<link rel="stylesheet" type="text/css" href="/static/css/test/demo.css"/>
-<link rel="stylesheet" type="text/css" href="/static/css/test/component.css"/>
-<script src="/static/js/test/modernizr.custom.js"></script>
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="/static/css/test/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/test/demo.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/test/component.css"/>
+    <script src="/static/js/test/modernizr.custom.js"></script>
 
 {% endblock %}
 {% block body %}
-<section class="grid-wrap">
-    <ul class="grid swipe-rotate" id="grid">
-        {% for s in srcs %}
-        <li><a href="#"><img src="{{  s.thumbnail}}" width="300" height="380"></a>
+    <section class="grid-wrap">
+        <ul class="grid swipe-rotate" id="grid">
+            {% for s in srcs %}
+                <li><a href="#"><img src="{{ s.thumbnail }}" width="300" height="380"></a>
 
-            <h3>{{ s.create_time }}</h3></li>
-        <li>
-            <a href="#">
-                <video src="{{ s.src_path }}" width="300" height="380" controls>454646464</video>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-</section>
+                    <h3>{{ s.create_time }}</h3></li>
+                <li>
+                    <a href="#">
+                        <video src="{{ s.src_path }}" width="300" height="380" controls>454646464</video>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock body %}
 {% block tail_js %}
-{{super()}}
+{{ super() }}
 <script src="/static/js/test/masonry.pkgd.min.js"></script>
 <script src="/static/js/test/imagesloaded.pkgd.min.js"></script>
 <script src="/static/js/test/classie.js"></script>
@@ -36,5 +36,3 @@
         viewportFactor: 0.4
     });
 </script>
-
-{% endblock tail_js %}
