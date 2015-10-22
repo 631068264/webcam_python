@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}资源管理{% endblock %}
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
-<link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+<link href="{{ config.static_url_path }}/css/normalize.css?v={{ ver('css/normalize.css') }}" rel="stylesheet"/>
+<link href="{{ config.static_url_path }}/css/style.css?v={{ ver('css/style.css') }}" rel="stylesheet"/>
 {{ super() }}
 
 {% endblock %}
@@ -50,8 +50,8 @@
 {% block tail_js %}
     {{ super() }}
 
-    <script src="/static/js/src/audioPlayer.js"></script>
-    <script src="/static/js/src/sort.js"></script>
+<script src="{{ config.static_url_path }}/js/audioPlayer.js?v={{ ver('js/audioPlayer.js') }}"></script>
+<script src="{{ config.static_url_path }}/js/sort.js?v={{ ver('js/sort.js') }}"></script>
 
 
 {% endblock tail_js %}
