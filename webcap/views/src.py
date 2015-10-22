@@ -15,6 +15,8 @@ from base.xform import F_int
 src = Blueprint("src", __name__)
 
 
+# TODO：video样式复用img
+# TODO：lightbox
 @src.route("/src/list/load")
 @general("资源列表")
 @login_required()

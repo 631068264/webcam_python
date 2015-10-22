@@ -17,6 +17,7 @@ task = Blueprint("task", __name__)
 
 
 # TODO：任务字段有待考虑
+# TODO: 开始时间 持续时间 资源类型
 @task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
