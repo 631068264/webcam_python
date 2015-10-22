@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}资源管理{% endblock %}
 {% block css %}
-    {{ super() }}
-    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+{{ super() }}
 
 {% endblock %}
 {% block body %}
@@ -13,8 +13,6 @@
             <a class="all selected" href="#">所有</a>
             <a class="video" href="#">视频</a>
             <a class="photography" href="#">图片</a>
-            <a class="text" href="#">文字</a>
-            <a class="audio" href="#">音频</a>
         </div>
     </div>
     <div class="postExcerpts">
@@ -26,7 +24,10 @@
                         <h2>{{ s.create_time }}</h2>
                         <em class="cat">Video</em>
                     </div>
-                    <a class="playVideo" href="#"></a>
+                    <div class="imgWrap">
+                        <img src="{{ s.thumbnail }}">
+                    </div>
+                    <a class="playAudio" href="#"></a>
                 </div>
             </div>
             <div class="postExcerpt photography">
@@ -38,7 +39,7 @@
                     <div class="imgWrap">
                         <img src="{{ s.thumbnail }}">
                     </div>
-                    <a class="view" href="#">View</a>
+                    <a class="view" href="#">12123131313</a>
                 </div>
             </div>
         {% endfor %}
