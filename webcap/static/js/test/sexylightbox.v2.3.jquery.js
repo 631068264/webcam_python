@@ -209,18 +209,11 @@ jQuery.bind = function (object, method) {
 
         initialize: function (options) {
 
-            console.log(this.getOptions());
             this.options = $.extend(this.getOptions(), options);
-            console.log(this.options);
             this.backwardcompatibility(this.options);
 
             var strBG = this.options.imagesdir + '/' + this.options.color + '/' + ((((window.XMLHttpRequest == undefined) && (ActiveXObject != undefined))) ? this.options.backgroundIE : this.options.background);
             var name = this.options.name;
-            ///////////////////////////
-            console.log(options);
-            console.log(this.options);
-            console.log(strBG);
-            console.log(this.options.dir + '/' + this.options.color + '/' + this.options.buttons);
 
             this.preloadimage(strBG);
             this.preloadimage(this.options.dir + '/' + this.options.color + '/' + this.options.buttons);

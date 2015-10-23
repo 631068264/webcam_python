@@ -272,7 +272,7 @@ header {
     margin-top: 10px;
 }
 
-.video .playAudio {
+.video .playVideo {
     background-position: 0 -257px;
     display: block;
     height: 43px;
@@ -283,11 +283,11 @@ header {
     left: 106px;
 }
 
-.video .playAudio:hover {
+.video .playVideo:hover {
     background-position: -209px -257px;
 }
 
-.video .playAudio:active {
+.video .playVideo:active {
     background-position: -102px -257px;
 }
 
