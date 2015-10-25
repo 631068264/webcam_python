@@ -27,7 +27,7 @@ def src_list(db_reader):
     # TODO: 即时任务建立时执行
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     srcs = dao.get_srcs_by_account_id(db_reader, account_id)
-    return TempResponse("src_list3.html", srcs=srcs)
+    return TempResponse("src_list.html", srcs=srcs)
 
 
 @src.route("/src/cancel")

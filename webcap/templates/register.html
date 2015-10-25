@@ -60,15 +60,14 @@
                 console.log(resp);
                 $('#btn_register').removeClass('disabled');
                 if (resp.status == 1) {
-                    alert("注册成功");
-                    window.location.href = '{{ url_for("home.index") }}';
+                    redirect("注册成功", '{{ url_for("home.index") }}');
                 } else {
-                    alert(resp.message);
+                    error(resp.message);
                 }
             },
             error: function (resp) {
                 $('#btn_register').removeClass('disabled');
-                alert('网络故障 请检查网络连接!')
+                error('网络故障 请检查网络连接!');
             }
         });
     </script>

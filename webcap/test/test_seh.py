@@ -45,8 +45,8 @@ def get_real_device(device_id):
 
 
 def do_task(db, task):
-    real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-    # real_device = get_real_device(task.device_id)
+    # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
+    real_device = get_real_device(task.device_id)
     path, url = get_src_path(task.device_id)
 
     mp4_name = util.get_file_name('.mp4')
@@ -55,13 +55,13 @@ def do_task(db, task):
     src = os.path.join(path, mp4_name)
     thumbnail = os.path.join(path, jpg_name)
 
-    video = 'ffmpeg -y -i ' + real_device + ' -c copy -t ' + str(task.duration + config.lazy) + ' ' + src
+    video = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
+            str(task.duration + config.lazy) + ' ' + src
     thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + thumbnail
     change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
     kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))
     kill(subprocess.Popen(shlex.split(video, posix=False), shell=True))
-    kill(subprocess.Popen(shlex.split(change_format, posix=False), shell=True))
 
     size = os.path.getsize(src)
     with transaction(db) as trans:

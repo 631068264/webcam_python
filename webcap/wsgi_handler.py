@@ -41,6 +41,6 @@ for name in views.__all__:
 if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
     # TODO:启动redis cms 命令行
-    threading.Thread(target=test_seh.start, args=("14:30",)).start()
+    threading.Thread(target=test_seh.start, args=("20:11",)).start()
     app.run(host='127.0.0.1',
             port=config.debug_port)

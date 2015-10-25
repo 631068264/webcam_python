@@ -74,14 +74,14 @@
                 if (resp.status == 1) {
                     $("#deviece_add").modal('hide');
                     location.reload();
-                    alert("申请成功");
+                    ok("申请成功");
                 } else {
-                    alert(resp.message);
+                    error(resp.message);
                 }
             },
             error: function (resp) {
                 $('#btn_add').removeClass('disabled');
-                alert('网络故障 请检查网络连接!')
+                error('网络故障 请检查网络连接!');
             }
         });
 
@@ -99,14 +99,14 @@
                             if (resp.status == 1) {
                                 location.reload();
                                 $(this).removeClass('disabled');
-                                alert('删除成功');
+                                ok("删除成功");
                             } else {
-                                alert(resp.message);
+                                error(resp.message);
                             }
                         }
                 ).fail(function () {
                             $(this).removeClass('disabled');
-                            alert('网络故障 请检查网络连接!');
+                            error('网络故障 请检查网络连接!');
                         });
             }
         });
@@ -124,13 +124,13 @@
                         function (resp) {
                             if (resp.status == 1) {
                                 location.reload();
-                                alert('修改成功');
+                                ok("修改成功");
                             } else {
-                                alert(resp.message);
+                                error(resp.message);
                             }
                         }
                 ).fail(function () {
-                            alert('网络故障 请检查网络连接!');
+                            error('网络故障 请检查网络连接!');
                         });
             }
         });

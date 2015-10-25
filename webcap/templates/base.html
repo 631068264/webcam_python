@@ -68,16 +68,22 @@
         <!--/.navbar-collapse -->
     </div>
 </nav>
+
+<!--错误提示-->
+<div id="msg"></div>
 {% block body %}
 
 {% endblock %}
 
 
+
+
+
 {% block tail_js %}
     <script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver('js/jquery.min.js') }}"></script>
+    <script src="{{ config.static_url_path }}/js/jquery.grumble.min.js?v={{ ver('js/jquery.grumble.min.js') }}"></script>
     <script src="{{ config.static_url_path }}/js/jquery-migrate-1.2.1.min.js ?v={{ ver('js/jquery-migrate-1.2.1.min.js ') }}"></script>
     <script src="{{ config.static_url_path }}/js/bootstrap.min.js?v={{ ver('js/bootstrap.min.js') }}"></script>
-    <script src="{{ config.static_url_path }}/js/jquery.grumble.min.js?v={{ ver('js/jquery.grumble.min.js') }}"></script>
     <script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver('js/jquery.form.js') }}"></script>
     <script src="{{ config.static_url_path }}/js/util.js?v={{ ver('js/util.js') }}"></script>
     <script>
@@ -100,13 +106,13 @@
                             } else {
                                 $('#btn_login').addClass('disabled');
                                 $('#btn_register').addClass('disabled');
-                                alert(resp.message);
+                                error(resp.message);
                             }
 
                         }).fail(function (e) {
                             $('#btn_login').addClass('disabled');
                             $('#btn_register').addClass('disabled');
-                            alert("系统错误,稍后再试");
+                            error('网络故障 请检查网络连接!');
                         });
             } else if (len < 4) {
                 $('#btn_login').addClass('disabled');
@@ -129,6 +135,9 @@
         });
 
     </script>
+
 {% endblock %}
+
+
 </body>
 </html>
