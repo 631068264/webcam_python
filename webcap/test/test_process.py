@@ -3,7 +3,6 @@
 # __author__ = 'wuyuxi'
 import subprocess
 import shlex
-import os
 
 
 # size = 'ffprobe -v error -show_entries format=size -of default=noprint_wrappers=1:nokey=1 dump.mp4 > file'
@@ -53,11 +52,13 @@ def kill2(proc, dur):
     print(1)
     time.sleep(dur)
     print(2)
-    proc.terminate()
-    print os.path.getsize('dump.mp4')
-    time.sleep(10)
-    print os.path.getsize('dump.mp4')
+    proc.kill()
     print(3)
+
+
+def kill3(proc):
+    proc.wait()
+    proc.terminate()
 
 
 # video = "ffmpeg -y -i rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp -c copy -t 5 dump.mp4"
@@ -66,5 +67,5 @@ video = 'ffmpeg -y -i rtsp://192.168.1.163:554/0d0b0e608af645a0590d0c425.sdp -c:
 # thumb = 'ffmpeg -i ' + real_device + ' -f image2 -t 0.001 -s 352x240 ' + thumbnail
 # proc1 = subprocess.Popen(shlex.split(thumb), shell=True)
 # kill(proc1)
-kill2(subprocess.Popen(shlex.split(video, posix=False), shell=True), 20)
+kill2(subprocess.Popen(shlex.split(video, posix=False), shell=True), 9)
 # kill(subprocess.Popen(shlex.split(change, posix=False), shell=True))

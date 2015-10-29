@@ -15,12 +15,15 @@ debug = True
 encoding = 'utf8'
 
 debug_port = 5000
-lazy = 20  # 为保持清晰度延迟20秒
 
 app_path = ''
 static_path = '/static'
 static_url_path = static_path
 
+# 为保持清晰度延迟20秒
+lazy = 10
+# 添加同一任务的最多天数
+add_same_task_max_day = 4
 
 # MySQL配置
 db_config = {

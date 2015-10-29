@@ -4,7 +4,6 @@
 
 import os
 import sys
-import threading
 
 import redis
 from flask import Flask
@@ -13,7 +12,6 @@ from etc import config
 from init_app import init
 from base.session import RedisSessionInterface
 import views
-from webcap.test import test_seh
 
 project_home = os.path.realpath(__file__)
 project_home = os.path.split(project_home)[0]
@@ -41,6 +39,6 @@ for name in views.__all__:
 if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
     # TODO:启动redis cms 命令行
-    threading.Thread(target=test_seh.start, args=("20:11",)).start()
+    # threading.Thread(target=test_seh.start, args=("20:11",)).start()
     app.run(host='127.0.0.1',
             port=config.debug_port)

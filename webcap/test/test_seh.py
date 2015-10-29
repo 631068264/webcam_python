@@ -19,7 +19,6 @@ from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 db = smartpool.ConnectionProxy("db_writer")
 
 
-# TODO:video速度超级慢
 # TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
 # TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():
@@ -56,7 +55,7 @@ def do_task(db, task):
     thumbnail = os.path.join(path, jpg_name)
 
     video = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
-            str(task.duration + config.lazy) + ' ' + src
+            str(task.duration) + ' ' + src
     thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + thumbnail
     change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
@@ -121,16 +120,17 @@ def get_src_path(device_id):
     return device_path, url_path
 
 
-def kill(proc):
+def kill(proc, kill_time=None):
     """
     关闭子进程
     :param proc:
     :return:
     """
-    while True:
-        if proc.poll() is not None:
-            proc.terminate()
-            break
+    if kill_time is None:
+        while True:
+            if proc.poll() is not None:
+                proc.terminate()
+                break
 
 
 if __name__ == "__main__":

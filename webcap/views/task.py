@@ -5,6 +5,7 @@ import datetime
 
 from flask import Blueprint, session
 
+from etc import config
 from base import dao
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
 from base.logic import login_required
@@ -16,8 +17,6 @@ from base.xform import F_int, F_str
 task = Blueprint("task", __name__)
 
 
-# TODO：任务字段有待考虑
-# TODO: 开始时间 持续时间 资源类型
 @task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
@@ -28,23 +27,29 @@ def task_list_load(db_reader):
     return TempResponse("task_list.html", tasks=tasks)
 
 
-@task.route("/task/device/list")
-@general("特定设备任务页面")
+@task.route("/task/add/load")
+@general("添加任务页面")
 @login_required()
-@db_conn("db_reader")
-@form_check({
-    "device_id": F_str("设备ID") & "strict" & "required",
-    "device_name": F_str("设备名") & "strict" & "required",
-})
-def device_list(db_reader, safe_vars):
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
-    return TempResponse("task_device_list.html", tasks=tasks, device_name=safe_vars.device_name,
-                        device_id=safe_vars.device_id)
+def task_add_load():
+    return TempResponse("task_add.html", task_date=date_select_list())
 
 
-@task.route("/task/set")
-@general("任务设置")
+def date_select_list():
+    d = (u"周日", u"周一", u"周二", u"周三", u"周四", u"周五", u"周六")
+    days = {}
+    for i in xrange(0, config.add_same_task_max_day):
+        t = datetime.date.today() + datetime.timedelta(i)
+        key = t.strftime('%Y-%m-%d')
+        index = int(t.strftime('%w'))
+        value = t.strftime('%Y-%m-%d') + d[index]
+        if i == 0:
+            value += u'（今天）'
+        days[key] = value
+    return days
+
+
+@task.route("/task/add")
+@general("添加任务")
 @login_required()
 @db_conn("db_writer")
 @form_check({
@@ -52,7 +57,7 @@ def device_list(db_reader, safe_vars):
     "duration": F_int("持续时间") & "strict" & "required",
     "interval": F_int("时间间隔") & "strict" & "required",
 })
-def task_set(db_writer, safe_vars):
+def task_add(db_writer, safe_vars):
     # TODO:时间限制 任务多样性(起始时间，时间多样性) 任务状态是否正在工作
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     size = dao.get_account_by_id(db_writer, account_id).size
@@ -91,3 +96,18 @@ def task_cancel(db_writer, safe_vars):
         })
         trans.finish()
     return OkResponse()
+
+
+@task.route("/task/device/list")
+@general("特定设备任务页面")
+@login_required()
+@db_conn("db_reader")
+@form_check({
+    "device_id": F_str("设备ID") & "strict" & "required",
+    "device_name": F_str("设备名") & "strict" & "required",
+})
+def device_list(db_reader, safe_vars):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
+    return TempResponse("task_device_list.html", tasks=tasks, device_name=safe_vars.device_name,
+                        device_id=safe_vars.device_id)

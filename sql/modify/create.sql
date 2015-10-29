@@ -33,21 +33,21 @@ CREATE TABLE `device` (
 	`account_id` BIGINT (20) NOT NULL COMMENT '账号ID',
 	FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) COMMENT = '设备表';
-INSERT INTO `device` VALUES ('0d0b0e608af645a0590d0c425', '1234', '0', '18620749654');
 
 CREATE TABLE `task` (
 	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
 	`create_time` datetime DEFAULT NULL COMMENT '任务创建时间',
+	`execute_time` datetime DEFAULT NULL COMMENT '任务执行时间',
+	`finish_time` datetime DEFAULT NULL COMMENT '任务完成时间',
 	`duration` BIGINT (20) DEFAULT NULL COMMENT '持续时间',
 	`interval` BIGINT (20) DEFAULT NULL COMMENT '时间间隔',
-	`now` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: 非即时, 1: 即时',
-	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
-  `device_id` VARCHAR (50) NOT NULL COMMENT '设备ID',
+	`now` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '是否立即执行0: 非即时, 1: 即时',
+	`type` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '资源类型0: 图片, 1: 视频',
+	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted,2:finished',
 	`account_id` BIGINT (20) NOT NULL COMMENT '账号ID',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) COMMENT = '任务表';
-INSERT INTO `task` VALUES ('1', '2015-10-17 15:14:59', '5', '5', '0', '0', '0d0b0e608af645a0590d0c425', '18620749654');
 
 CREATE TABLE `src` (
 	`id` BIGINT (20) NOT NULL AUTO_INCREMENT COMMENT '资源ID',
@@ -56,7 +56,7 @@ CREATE TABLE `src` (
 	`thumbnail` VARCHAR (200) DEFAULT NULL COMMENT '缩略图——url',
 	`size` BIGINT (20) DEFAULT NULL COMMENT '资源大小',
 	`status` TINYINT (4) NOT NULL DEFAULT '0' COMMENT '0: normal, 1: deleted',
-	`device_id` VARCHAR (50) NOT NULL COMMENT '设备ID',
+	`device_id` BIGINT (20) NOT NULL COMMENT '设备ID',
 	`account_id` BIGINT (20) NOT NULL COMMENT '账号ID',
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)

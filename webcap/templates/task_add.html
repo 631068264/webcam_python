@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}添加任务{% endblock %}
+{% block body %}
+    <div class="container" style="padding: 70px">
+        <form class="form-horizontal" action="{{ url_for('task.task_add') }}" method="post" id="form_add_task">
+            <fieldset>
+                <div id="legend" class="">
+                    <legend class="">任务添加</legend>
+                </div>
+
+                <div class="form-group">
+                    <label for="task_date" class="col-lg-2 control-label">任务日期</label>
+
+                    <div class="col-lg-5">
+                        <select name="task_date" id="task_date" multiple>
+                            <option>请选择任务日期</option>
+                            {% for k,v in task_date.iteritems() %}
+                                <option value="{{ k }}">{{ v }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="execute_time" class="col-lg-2 control-label">执行时间</label>
+
+                    <div class="col-lg-5">
+                        <input type="time" class="form-control" id="execute_time" name="execute_time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="duration" class="col-lg-2 control-label">持续时间</label>
+
+                    <div class="col-lg-5">
+                        <input type="number" class="form-control" id="duration" name="duration" required min="5"
+                               max="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="interval" class="col-lg-2 control-label">时间间隔</label>
+
+                    <div class="col-lg-5">
+                        <input type="number" class="form-control" id="interval" name="interval" required min="5"
+                               max="10">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="now" class="col-lg-2 control-label">是否立即执行</label>
+
+                    <div class="col-lg-5">
+                        <input type="checkbox" class="form-control" id="now" name="now">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="type" class="col-lg-2 control-label">资源类型</label>
+
+                    <div class="col-lg-5">
+                        <input type="checkbox" class="form-control" id="type" name="type">
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_add_task">登录</a>
+                </div>
+
+
+            </fieldset>
+        </form>
+    </div>
+{% endblock body %}
+{% block tail_js %}
+    {{ super() }}
+    <script>
+        //添加设备
+        $('#btn_add_task').click(function () {
+            $(this).addClass('disabled');
+            $('#form_add_task').submit();
+        });
+        $('#form_add_task').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_add_task').removeClass('disabled');
+                if (resp.status == 1) {
+                    redirect("设备添加成功", '{{ url_for("task.task_list_load") }}');
+                } else {
+                    error(resp.message);
+                }
+            },
+            error: function (resp) {
+                $('#btn_add_task').removeClass('disabled');
+                error('网络故障 请检查网络连接!');
+            }
+        });
+    </script>
+{% endblock tail_js %}
