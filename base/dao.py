@@ -51,13 +51,13 @@ def update_device_by_account_id(db, account_id, device_id):
 
 def update_task_by_account_id(db, account_id, task_id):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == task_id)
+        (F.account_id == account_id) & (F.status == const.TASK.STATUS.NORMAL) & (F.id == task_id)
     ).select_one(for_update=True)
 
 
 def update_src_by_account_id(db, account_id, src_id):
     return QS(db).table(T.src).where(
-        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == src_id)
+        (F.account_id == account_id) & (F.status == const.TASK.STATUS.NORMAL) & (F.id == src_id)
     ).select_one(for_update=True)
 
 
@@ -69,7 +69,7 @@ def get_device_by_account_id(db, account_id, device_id):
 
 def get_tasks_by_account_id(db, account_id):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.status != const.TASK_STATUS.DELETED)
+        (F.account_id == account_id) & (F.status != const.TASK.STATUS.DELETED)
     ).order_by(F.create_time, desc=True).select()
 
 
@@ -81,5 +81,5 @@ def get_srcs_by_account_id(db, account_id):
 
 def get_tasks_by_account_and_device(db, account_id, device_id):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.device_id == device_id) & (F.status == const.TASK_STATUS.NORMAL)
+        (F.account_id == account_id) & (F.device_id == device_id) & (F.status == const.TASK.STATUS.NORMAL)
     ).select()

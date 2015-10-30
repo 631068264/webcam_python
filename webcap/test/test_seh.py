@@ -25,7 +25,7 @@ def daily_task():
     date = get_today_range()
     # 检验设备合法性
     tasks = QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
-        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK_STATUS.NORMAL) & (
+        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK.STATUS.NORMAL) & (
             F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"])
     ).order_by("t.create_time").select(for_update=True)
 

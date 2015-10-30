@@ -100,7 +100,6 @@ class TASK(object):
             PHOTOGRAPH: "图片",
             VIDEO: "视频",
         }
-
         ALL = NAME_DICT.keys()
 
 

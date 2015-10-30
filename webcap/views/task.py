@@ -12,7 +12,7 @@ from base.logic import login_required
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 from base import constant as const
-from base.xform import F_int, F_str
+from base.xform import F_int, F_str, F_datetime
 
 task = Blueprint("task", __name__)
 
@@ -31,7 +31,7 @@ def task_list_load(db_reader):
 @general("添加任务页面")
 @login_required()
 def task_add_load():
-    return TempResponse("task_add.html", task_date=date_select_list())
+    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TASK.TYPE.NAME_DICT)
 
 
 def date_select_list():
@@ -48,17 +48,20 @@ def date_select_list():
     return days
 
 
-@task.route("/task/add")
+@task.route("/task/add", methods=["POST"])
 @general("添加任务")
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "now": F_int("是否即时") & "strict" & "required" & (lambda v: (isinstance(v, bool), v)),
+    "task_date": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "required" & "multiple"),
+    "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "required",
     "duration": F_int("持续时间") & "strict" & "required",
     "interval": F_int("时间间隔") & "strict" & "required",
+    "now": F_int("是否即时") & "strict" & "required" & (lambda v: (isinstance(v, bool), v)),
+    "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TASK.TYPE.ALL, v)),
 })
 def task_add(db_writer, safe_vars):
-    # TODO:时间限制 任务多样性(起始时间，时间多样性) 任务状态是否正在工作
+    # TODO:即时就只有今天 不用填执行时间 非即时检验任务日期
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     size = dao.get_account_by_id(db_writer, account_id).size
     if const.ROLE.SIZE[session[const.SESSION.KEY_ROLE_ID]] <= size:
@@ -71,7 +74,7 @@ def task_add(db_writer, safe_vars):
             "interval": safe_vars.interval,
             "now": const.IS_NOW.NOW if safe_vars.now else const.IS_NOW.NOT_NOW,
             "account_id": account_id,
-            "status": const.TASK_STATUS.NORMAL,
+            "status": const.TASK.STATUS.NORMAL,
         })
         trans.finish()
     return OkResponse()
@@ -92,7 +95,7 @@ def task_cancel(db_writer, safe_vars):
 
     with transaction(db_writer) as trans:
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
-            "status": const.TASK_STATUS.DELETED,
+            "status": const.TASK.STATUS.DELETED,
         })
         trans.finish()
     return OkResponse()

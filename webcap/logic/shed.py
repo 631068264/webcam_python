@@ -26,7 +26,7 @@ def do_daily_task(db_writer):
     date = get_today_range()
     tasks = QS(db_writer).table(T.task).where(
         (F.create_time >= date["start"]) & (F.create_time <= date["end"]) &
-        (F.status == const.TASK_STATUS.NORMAL)
+        (F.status == const.TASK.STATUS.NORMAL)
     ).order_by("create_time").select(for_update=True)
 
     for task in tasks:

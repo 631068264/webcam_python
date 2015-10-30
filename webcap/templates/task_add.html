@@ -9,10 +9,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="task_date" class="col-lg-2 control-label">任务日期</label>
+                    <label for="task_dates" class="col-lg-2 control-label">任务日期</label>
 
                     <div class="col-lg-5">
-                        <select name="task_date" id="task_date" multiple>
+                        <select name="task_dates" id="task_dates" multiple>
                             <option>请选择任务日期</option>
                             {% for k,v in task_date.iteritems() %}
                                 <option value="{{ k }}">{{ v }}</option>
@@ -58,13 +58,18 @@
                     <label for="type" class="col-lg-2 control-label">资源类型</label>
 
                     <div class="col-lg-5">
-                        <input type="checkbox" class="form-control" id="type" name="type">
+                        {% for k,v in task_type.iteritems() %}
+                            <input type="radio" class="form-control" id="type" name="type" value="{{ k }}"
+                                    {% if k == const.TASK.TYPE.PHOTOGRAPH %}
+                                   checked
+                                    {% endif %} >{{ v }}
+                        {% endfor %}
                     </div>
                 </div>
 
 
                 <div class="form-group">
-                    <a href="#" class="col-lg-offset-8 btn btn-primary disabled" id="btn_add_task">登录</a>
+                    <a href="#" class="col-lg-offset-8 btn btn-primary " id="btn_add_task">申请任务</a>
                 </div>
 
 
