@@ -81,7 +81,7 @@ class TASK(object):
         # 删除状态
         DELETED = 1
         # 任务完成
-        FINISHED = 3
+        FINISHED = 2
 
         NAME_DICT = {
             NORMAL: "正常",
@@ -121,6 +121,13 @@ class DEVICE_STATUS(object):
         DELETED: "禁用",
     }
     ALL = NAME_DICT.keys()
+
+
+class BOOLEAN(object):
+    TRUE = 1
+    FALSE = 0
+
+    ALL = (TRUE, FALSE)
 
 
 class DEVICE(object):

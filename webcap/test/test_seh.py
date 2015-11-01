@@ -46,36 +46,48 @@ def get_real_device(device_id):
 def do_task(db, task):
     # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
     real_device = get_real_device(task.device_id)
-    path, url = get_src_path(task.device_id)
+    path, static_url = get_src_path(task.device_id)
+    now = datetime.datetime.now()
 
-    mp4_name = util.get_file_name('.mp4')
-    jpg_name = util.get_file_name('.jpg')
+    data = {}
+    if task.type == const.TASK.TYPE.PHOTOGRAPH:
+        data["src_name"] = util.get_file_name('.jpg')
+        data["src_path"] = os.path.join(path, data["src_name"])
+        cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
+        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    src = os.path.join(path, mp4_name)
-    thumbnail = os.path.join(path, jpg_name)
+    if task.type == const.TASK.TYPE.VIDEO:
+        data["src_name"] = util.get_file_name('.mp4')
+        data["src_path"] = os.path.join(path, data["src_name"])
+        cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
+              str(task.duration) + ' ' + data["src_path"]
+        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    video = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
-            str(task.duration) + ' ' + src
-    thumb = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + thumbnail
-    change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
+    # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
-    kill(subprocess.Popen(shlex.split(thumb, posix=False), shell=True))
-    kill(subprocess.Popen(shlex.split(video, posix=False), shell=True))
-
-    size = os.path.getsize(src)
+    size = os.path.getsize(data["src_path"])
     with transaction(db) as trans:
+        # 更新资源
         QS(db).table(T.src).where(F.id == task.id).insert({
-            "create_time": datetime.datetime.now(),
-            "src_path": os.path.join(url, mp4_name),
-            "thumbnail": os.path.join(url, jpg_name),
+            "create_time": now,
+            "src_path": os.path.join(static_url, data["src_name"]),
+            # "thumbnail": os.path.join(url, jpg_name),
             "size": size,
+            "status": const.SRC_STATUS.NORMAL,
             "device_id": task.device_id,
             "account_id": task.account_id,
         })
+
         # TODO:用户size限制 怎么停
+        # 更新用户资料
         QS(db).table(T.account).where(F.id == task.account_id).update({
             "size": E("size + %d" % size),
         })
+
+        # 更新任务属性
+        task.finish_time = now
+        task.status = const.TASK.STATUS.FINISHED
+        QS(db).table(T.task).insert(task, on_duplicate_key_update=task)
         trans.finish()
 
 
@@ -131,6 +143,9 @@ def kill(proc, kill_time=None):
             if proc.poll() is not None:
                 proc.terminate()
                 break
+    else:
+        time.sleep(kill_time)
+        proc.terminate()
 
 
 if __name__ == "__main__":

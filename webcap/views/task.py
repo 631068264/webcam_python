@@ -36,7 +36,7 @@ def task_add_load():
 
 def date_select_list():
     d = (u"周日", u"周一", u"周二", u"周三", u"周四", u"周五", u"周六")
-    days = {}
+    days = []
     for i in xrange(0, config.add_same_task_max_day):
         t = datetime.date.today() + datetime.timedelta(i)
         key = t.strftime('%Y-%m-%d')
@@ -44,7 +44,11 @@ def date_select_list():
         value = t.strftime('%Y-%m-%d') + d[index]
         if i == 0:
             value += u'（今天）'
-        days[key] = value
+        day = {
+            "key": key,
+            "value": value,
+        }
+        days.append(day)
     return days
 
 
@@ -53,31 +57,71 @@ def date_select_list():
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "task_date": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "required" & "multiple"),
-    "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "required",
-    "duration": F_int("持续时间") & "strict" & "required",
-    "interval": F_int("时间间隔") & "strict" & "required",
-    "now": F_int("是否即时") & "strict" & "required" & (lambda v: (isinstance(v, bool), v)),
+    "now": F_int("是否即时") & "strict" & "optional" & (lambda v: (v in const.BOOLEAN.ALL, v)),
+    "task_dates": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "optional" & "multiple"),
+    "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "optional",
+    "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "required",
+    "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "required",
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TASK.TYPE.ALL, v)),
+    "device_id": F_int("设备ID") & "strict" & "required",
 })
 def task_add(db_writer, safe_vars):
+    today = datetime.date.today()
+    now = datetime.datetime.now()
     # TODO:即时就只有今天 不用填执行时间 非即时检验任务日期
+
+    # 检验非即时信息
+    if not safe_vars.now:
+        if not safe_vars.task_dates:
+            return ErrorResponse("任务日期不能为空")
+        else:  # 检验任务日期并格式化
+            raw_dates = set()
+            begin = today
+            end = today + datetime.timedelta(config.add_same_task_max_day - 1)
+            for task_date in safe_vars.task_dates:
+                if not (begin <= task_date <= end):
+                    return ErrorResponse("任务日期请选择从今天起%d天内的日期" % config.add_same_task_max_day)
+                raw_dates.add(task_date)
+            if not (0 < len(raw_dates) <= config.add_same_task_max_day):
+                return ErrorResponse("任务日期请选择从今天起%d天内的日期" % config.add_same_task_max_day)
+        if not safe_vars.execute_time:
+            return ErrorResponse("执行时间不能为空")
+
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     size = dao.get_account_by_id(db_writer, account_id).size
     if const.ROLE.SIZE[session[const.SESSION.KEY_ROLE_ID]] <= size:
         return ErrorResponse("用户的资源空间有限")
 
-    with transaction(db_writer) as trans:
-        QS(db_writer).table(T.task).insert({
-            "create_time": datetime.date.today(),
-            "duration": safe_vars.duration,
-            "interval": safe_vars.interval,
-            "now": const.IS_NOW.NOW if safe_vars.now else const.IS_NOW.NOT_NOW,
-            "account_id": account_id,
-            "status": const.TASK.STATUS.NORMAL,
-        })
-        trans.finish()
-    return OkResponse()
+    data = {
+        "create_time": today,
+        "execute_time": now.time(),
+        "duration": safe_vars.duration,
+        "interval": safe_vars.interval,
+        "now": const.BOOLEAN.TRUE if safe_vars.now else const.BOOLEAN.FALSE,
+        "type": safe_vars.type,
+        "status": const.TASK.STATUS.NORMAL,
+        "account_id": account_id,
+        "device_id": safe_vars.device_id,
+    }
+
+    # 非即时
+    if not safe_vars.now:
+        with transaction(db_writer) as trans:
+            for task_date in raw_dates:
+                data["create_time"] = task_date
+                data["execute_time"] = safe_vars.execute_time
+                QS(db_writer).table(T.task).insert(data)
+            trans.finish()
+        return OkResponse()
+
+    # 即时
+    if safe_vars.now:
+        with transaction(db_writer) as trans:
+            task_id = QS(db_writer).table(T.task).insert(data)
+            # 任务
+            task = dao.get_task_device(db_writer, task_id)
+            trans.finish()
+        return OkResponse()
 
 
 @task.route("/task/cancel")

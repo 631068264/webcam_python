@@ -1,85 +1,102 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
-import datetime
-import shlex
-import socket
-import subprocess
 import os
+import shlex
+import datetime
+import subprocess
+import time
 
-from apscheduler.schedulers.background import BackgroundScheduler
+import schedule
 
-from base.poolmysql import transaction
-from base.smartsql import Table as T, Field as F, QuerySet as QS
-from base.framework import db_conn
+from etc import config
+from base import util
 from base import constant as const
+from base.poolmysql import transaction
+from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 
 
-def daily_task():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(daily_task, 'cron', hour=0, minute=0, second=0)
-    return scheduler
+def do_task(db, task):
+    # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
+    real_device = get_real_device(task.device_id)
+    path, static_url = get_src_path(task.device_id)
+    now = datetime.datetime.now()
 
+    data = {}
+    if task.type == const.TASK.TYPE.PHOTOGRAPH:
+        data["src_name"] = util.get_file_name('.jpg')
+        data["src_path"] = os.path.join(path, data["src_name"])
+        cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
+        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-@db_conn("db_writer")
-def do_daily_task(db_writer):
-    date = get_today_range()
-    tasks = QS(db_writer).table(T.task).where(
-        (F.create_time >= date["start"]) & (F.create_time <= date["end"]) &
-        (F.status == const.TASK.STATUS.NORMAL)
-    ).order_by("create_time").select(for_update=True)
+    if task.type == const.TASK.TYPE.VIDEO:
+        data["src_name"] = util.get_file_name('.mp4')
+        data["src_path"] = os.path.join(path, data["src_name"])
+        cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
+              str(task.duration) + ' ' + data["src_path"]
+        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    for task in tasks:
-        device = QS(db_writer).table(T.account).where(F.id == task.account_id).select_one("device")
-        if device != 0 or device is not None:
-            scheduler = BackgroundScheduler()
-            scheduler.add_job(do_task, 'interval', second=task.interval, args=[device, task, db_writer])
-            scheduler.start()
+    # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
 
-
-def do_task(device, task, db):
-    ip = socket.gethostbyname(socket.gethostname())
-    src = ""
-    thumbnail = ""
-    video = 'ffmpeg -i rtsp://' + ip + device + '.sdp -c copy -t ' + task.duration + src
-    thumb = 'ffmpeg -i rtsp://' + ip + device + '.sdp -f image2 -t 0.001 -s 352x240' + thumbnail
-
-    kill(subprocess.Popen(shlex.split(thumb), shell=True))
-    kill(subprocess.Popen(shlex.split(video), shell=True))
-
+    size = os.path.getsize(data["src_path"])
     with transaction(db) as trans:
-        QS(db).table(T.task).where(F.id == task.id).update({
-            "src": src,
-            "thumbnail": thumbnail,
-            "size": os.path.getsize(src),
+        # 更新资源
+        QS(db).table(T.src).where(F.id == task.id).insert({
+            "create_time": now,
+            "src_path": os.path.join(static_url, data["src_name"]),
+            # "thumbnail": os.path.join(url, jpg_name),
+            "size": size,
+            "status": const.SRC_STATUS.NORMAL,
+            "device_id": task.device_id,
+            "account_id": task.account_id,
         })
+
+        # TODO:用户size限制 怎么停
+        # 更新用户资料
+        QS(db).table(T.account).where(F.id == task.account_id).update({
+            "size": E("size + %d" % size),
+        })
+
+        # 更新任务属性
+        task.finish_time = now
+        task.status = const.TASK.STATUS.FINISHED
+        QS(db).table(T.task).insert(task, on_duplicate_key_update=task)
         trans.finish()
+    return schedule.CancelJob
 
 
-def get_today_range(today=None):
+def get_src_path(device_id):
     """
-    获取一天界限
-    :param today:
+    创建个人目录
+    :param device_id:
     :return:
     """
-    if today is None:
-        today = datetime.date.today()
-    today_start = today
-    today_end = today + datetime.timedelta(1)
-    data = {
-        "start": today_start,
-        "end": today_end,
-    }
-    return data
+    root_path = os.path.dirname(os.getcwd())
+    save_root_path = os.path.join("webcap", config.static_path.replace('/', '') + os.sep + "download")
+    download_path = os.path.join(root_path, save_root_path)
+    device_path = os.path.join(download_path, device_id)
+    url_path = os.path.join(os.path.join(config.static_path, "download"), device_id).replace('\\', '/')
+    if not os.path.exists(device_path):
+        os.makedirs(device_path)
+
+    return device_path, url_path
 
 
-def kill(proc):
+def get_real_device(device_id):
+    return const.LOCAL.get_device_src(device_id)
+
+
+def kill(proc, kill_time=None):
     """
     关闭子进程
     :param proc:
     :return:
     """
-    while True:
-        if proc.poll() is not None:
-            proc.terminate()
-            break
+    if kill_time is None:
+        while True:
+            if proc.poll() is not None:
+                proc.terminate()
+                break
+    else:
+        time.sleep(kill_time)
+        proc.terminate()

@@ -73,6 +73,12 @@ def get_tasks_by_account_id(db, account_id):
     ).order_by(F.create_time, desc=True).select()
 
 
+def get_task_device(db, task_id):
+    return QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
+        (F.id == task_id) & (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t_status == const.TASK.STATUS.NORMAL)
+    ).select_one(for_update=True)
+
+
 def get_srcs_by_account_id(db, account_id):
     return QS(db).table(T.src).where(
         (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)
