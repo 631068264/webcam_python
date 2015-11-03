@@ -62,18 +62,6 @@ class PASSWORD_ACTION(object):
     ALL = (RESET, CHANGE)
 
 
-class YES_NO(object):
-    YES = "Y"
-    NO = "N"
-
-    NAME_DICT = {
-        YES: "是",
-        NO: "否",
-    }
-
-    ALL = NAME_DICT.keys()
-
-
 class TASK(object):
     class STATUS(object):
         # 正常状态
@@ -126,7 +114,10 @@ class DEVICE_STATUS(object):
 class BOOLEAN(object):
     TRUE = 1
     FALSE = 0
-
+    NAME_DICT = {
+        TRUE: "是",
+        FALSE: "否",
+    }
     ALL = (TRUE, FALSE)
 
 
@@ -149,12 +140,6 @@ class LOCAL(object):
         if not isinstance(device_id, str):
             device_id = str(device_id)
         return LOCAL.PREFIX + device_id + LOCAL.SUFFIX
-
-
-class IS_NOW(object):
-    NOW = 1
-    NOT_NOW = 0
-    ALL = (NOW, NOT_NOW)
 
 
 if __name__ == '__main__':

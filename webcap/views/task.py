@@ -18,6 +18,10 @@ from webcap.logic import shed
 task = Blueprint("task", __name__)
 
 
+# TODO:修改目标任务设备
+# TODO:删除任务
+# TODO:添加任务选择设备
+
 @task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
@@ -25,14 +29,34 @@ task = Blueprint("task", __name__)
 def task_list_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     tasks = dao.get_tasks_by_account_id(db_reader, account_id)
-    return TempResponse("task_list.html", tasks=tasks)
+    devices = dao.get_devices_by_account_id(db_reader, account_id)
+    return TempResponse("task_list.html", tasks=tasks, devices=devices)
+
+
+@task.route("/task/device/list")
+@general("特定设备任务页面")
+@login_required()
+@db_conn("db_reader")
+@form_check({
+    "device_id": F_str("设备ID") & "strict" & "required",
+    "device_name": F_str("设备名") & "strict" & "required",
+})
+def device_list(db_reader, safe_vars):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
+    devices = dao.get_devices_by_account_id(db_reader, account_id)
+    return TempResponse("task_list.html", tasks=tasks, device_name=safe_vars.device_name,
+                        device_id=safe_vars.device_id, devices=devices)
 
 
 @task.route("/task/add/load")
 @general("添加任务页面")
 @login_required()
-def task_add_load():
-    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TASK.TYPE.NAME_DICT)
+@db_conn("db_reader")
+def task_add_load(db_reader):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TASK.TYPE.NAME_DICT,
+                        devices=dao.get_devices_by_account_id(db_reader, account_id))
 
 
 def date_select_list():
@@ -143,18 +167,3 @@ def task_cancel(db_writer, safe_vars):
         })
         trans.finish()
     return OkResponse()
-
-
-@task.route("/task/device/list")
-@general("特定设备任务页面")
-@login_required()
-@db_conn("db_reader")
-@form_check({
-    "device_id": F_str("设备ID") & "strict" & "required",
-    "device_name": F_str("设备名") & "strict" & "required",
-})
-def device_list(db_reader, safe_vars):
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
-    return TempResponse("task_device_list.html", tasks=tasks, device_name=safe_vars.device_name,
-                        device_id=safe_vars.device_id)

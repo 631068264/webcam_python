@@ -88,5 +88,5 @@ def get_srcs_by_account_id(db, account_id):
 
 def get_tasks_by_account_and_device(db, account_id, device_id):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.device_id == device_id) & (F.status == const.TASK.STATUS.NORMAL)
+        (F.account_id == account_id) & (F.device_id == device_id) & (F.status != const.TASK.STATUS.DELETED)
     ).select()
