@@ -26,22 +26,19 @@
                       role="button" id="get_device">获取设备号 &raquo;</a></p>
             </div>
             <div class="col-md-3 col-md-offset-1">
-                <h2>Heading</h2>
+                <h2>设定定时任务</h2>
 
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
-                    mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
-                    mollis euismod. Donec sed odio dui. </p>
+                <p><strong>先获取设备号</strong>，因为根据设备号，设定定时任务 </p>
 
-                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                <p><a class="btn btn-default" href="{{ url_for('task.task_list_load') }}"
+                      role="button">设定定时任务 &raquo;</a></p>
             </div>
             <div class="col-md-3 col-md-offset-1">
-                <h2>Heading</h2>
+                <h2>查看资源</h2>
 
-                <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
-                    porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
-                    ut fermentum massa justo sit amet risus.</p>
+                <p>定时任务完成后，可以查看相应的资源</p>
 
-                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                <p><a class="btn btn-default" href="{{ url_for('src.src_list') }}" role="button">查看资源 &raquo;</a></p>
             </div>
         </div>
 
@@ -54,9 +51,9 @@
 
         //用户提示
         {% if session[const.SESSION.KEY_LOGIN] %}
-             var is_show = false;
+            var is_show = false;
         {% else %}
-             var is_show = true;
+            var is_show = true;
         {% endif %}
         if (is_show) {
             $('#login').grumble({
