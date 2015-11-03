@@ -17,6 +17,7 @@ def register(db, username, password):
         "status": const.ACCOUNT_STATUS.NORMAL,
         "role_id": const.ROLE.NORMAL_ACCOUNT,
     })
+    # user_id重做
     msg = {
         "user_id": user_id,
         "role_id": const.ROLE.NORMAL_ACCOUNT,

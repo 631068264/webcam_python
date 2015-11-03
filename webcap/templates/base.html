@@ -38,8 +38,8 @@
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('home.index') }}">首页</a></li>
                 <li><a href="{{ url_for('device.device_list_load') }}">设备管理</a></li>
-                <li><a href="{{ url_for('src.src_list') }}">资源管理</a></li>
                 <li><a href="{{ url_for('task.task_list_load') }}">任务管理</a></li>
+                <li><a href="{{ url_for('src.src_list') }}">资源管理</a></li>
             </ul>
             {% if session[const.SESSION.KEY_LOGIN] %}
                 <ul class="nav navbar-nav navbar-right">

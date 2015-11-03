@@ -13,6 +13,7 @@ from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 from base import constant as const
 from base.xform import F_int, F_str, F_datetime
+from webcap.logic import shed
 
 task = Blueprint("task", __name__)
 
@@ -37,13 +38,11 @@ def task_add_load():
 def date_select_list():
     d = (u"周日", u"周一", u"周二", u"周三", u"周四", u"周五", u"周六")
     days = []
-    for i in xrange(0, config.add_same_task_max_day):
+    for i in xrange(1, config.add_same_task_max_day + 1):
         t = datetime.date.today() + datetime.timedelta(i)
         key = t.strftime('%Y-%m-%d')
         index = int(t.strftime('%w'))
-        value = t.strftime('%Y-%m-%d') + d[index]
-        if i == 0:
-            value += u'（今天）'
+        value = t.strftime('%Y-%m-%d  ') + d[index]
         day = {
             "key": key,
             "value": value,
@@ -120,6 +119,7 @@ def task_add(db_writer, safe_vars):
             task_id = QS(db_writer).table(T.task).insert(data)
             # 任务
             task = dao.get_task_device(db_writer, task_id)
+            shed.start_task(db_writer, task)
             trans.finish()
         return OkResponse()
 
