@@ -19,8 +19,6 @@ from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 db = smartpool.ConnectionProxy("db_writer")
 
 
-# TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
-# TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():
     date = get_today_range()
     # 检验设备合法性
@@ -29,13 +27,11 @@ def daily_task():
             F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"])
     ).order_by("t.create_time").select(for_update=True)
 
-    # TODO:多线程并行 线程池
     for task in tasks:
         kw = {
             "task": task,
             "db": db,
         }
-        # TODO：可能只做一遍 interval为空
         schedule.every(task.interval).seconds.do(do_task, **kw)
 
 
@@ -78,7 +74,6 @@ def do_task(db, task):
             "account_id": task.account_id,
         })
 
-        # TODO:用户size限制 怎么停
         # 更新用户资料
         QS(db).table(T.account).where(F.id == task.account_id).update({
             "size": E("size + %d" % size),

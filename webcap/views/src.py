@@ -15,17 +15,13 @@ from base.xform import F_int
 src = Blueprint("src", __name__)
 
 
-# TODO：lightbox
 @src.route("/src/list/load")
 @general("资源列表")
 @login_required()
 @db_conn("db_reader")
 def src_list(db_reader):
-    # TODO:资源类型
-    # TODO: 统一css 按view细看 lightbox功能
-    # TODO：任务设定 执行时间 持续时间 （重复 结束时间）
-    # TODO: 即时任务建立时执行
     account_id = session[const.SESSION.KEY_ADMIN_ID]
+    # TODO:资源页面style
     srcs = dao.get_srcs_by_account_id(db_reader, account_id)
     return TempResponse("src_list.html", srcs=srcs)
 

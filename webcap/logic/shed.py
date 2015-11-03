@@ -75,7 +75,6 @@ def do_task(db, task):
         kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
     # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
-
     size = os.path.getsize(data["src_path"])
     # 更新资源
     QS(db).table(T.src).where(F.id == task.id).insert({
@@ -84,11 +83,11 @@ def do_task(db, task):
         # "thumbnail": os.path.join(url, jpg_name),
         "size": size,
         "status": const.SRC_STATUS.NORMAL,
+        "type": task.type,
         "device_id": task.device_id,
         "account_id": task.account_id,
     })
 
-    # TODO:用户size限制 怎么停
     # 更新用户资料
     QS(db).table(T.account).where(F.id == task.account_id).update({
         "size": E("size + %d" % size),

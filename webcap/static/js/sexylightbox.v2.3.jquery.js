@@ -121,9 +121,6 @@ jQuery.bind = function (object, method) {
                         }
                         this.element.css({'zIndex': zIndex});
                     }
-                    // Diossss por diosss, pongan funciones �tiles en jQuery,
-                    // no todo es Selectores! la puta madre, lo que hay que hacer
-                    // para detectar si una variable est?definida:
                     zIndex = (!!(this.options.zIndex || this.options.zIndex === 0) && zIndex > this.options.zIndex) ? this.options.zIndex : zIndex - 1;
                     if (zIndex < 0) {
                         zIndex = 1;
