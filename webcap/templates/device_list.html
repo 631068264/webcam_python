@@ -48,8 +48,6 @@
                                 <label for="device_name">设备名</label>
                                 <input type="text" class="form-control" id="device_name" name="device_name"
                                        placeholder="请输入设备名" required>
-
-
                             </div>
                             <a href="#" class="pull-right btn btn-primary" id="btn_add">申请</a>
                         </form>
@@ -85,11 +83,11 @@
             }
         });
 
-        //删除
+        //删除设备
         $('a[btn_type="delete"]').click(function () {
             var device_id = $(this).attr("device_id");
-            var r = confirm("真的要删除?");
-            if (r == true) {
+            var flag = confirm("真的要删除?");
+            if (flag) {
                 $(this).addClass('disabled');
                 console.log(device_id);
                 $.get(

@@ -54,6 +54,19 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="device" class="col-md-2 control-label">选择设备</label>
+
+                    <div class="col-md-5">
+                        <select name="device_id" id="device">
+                            <option>请选择设备</option>
+                            {% for d in devices %}
+                                <option value="{{ d.id }}">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
 
                 <div class="form-group">
                     <label for="type" class="col-md-2 control-label">资源类型</label>

@@ -18,10 +18,6 @@ from webcap.logic import shed
 task = Blueprint("task", __name__)
 
 
-# TODO:修改目标任务设备
-# TODO:删除任务
-# TODO:添加任务选择设备
-
 @task.route("/task/list/load")
 @general("任务列表页面")
 @login_required()
@@ -86,12 +82,11 @@ def date_select_list():
     "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "required",
     "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "required",
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TASK.TYPE.ALL, v)),
-    "device_id": F_int("设备ID") & "strict" & "required",
+    "device_id": F_str("设备ID") & "strict" & "required",
 })
 def task_add(db_writer, safe_vars):
     today = datetime.date.today()
     now = datetime.datetime.now()
-    # TODO:即时就只有今天 不用填执行时间 非即时检验任务日期
 
     # 检验非即时信息
     if not safe_vars.now:
@@ -157,13 +152,34 @@ def task_add(db_writer, safe_vars):
 })
 def task_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    task = dao.update_task_by_account_id(db_writer, account_id, safe_vars.task_id)
-    if not task:
-        return ErrorResponse("该任务不是你的")
-
     with transaction(db_writer) as trans:
+        task = dao.update_task_by_account_id(db_writer, account_id, safe_vars.task_id)
+        if not task:
+            return ErrorResponse("该任务不是你的")
+
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
             "status": const.TASK.STATUS.DELETED,
+        })
+        trans.finish()
+    return OkResponse()
+
+
+@task.route("/task/change/device")
+@general("改变设备")
+@login_required()
+@db_conn("db_writer")
+@form_check({
+    "task_id": F_int("任务ID") & "strict" & "required",
+    "device_id": F_str("设备ID") & "strict" & "required",
+})
+def task_change_device(db_writer, safe_vars):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    with transaction(db_writer) as trans:
+        task = dao.update_device_by_account_id(db_writer, account_id, safe_vars.task_id)
+        if not task:
+            return ErrorResponse("该任务不是你的")
+        QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
+            "device_id": safe_vars.device_id,
         })
         trans.finish()
     return OkResponse()

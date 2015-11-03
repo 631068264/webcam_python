@@ -65,11 +65,12 @@ def device_add(db_writer, safe_vars):
     "device_name": F_str("设备名") & "strict" & "required",
 })
 def device_edit(db_writer, safe_vars):
-    device = dao.update_device_by_account_id(db_writer, session[const.SESSION.KEY_ADMIN_ID], safe_vars.device_id)
-    if not device:
-        return ErrorResponse("没有权限修改该设备")
-    device.name = safe_vars.device_name
     with transaction(db_writer)as trans:
+        device = dao.update_device_by_account_id(db_writer, session[const.SESSION.KEY_ADMIN_ID], safe_vars.device_id)
+        if not device:
+            return ErrorResponse("没有权限修改该设备")
+        device.name = safe_vars.device_name
+
         QS(db_writer).table(T.device).update(device)
         trans.finish()
     return OkResponse()
@@ -84,11 +85,11 @@ def device_edit(db_writer, safe_vars):
 })
 def device_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    device = dao.update_device_by_account_id(db_writer, account_id, safe_vars.device_id)
-    if not device:
-        return ErrorResponse("该任务不是你的")
-
     with transaction(db_writer) as trans:
+        device = dao.update_device_by_account_id(db_writer, account_id, safe_vars.device_id)
+        if not device:
+            return ErrorResponse("该任务不是你的")
+
         QS(db_writer).table(T.device).where(F.id == safe_vars.device_id).update({
             "status": const.DEVICE_STATUS.DELETED,
         })

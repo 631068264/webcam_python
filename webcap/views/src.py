@@ -39,11 +39,11 @@ def src_list(db_reader):
 })
 def src_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    src = dao.update_src_by_account_id(db_writer, account_id, safe_vars.src_id)
-    if not src:
-        return ErrorResponse("该资源不是你的")
-
     with transaction(db_writer) as trans:
+        src = dao.update_src_by_account_id(db_writer, account_id, safe_vars.src_id)
+        if not src:
+            return ErrorResponse("该资源不是你的")
+
         QS(db_writer).table(T.src).where(F.id == safe_vars.src_id).update({
             "status": const.SRC_STATUS.DELETED,
         })
