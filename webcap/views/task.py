@@ -51,7 +51,7 @@ def device_list(db_reader, safe_vars):
 @db_conn("db_reader")
 def task_add_load(db_reader):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TASK.TYPE.NAME_DICT,
+    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TYPE.NAME_DICT,
                         devices=dao.get_devices_by_account_id(db_reader, account_id))
 
 
@@ -81,10 +81,12 @@ def date_select_list():
     "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "optional",
     "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "required",
     "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "required",
-    "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TASK.TYPE.ALL, v)),
+    "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
 def task_add(db_writer, safe_vars):
+    if safe_vars.device_id == '0':
+        return ErrorResponse("请选择设备")
     today = datetime.date.today()
     now = datetime.datetime.now()
 
@@ -112,12 +114,12 @@ def task_add(db_writer, safe_vars):
 
     data = {
         "create_time": today,
-        "execute_time": now.time(),
+        "execute_time": now,
         "duration": safe_vars.duration,
         "interval": safe_vars.interval,
         "now": const.BOOLEAN.TRUE if safe_vars.now else const.BOOLEAN.FALSE,
         "type": safe_vars.type,
-        "status": const.TASK.STATUS.NORMAL,
+        "status": const.TASK_STATUS.NORMAL,
         "account_id": account_id,
         "device_id": safe_vars.device_id,
     }
@@ -127,7 +129,7 @@ def task_add(db_writer, safe_vars):
         with transaction(db_writer) as trans:
             for task_date in raw_dates:
                 data["create_time"] = task_date
-                data["execute_time"] = safe_vars.execute_time
+                data["execute_time"] = safe_vars.execute_time.replace(1970, 1, 1)
                 QS(db_writer).table(T.task).insert(data)
             trans.finish()
         return OkResponse()
@@ -135,14 +137,16 @@ def task_add(db_writer, safe_vars):
     # 即时
     if safe_vars.now:
         with transaction(db_writer) as trans:
-            task_id = QS(db_writer).table(T.task).insert(data)
             # 任务
+            task_id = QS(db_writer).table(T.task).insert(data)
             task = dao.get_task_device(db_writer, task_id)
-            shed.start_task(db_writer, task)
+            # shed.start_task(db_writer, task)
+            shed.do_task(db_writer, task)
             trans.finish()
-        return OkResponse()
+    return OkResponse()
 
 
+# TODO：删除任务时间控制
 @task.route("/task/cancel")
 @general("任务删除")
 @login_required()
@@ -158,7 +162,7 @@ def task_cancel(db_writer, safe_vars):
             return ErrorResponse("该任务不是你的")
 
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
-            "status": const.TASK.STATUS.DELETED,
+            "status": const.TASK_STATUS.DELETED,
         })
         trans.finish()
     return OkResponse()

@@ -23,7 +23,7 @@ def daily_task():
     date = get_today_range()
     # 检验设备合法性
     tasks = QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
-        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK.STATUS.NORMAL) & (
+        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK_STATUS.NORMAL) & (
             F.t__create_time >= date["start"]) & (F.t__create_time <= date["end"])
     ).order_by("t.create_time").select(for_update=True)
 
@@ -46,13 +46,13 @@ def do_task(db, task):
     now = datetime.datetime.now()
 
     data = {}
-    if task.type == const.TASK.TYPE.PHOTOGRAPH:
+    if task.type == const.TYPE.PHOTOGRAPH:
         data["src_name"] = util.get_file_name('.jpg')
         data["src_path"] = os.path.join(path, data["src_name"])
         cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
         kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    if task.type == const.TASK.TYPE.VIDEO:
+    if task.type == const.TYPE.VIDEO:
         data["src_name"] = util.get_file_name('.mp4')
         data["src_path"] = os.path.join(path, data["src_name"])
         cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
@@ -81,7 +81,7 @@ def do_task(db, task):
 
         # 更新任务属性
         task.finish_time = now
-        task.status = const.TASK.STATUS.FINISHED
+        TASK_STATUS = const.TASK_STATUS.FINISHED
         QS(db).table(T.task).insert(task, on_duplicate_key_update=task)
         trans.finish()
 

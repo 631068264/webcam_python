@@ -7,7 +7,7 @@
         <caption><strong><h3>{{ session[const.SESSION.KEY_ADMIN_NAME] }}__任务表</h3></strong></caption>
         <tr>
             <th>任务ID</th>
-            <th>创建时间</th>
+            <th>创建日期</th>
             <th>执行时间</th>
             <th>完成时间</th>
             <th>持续时间</th>
@@ -21,12 +21,13 @@
         {% for t in tasks %}
             <tr>
                 <td>{{ t.id }}</td>
-                <td>{{ t.create_time }}</td>
+                <td>{{ t.create_time | fm_date }}</td>
                 <td>{{ t.execute_time }}</td>
                 <td>{{ t.finish_time }}</td>
                 <td>{{ t.duration }}</td>
                 <td>{{ t.interval }}</td>
                 <td>{{ const.BOOLEAN.NAME_DICT[t.now] }}</td>
+                <td>{{ const.TYPE.NAME_DICT[t.type] }}</td>
                 <td>
                     <select name="device_id" select_type="device" task_id="{{ t.id }}">
                         {% for d in devices %}
@@ -37,7 +38,7 @@
                         {% endfor %}
                     </select>
                 </td>
-                <td>{{ const.TASK.STATUS.NAME_DICT[t.status] }}</td>
+                <td>{{ const.TASK_STATUS.NAME_DICT[t.status] }}</td>
                 <td>
                     <a href="#" type="button" btn_type="delete" class="btn btn-primary" task_id="{{ t.id }}">删除<span
                             class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>

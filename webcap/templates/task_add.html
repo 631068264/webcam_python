@@ -59,7 +59,7 @@
 
                     <div class="col-md-5">
                         <select name="device_id" id="device">
-                            <option>请选择设备</option>
+                            <option value=0>请选择设备</option>
                             {% for d in devices %}
                                 <option value="{{ d.id }}">{{ d.name }}</option>
                             {% endfor %}
@@ -75,7 +75,7 @@
                         {% for k,v in task_type.iteritems() %}
                             <label class="radio-inline">
                                 <input type="radio" id="type" name="type" value="{{ k }}"
-                                        {% if k == const.TASK.TYPE.PHOTOGRAPH %}
+                                        {% if k == const.TYPE.PHOTOGRAPH %}
                                        checked
                                         {% endif %} >{{ v }}
                             </label>

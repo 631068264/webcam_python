@@ -62,33 +62,33 @@ class PASSWORD_ACTION(object):
     ALL = (RESET, CHANGE)
 
 
-class TASK(object):
-    class STATUS(object):
-        # 正常状态
-        NORMAL = 0
-        # 删除状态
-        DELETED = 1
-        # 任务完成
-        FINISHED = 2
+class TASK_STATUS(object):
+    # 正常状态
+    NORMAL = 0
+    # 删除状态
+    DELETED = 1
+    # 任务完成
+    FINISHED = 2
 
-        NAME_DICT = {
-            NORMAL: "正常",
-            DELETED: "删除",
-            FINISHED: "完成",
-        }
+    NAME_DICT = {
+        NORMAL: "正常",
+        DELETED: "删除",
+        FINISHED: "完成",
+    }
 
-        ALL = NAME_DICT.keys()
+    ALL = NAME_DICT.keys()
 
-    class TYPE(object):
-        # 图片
-        PHOTOGRAPH = 0
-        # 视频
-        VIDEO = 1
-        NAME_DICT = {
-            PHOTOGRAPH: "图片",
-            VIDEO: "视频",
-        }
-        ALL = NAME_DICT.keys()
+
+class TYPE(object):
+    # 图片
+    PHOTOGRAPH = 0
+    # 视频
+    VIDEO = 1
+    NAME_DICT = {
+        PHOTOGRAPH: "图片",
+        VIDEO: "视频",
+    }
+    ALL = NAME_DICT.keys()
 
 
 class SRC_STATUS(object):

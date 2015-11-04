@@ -19,35 +19,38 @@
     </div>
     <div class="postExcerpts">
         {% for s in srcs %}
-            <div class="postExcerpt video">
-                <div class="postExcerptInner">
-                    <div class="titleAndCat">
-                        <h2>{{ s.create_time }}</h2>
-                        <em class="cat">Video</em>
+            {% if s.type == const.TYPE.VIDEO %}
+                <div class="postExcerpt video">
+                    <div class="postExcerptInner">
+                        <div class="titleAndCat">
+                            <h2>{{ s.create_time }}</h2>
+                            <em class="cat">Video</em>
+                        </div>
+                        <div class="imgWrap">
+                            <img src="{{ s.thumbnail }}">
+                        </div>
+                        <div id="{{ s.id }}" style="display:none;">
+                            <video src="{{ s.src_path }}" controls></video>
+                        </div>
+                        <a class="playVideo" href="#TB_inline?height=298&width=362&background=#FFF&inlineId={{ s.id }}"
+                           rel="sexylightbox[video]" title="{{ s.create_time }}"></a>
                     </div>
-                    <div class="imgWrap">
-                        <img src="{{ s.thumbnail }}">
-                    </div>
-                    <div id="{{ s.id }}" style="display:none;">
-                        <video src="{{ s.src_path }}" controls></video>
-                    </div>
-                    <a class="playVideo" href="#TB_inline?height=298&width=362&background=#FFF&inlineId={{ s.id }}"
-                       rel="sexylightbox[video]" title="{{ s.create_time }}"></a>
                 </div>
-            </div>
-            <div class="postExcerpt photography">
-                <div class="postExcerptInner">
-                    <div class="titleAndCat">
-                        <h2>{{ s.create_time }}</h2>
-                        <em class="cat">Photography</em>
+            {% else %}
+                <div class="postExcerpt photography">
+                    <div class="postExcerptInner">
+                        <div class="titleAndCat">
+                            <h2>{{ s.create_time }}</h2>
+                            <em class="cat">Photography</em>
+                        </div>
+                        <div class="imgWrap">
+                            <img src="{{ s.src_path }}">
+                        </div>
+                        <a class="view" href="{{ s.src_path }}?height=500&width=700" rel="sexylightbox[photography]"
+                           title="{{ s.create_time }}"></a>
                     </div>
-                    <div class="imgWrap">
-                        <img src="{{ s.thumbnail }}">
-                    </div>
-                    <a class="view" href="{{ s.thumbnail }}?height=500&width=700" rel="sexylightbox[photography]"
-                       title="{{ s.create_time }}"></a>
                 </div>
-            </div>
+            {% endif %}
         {% endfor %}
     </div>
     <div id="go_up"></div>
@@ -62,7 +65,7 @@
 
     <script>
         SexyLightbox.initialize({color: 'white', imagesdir: '{{config.static_url_path}}/images/sexyimages'});
-        GoUp('#go_up','{{config.static_url_path}}/images/gotoTop.png');
+        GoUp('#go_up', '{{config.static_url_path}}/images/gotoTop.png');
 
     </script>
 {% endblock tail_js %}
