@@ -45,60 +45,61 @@ def daily_task():
         (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK_STATUS.NORMAL) &
         (F.t__create_time >= start) & (F.t__create_time <= end)
     ).order_by(F.t__execute_time).select()
-    with transaction(db) as trans:
-        for task in tasks:
-            kw = {
-                "job_func": do_task,
-                "parm": (db, task),
-            }
-            schedule.every().day.at(task.execute_time.time()).do(run_thread, **kw)
-        trans.finish()
+
+    for task in tasks:
+        kw = {
+            "job_func": do_task,
+            "parm": (db, task),
+        }
+        schedule.every().day.at(task.execute_time.time()).do(run_thread, **kw)
 
 
 def do_task(db, task):
-    real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-    # real_device = get_real_device(task.device_id)
-    path, static_url = get_src_path(task.device_id)
-    now = datetime.datetime.now()
+    with transaction(db) as trans:
+        real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
+        # real_device = get_real_device(task.device_id)
+        path, static_url = get_src_path(task.device_id)
+        now = datetime.datetime.now()
 
-    data = {}
-    if task.type == const.TYPE.PHOTOGRAPH:
-        data["src_name"] = util.get_file_name('.jpg')
-        data["src_path"] = os.path.join(path, data["src_name"])
-        cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
-        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
+        data = {}
+        if task.type == const.TYPE.PHOTOGRAPH:
+            data["src_name"] = util.get_file_name('.jpg')
+            data["src_path"] = os.path.join(path, data["src_name"])
+            cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
+            kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    elif task.type == const.TYPE.VIDEO:
-        data["src_name"] = util.get_file_name('.mp4')
-        data["src_path"] = os.path.join(path, data["src_name"])
-        cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
-              str(task.duration) + ' ' + data["src_path"]
-        kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
+        elif task.type == const.TYPE.VIDEO:
+            data["src_name"] = util.get_file_name('.mp4')
+            data["src_path"] = os.path.join(path, data["src_name"])
+            cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
+                  str(task.duration) + ' ' + data["src_path"]
+            kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-    # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
-    size = os.path.getsize(data["src_path"])
-    # 更新资源
-    QS(db).table(T.src).where(F.id == task.id).insert({
-        "create_time": now,
-        "src_path": os.path.join(static_url, data["src_name"]),
-        # "thumbnail": os.path.join(url, jpg_name),
-        "size": size,
-        "status": const.SRC_STATUS.NORMAL,
-        "type": task.type,
-        "device_id": task.device_id,
-        "account_id": task.account_id,
-    })
+        # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
+        size = os.path.getsize(data["src_path"])
+        # 更新资源
+        QS(db).table(T.src).where(F.id == task.id).insert({
+            "create_time": now,
+            "src_path": os.path.join(static_url, data["src_name"]),
+            # "thumbnail": os.path.join(url, jpg_name),
+            "size": size,
+            "status": const.SRC_STATUS.NORMAL,
+            "type": task.type,
+            "device_id": task.device_id,
+            "account_id": task.account_id,
+        })
 
-    # 更新用户资料
-    QS(db).table(T.account).where(F.id == task.account_id).update({
-        "size": E("size + %d" % size),
-    })
+        # 更新用户资料
+        QS(db).table(T.account).where(F.id == task.account_id).update({
+            "size": E("size + %d" % size),
+        })
 
-    # 更新任务属性
-    QS(db).table(T.task).where(F.id == task.id).update({
-        "finish_time": now,
-        "status": const.TASK_STATUS.FINISHED,
-    })
+        # 更新任务属性
+        QS(db).table(T.task).where(F.id == task.id).update({
+            "finish_time": now,
+            "status": const.TASK_STATUS.FINISHED,
+        })
+        trans.finish()
     return schedule.CancelJob
 
 

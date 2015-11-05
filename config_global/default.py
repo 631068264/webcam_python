@@ -24,6 +24,8 @@ static_url_path = static_path
 lazy = 10
 # 添加同一任务的最多天数
 add_same_task_max_day = 4
+# 任务开始前2小时不能删除
+min_hours_left_when_cancel = 2
 
 # MySQL配置
 db_config = {

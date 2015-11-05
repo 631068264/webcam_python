@@ -22,8 +22,8 @@
             <tr>
                 <td>{{ t.id }}</td>
                 <td>{{ t.create_time | fm_date }}</td>
-                <td>{{ t.execute_time }}</td>
-                <td>{{ t.finish_time }}</td>
+                <td>{{ t.execute_time | fm_time('%H:%M:%S') }}</td>
+                <td>{{ t.finish_time | fm_time('%H:%M:%S',default='-') }}</td>
                 <td>{{ t.duration }}</td>
                 <td>{{ t.interval }}</td>
                 <td>{{ const.BOOLEAN.NAME_DICT[t.now] }}</td>
@@ -79,7 +79,7 @@
             }
         });
         //改变设备
-        $('select[select_type="device"]').blur(function () {
+        $('select[select_type="device"]').change(function () {
             var task_id = $(this).attr('task_id');
             var device_id = $(this).val();
             var devive_name = $('#device option:selected').text();

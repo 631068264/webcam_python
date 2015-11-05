@@ -52,7 +52,7 @@ def update_device_by_account_id(db, account_id, device_id):
 
 def update_task_by_account_id(db, account_id, task_id):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == task_id)
+        (F.account_id == account_id) & (F.status != const.TASK_STATUS.DELETED) & (F.id == task_id)
     ).select_one(for_update=True)
 
 
