@@ -144,7 +144,6 @@ def task_add(db_writer, safe_vars):
     return OkResponse()
 
 
-# TODO：删除任务时间控制
 @task.route("/task/cancel")
 @general("任务删除")
 @login_required()
@@ -162,7 +161,7 @@ def task_cancel(db_writer, safe_vars):
 
         if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
                 hours=config.min_hours_left_when_cancel) > task.create_time.replace(
-            hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
+                hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
                 second=task.execute_time.time().second):
             return ErrorResponse("距离任务开始不足%s小时不能删除" % config.min_hours_left_when_cancel)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({

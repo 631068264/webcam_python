@@ -22,6 +22,8 @@
             {% if s.type == const.TYPE.VIDEO %}
                 <div class="postExcerpt video">
                     <div class="postExcerptInner">
+                        <button class="close" aria-label="Close" src_id= {{ s.id }}><span
+                                aria-hidden="true">&times;</span></button>
                         <div class="titleAndCat">
                             <h2>{{ s.create_time }}</h2>
                             <em class="cat">Video</em>
@@ -39,6 +41,8 @@
             {% else %}
                 <div class="postExcerpt photography">
                     <div class="postExcerptInner">
+                        <button class="close" aria-label="Close" src_id= {{ s.id }}><span
+                                aria-hidden="true">&times;</span></button>
                         <div class="titleAndCat">
                             <h2>{{ s.create_time }}</h2>
                             <em class="cat">Photography</em>
@@ -66,6 +70,29 @@
     <script>
         SexyLightbox.initialize({color: 'white', imagesdir: '{{config.static_url_path}}/images/sexyimages'});
         GoUp('#go_up', '{{config.static_url_path}}/images/gotoTop.png');
+        $('.close').click(function () {
+            var src_id = $(this).attr('src_id');
+            var flag = confirm("真的要删除?");
 
+            if (flag) {
+                $.post(
+                        '{{ url_for("src.src_cancel") }}',
+                        {src_id: src_id},
+                        function (resp) {
+                            if (resp.status == 1) {
+                                location.reload();
+                                $(this).removeClass('disabled');
+                                ok("删除成功");
+                            } else {
+                                error(resp.message);
+                            }
+                        }
+                ).fail(function () {
+                            $(this).removeClass('disabled');
+                            error('网络故障 请检查网络连接!');
+                        });
+            }
+
+        });
     </script>
 {% endblock tail_js %}

@@ -25,7 +25,8 @@ def src_list(db_reader):
     return TempResponse("src_list.html", srcs=srcs)
 
 
-@src.route("/src/cancel")
+# TODO：回收站封禁
+@src.route("/src/cancel", methods=["POST"])
 @general("资源删除")
 @login_required()
 @db_conn("db_writer")
