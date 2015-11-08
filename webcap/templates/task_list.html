@@ -24,8 +24,8 @@
                 <td>{{ t.create_time | fm_date }}</td>
                 <td>{{ t.execute_time | fm_time('%H:%M:%S') }}</td>
                 <td>{{ t.finish_time | fm_time('%H:%M:%S',default='-') }}</td>
-                <td>{{ t.duration }}</td>
-                <td>{{ t.interval }}</td>
+                <td>{{ t.duration | fm_null(default='-') }}</td>
+                <td>{{ t.interval | fm_null(default='-') }}</td>
                 <td>{{ const.BOOLEAN.NAME_DICT[t.now] }}</td>
                 <td>{{ const.TYPE.NAME_DICT[t.type] }}</td>
                 <td>

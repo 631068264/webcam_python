@@ -71,6 +71,7 @@ def date_select_list():
     return days
 
 
+# TODO：图片资源不需要持续时间
 @task.route("/task/add", methods=["POST"])
 @general("添加任务")
 @login_required()
@@ -79,8 +80,8 @@ def date_select_list():
     "now": F_int("是否即时") & "strict" & "optional" & (lambda v: (v in const.BOOLEAN.ALL, v)),
     "task_dates": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "optional" & "multiple"),
     "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "optional",
-    "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "required",
-    "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "required",
+    "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "optional",
+    "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "optional",
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
@@ -104,6 +105,9 @@ def task_add(db_writer, safe_vars):
                 raw_dates.add(task_date)
             if not (0 < len(raw_dates) <= config.add_same_task_max_day):
                 return ErrorResponse("任务日期请选择从今天起%d天内的日期" % config.add_same_task_max_day)
+
+                # TODO：同一设备同一天只要一个任务
+
         if not safe_vars.execute_time:
             return ErrorResponse("执行时间不能为空")
 
@@ -137,6 +141,7 @@ def task_add(db_writer, safe_vars):
     # 即时
     if safe_vars.now:
         # 任务
+        # TODO:执行时间和完成时间一样？
         task_id = QS(db_writer).table(T.task).insert(data)
         task = dao.get_task_device(db_writer, task_id)
         # shed.start_task(db_writer, task)
@@ -161,7 +166,7 @@ def task_cancel(db_writer, safe_vars):
 
         if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
                 hours=config.min_hours_left_when_cancel) > task.create_time.replace(
-                hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
+            hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
                 second=task.execute_time.time().second):
             return ErrorResponse("距离任务开始不足%s小时不能删除" % config.min_hours_left_when_cancel)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({

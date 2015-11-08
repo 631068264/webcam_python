@@ -20,12 +20,12 @@ from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 db = smartpool.ConnectionProxy("db_writer")
 
 
-def run_thread(job_func, parm):
-    threading.Thread(target=job_func, args=parm).start()
+def run_thread(job_fun, parm):
+    threading.Thread(target=job_fun, args=parm).start()
 
 
-def start_daily_task(time):
-    schedule.every().days.at(time).do(daily_task)
+def start_daily_task(start_time):
+    schedule.every().days.at(start_time).do(daily_task)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -47,41 +47,56 @@ def daily_task():
     ).order_by(F.t__execute_time).select()
 
     for task in tasks:
+        parm = (db, task)
         kw = {
-            "job_func": do_task,
+            "job_fun": do_task,
             "parm": (db, task),
         }
-        schedule.every().day.at(task.execute_time.time()).do(run_thread, **kw)
+        exec_time = task.execute_time.strftime('%H:%M')
+        schedule.every().day.at(exec_time).do(run_thread, **kw)
 
 
 def do_task(db, task):
     with transaction(db) as trans:
-        real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-        # real_device = get_real_device(task.device_id)
+        # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
+        real_device = get_real_device(task.device_id)
         path, static_url = get_src_path(task.device_id)
-        now = datetime.datetime.now()
 
         data = {}
         if task.type == const.TYPE.PHOTOGRAPH:
             data["src_name"] = util.get_file_name('.jpg')
             data["src_path"] = os.path.join(path, data["src_name"])
-            cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x380 ' + data["src_path"]
-            kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
+
+            data["thumbnail_name"] = util.get_file_name('.jpg')
+            data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
+
+            src_cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 500x650 ' + data["src_path"]
+            thumbnail_cmd = 'ffmpeg -y -i ' + data['src_path'] + ' -f image2 -s 300x200 ' + data["thumbnail_path"]
+            kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True))
+            kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
 
         elif task.type == const.TYPE.VIDEO:
             data["src_name"] = util.get_file_name('.mp4')
             data["src_path"] = os.path.join(path, data["src_name"])
-            cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
-                  str(task.duration) + ' ' + data["src_path"]
-            kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
+
+            data["thumbnail_name"] = util.get_file_name('.jpg')
+            data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
+
+            src_cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
+                      str(task.duration) + ' ' + data["src_path"]
+
+            thumbnail_cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x200 ' + data["thumbnail_path"]
+
+            kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
+            kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True), kill_time=task.duration + config.lazy)
 
         # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
         size = os.path.getsize(data["src_path"])
         # 更新资源
         QS(db).table(T.src).where(F.id == task.id).insert({
-            "create_time": now,
+            "create_time": datetime.datetime.now(),
             "src_path": os.path.join(static_url, data["src_name"]),
-            # "thumbnail": os.path.join(url, jpg_name),
+            "thumbnail": os.path.join(static_url, data["thumbnail_name"]),
             "size": size,
             "status": const.SRC_STATUS.NORMAL,
             "type": task.type,
@@ -96,7 +111,7 @@ def do_task(db, task):
 
         # 更新任务属性
         QS(db).table(T.task).where(F.id == task.id).update({
-            "finish_time": now,
+            "finish_time": datetime.datetime.now(),
             "status": const.TASK_STATUS.FINISHED,
         })
         trans.finish()

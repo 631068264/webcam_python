@@ -76,6 +76,7 @@ def device_edit(db_writer, safe_vars):
     return OkResponse()
 
 
+# TODO:设备删除 删除连带删除其任务 资源暂时不分设备
 @device.route("/device/cancel")
 @general("设备删除")
 @login_required()

@@ -34,7 +34,7 @@
                         <div id="{{ s.id }}" style="display:none;">
                             <video src="{{ s.src_path }}" controls></video>
                         </div>
-                        <a class="playVideo" href="#TB_inline?height=298&width=362&background=#FFF&inlineId={{ s.id }}"
+                        <a class="playVideo" href="#TB_inline?height=500&width=650&background=#FFF&inlineId={{ s.id }}"
                            rel="sexylightbox[video]" title="{{ s.create_time }}"></a>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                             <em class="cat">Photography</em>
                         </div>
                         <div class="imgWrap">
-                            <img src="{{ s.src_path }}">
+                            <img src="{{ s.thumbnail }}">
                         </div>
                         <a class="view" href="{{ s.src_path }}?height=500&width=700" rel="sexylightbox[photography]"
                            title="{{ s.create_time }}"></a>

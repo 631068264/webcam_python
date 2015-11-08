@@ -8,7 +8,7 @@ from base import dao
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
 from base.logic import login_required
 from base.poolmysql import transaction
-from base.smartsql import Table as T, Field as F, QuerySet as QS
+from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
 from base.xform import F_int
 
@@ -42,6 +42,10 @@ def src_cancel(db_writer, safe_vars):
 
         QS(db_writer).table(T.src).where(F.id == safe_vars.src_id).update({
             "status": const.SRC_STATUS.DELETED,
+        })
+
+        QS(db_writer).table(T.account).where(F.id == account_id).update({
+            "size": E("IF((size - %d ) < 0,0,size - %d)" % src.size),
         })
         trans.finish()
     return OkResponse()
