@@ -99,7 +99,7 @@ function Toast(dom, msg, location, dur) {
             node.css("display", "none");
             console.log("3");
             //延时跳转
-            location ? window.location.href = location : location = null;
+            location ? window.location.href = location.split('#')[0] : location = null;
         }, 1000);
         console.log("2");
     }, 1000 * dur);
@@ -115,5 +115,8 @@ function error(msg) {
 }
 
 function redirect(msg, location) {
+    if (location == null) {
+        location = window.location.href;
+    }
     Toast('#msg', msg, location, 1);
 }

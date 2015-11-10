@@ -37,22 +37,24 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="duration" class="col-md-2 control-label">持续时间</label>
+                <div class="form-group" id="form_duration" style="display: none;">
+                    <label for="duration" class="col-md-2 control-label">时长</label>
 
-                    <div class="col-md-2">
+                    <div class="col-md-2 input-group">
                         <input type="number" class="form-control" id="duration" name="duration" min="5"
                                max="10">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="interval" class="col-md-2 control-label">时间间隔</label>
 
-                    <div class="col-md-2">
-                        <input type="number" class="form-control" id="interval" name="interval"  min="5"
-                               max="10">
+                        <div class="input-group-addon">秒</div>
                     </div>
                 </div>
+                {#                <div class="form-group">#}
+                {#                    <label for="interval" class="col-md-2 control-label">时间间隔</label>#}
+                {##}
+                {#                    <div class="col-md-2">#}
+                {#                        <input type="number" class="form-control" id="interval" name="interval"  min="5"#}
+                {#                               max="10">#}
+                {#                    </div>#}
+                {#                </div>#}
 
                 <div class="form-group">
                     <label for="device" class="col-md-2 control-label">选择设备</label>
@@ -102,8 +104,12 @@
             $('#form_task_dates').toggle(!flag);
             $('#form_execute_time').toggle(!flag);
         });
+        $("input:radio[name = 'type']").change(function () {
+            var flag = $(this).val();
+            $('#form_duration').toggle(flag);
+        });
 
-        //添加设备
+        //添加任务
         $('#btn_add_task').click(function () {
             $(this).addClass('disabled');
             $('#form_add_task').submit();
@@ -113,7 +119,7 @@
                 console.log(resp);
                 $('#btn_add_task').removeClass('disabled');
                 if (resp.status == 1) {
-                    redirect("设备添加成功", '{{ url_for("task.task_list_load") }}');
+                    redirect("任务添加成功", '{{ url_for("task.task_list_load") }}');
                 } else {
                     error(resp.message);
                 }

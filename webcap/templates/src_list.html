@@ -73,16 +73,14 @@
         $('.close').click(function () {
             var src_id = $(this).attr('src_id');
             var flag = confirm("真的要删除?");
-
             if (flag) {
                 $.post(
                         '{{ url_for("src.src_cancel") }}',
                         {src_id: src_id},
                         function (resp) {
                             if (resp.status == 1) {
-                                location.reload();
                                 $(this).removeClass('disabled');
-                                ok("删除成功");
+                                redirect("删除成功");
                             } else {
                                 error(resp.message);
                             }

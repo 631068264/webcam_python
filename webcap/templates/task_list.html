@@ -10,8 +10,8 @@
             <th>创建日期</th>
             <th>执行时间</th>
             <th>完成时间</th>
-            <th>持续时间</th>
-            <th>时间间隔</th>
+            <th>时长</th>
+            {#            <th>时间间隔</th>#}
             <th>当天执行</th>
             <th>资源类型</th>
             <th>目标设备</th>
@@ -25,7 +25,7 @@
                 <td>{{ t.execute_time | fm_time('%H:%M:%S') }}</td>
                 <td>{{ t.finish_time | fm_time('%H:%M:%S',default='-') }}</td>
                 <td>{{ t.duration | fm_null(default='-') }}</td>
-                <td>{{ t.interval | fm_null(default='-') }}</td>
+                {#                <td>{{ t.interval | fm_null(default='-') }}</td>#}
                 <td>{{ const.BOOLEAN.NAME_DICT[t.now] }}</td>
                 <td>{{ const.TYPE.NAME_DICT[t.type] }}</td>
                 <td>
@@ -61,13 +61,12 @@
                 $(this).addClass('disabled');
                 console.log(task_id);
                 $.get(
-                        "/webcap/task/cancel",
+                        '{{ url_for("task.task_cancel") }}',
                         {task_id: task_id},
                         function (resp) {
                             if (resp.status == 1) {
-                                location.reload();
                                 $(this).removeClass('disabled');
-                                ok("删除成功");
+                                redirect("删除成功");
                             } else {
                                 error(resp.message);
                             }
@@ -87,12 +86,11 @@
             var flag = confirm("是否将设备修改为：" + devive_name);
             if (flag) {
                 $.get(
-                        "/webcap/task/change/device",
+                        '{{ url_for("task.task_change_device") }}',
                         {device_id: device_id, task_id: task_id},
                         function (resp) {
                             if (resp.status == 1) {
-                                location.reload();
-                                ok("修改成功");
+                                redirect("修改成功");
                             } else {
                                 error(resp.message);
                             }

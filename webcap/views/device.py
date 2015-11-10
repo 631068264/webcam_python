@@ -76,7 +76,6 @@ def device_edit(db_writer, safe_vars):
     return OkResponse()
 
 
-# TODO:设备删除 删除连带删除其任务 资源暂时不分设备
 @device.route("/device/cancel")
 @general("设备删除")
 @login_required()
@@ -89,10 +88,14 @@ def device_cancel(db_writer, safe_vars):
     with transaction(db_writer) as trans:
         device = dao.update_device_by_account_id(db_writer, account_id, safe_vars.device_id)
         if not device:
-            return ErrorResponse("该任务不是你的")
+            return ErrorResponse("该设备不是你的")
 
-        QS(db_writer).table(T.device).where(F.id == safe_vars.device_id).update({
+        QS(db_writer).table(T.device).where(F.id == device.id).update({
             "status": const.DEVICE_STATUS.DELETED,
+        })
+        # TODO: 资源暂时不分设备
+        QS(db_writer).table(T.task).where(F.device_id == device.id).update({
+            "status": const.TASK_STATUS.DELETED,
         })
 
         QS(db_writer).table(T.account).where(F.id == account_id).update({

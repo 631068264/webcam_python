@@ -71,8 +71,7 @@
                 $('#btn_add').removeClass('disabled');
                 if (resp.status == 1) {
                     $("#deviece_add").modal('hide');
-                    location.reload();
-                    ok("申请成功");
+                    redirect("申请成功");
                 } else {
                     error(resp.message);
                 }
@@ -86,18 +85,17 @@
         //删除设备
         $('a[btn_type="delete"]').click(function () {
             var device_id = $(this).attr("device_id");
-            var flag = confirm("真的要删除?");
+            var flag = confirm("真的要删除?\n 该设备下的所有任务也会被删除");
             if (flag) {
                 $(this).addClass('disabled');
                 console.log(device_id);
                 $.get(
-                        "/webcap/device/cancel",
+                        "{{ url_for('device.device_cancel') }}",
                         {device_id: device_id},
                         function (resp) {
                             if (resp.status == 1) {
-                                location.reload();
                                 $(this).removeClass('disabled');
-                                ok("删除成功");
+                                redirect("删除成功");
                             } else {
 
                             }
@@ -117,7 +115,7 @@
             var r = confirm("真的要修改为：" + device_name);
             if (r) {
                 $.get(
-                        "/webcap/device/edit",
+                        '{{ url_for("device.device_edit") }}',
                         {device_id: device_id, device_name: device_name},
                         function (resp) {
                             if (resp.status == 1) {

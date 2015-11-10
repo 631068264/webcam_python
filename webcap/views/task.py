@@ -71,7 +71,6 @@ def date_select_list():
     return days
 
 
-# TODO：图片资源不需要持续时间
 @task.route("/task/add", methods=["POST"])
 @general("添加任务")
 @login_required()
@@ -81,7 +80,7 @@ def date_select_list():
     "task_dates": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "optional" & "multiple"),
     "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "optional",
     "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "optional",
-    "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "optional",
+    # "interval": (5 <= F_int("时间间隔") <= 10) & "strict" & "optional",
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
@@ -96,9 +95,11 @@ def task_add(db_writer, safe_vars):
         if not safe_vars.task_dates:
             return ErrorResponse("任务日期不能为空")
         else:  # 检验任务日期并格式化
+            if not safe_vars.execute_time:
+                return ErrorResponse("执行时间不能为空")
             raw_dates = set()
             begin = today
-            end = today + datetime.timedelta(config.add_same_task_max_day - 1)
+            end = today + datetime.timedelta(config.add_same_task_max_day)
             for task_date in safe_vars.task_dates:
                 if not (begin <= task_date <= end):
                     return ErrorResponse("任务日期请选择从今天起%d天内的日期" % config.add_same_task_max_day)
@@ -106,10 +107,12 @@ def task_add(db_writer, safe_vars):
             if not (0 < len(raw_dates) <= config.add_same_task_max_day):
                 return ErrorResponse("任务日期请选择从今天起%d天内的日期" % config.add_same_task_max_day)
 
-                # TODO：同一设备同一天只要一个任务
-
-        if not safe_vars.execute_time:
-            return ErrorResponse("执行时间不能为空")
+            tasks = QS(db_writer).table(T.task).where(
+                (F.create_time == list(raw_dates)) & (F.status == const.TASK_STATUS.NORMAL) &
+                (F.device_id == safe_vars.device_id)).select()
+            if tasks:
+                same_days = [t.create_time.strftime('%Y-%m-%d') for t in tasks]
+                return ErrorResponse("该设备 %s 有未完成任务,不能再创建任务" % same_days)
 
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     size = dao.get_account_by_id(db_writer, account_id).size
@@ -120,7 +123,7 @@ def task_add(db_writer, safe_vars):
         "create_time": today,
         "execute_time": now,
         "duration": safe_vars.duration,
-        "interval": safe_vars.interval,
+        # "interval": safe_vars.interval,
         "now": const.BOOLEAN.TRUE if safe_vars.now else const.BOOLEAN.FALSE,
         "type": safe_vars.type,
         "status": const.TASK_STATUS.NORMAL,
@@ -140,11 +143,8 @@ def task_add(db_writer, safe_vars):
 
     # 即时
     if safe_vars.now:
-        # 任务
-        # TODO:执行时间和完成时间一样？
         task_id = QS(db_writer).table(T.task).insert(data)
         task = dao.get_task_device(db_writer, task_id)
-        # shed.start_task(db_writer, task)
         shed.do_task(db_writer, task)
     return OkResponse()
 
@@ -166,7 +166,7 @@ def task_cancel(db_writer, safe_vars):
 
         if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
                 hours=config.min_hours_left_when_cancel) > task.create_time.replace(
-            hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
+                hour=task.execute_time.time().hour, minute=task.execute_time.time().minute,
                 second=task.execute_time.time().second):
             return ErrorResponse("距离任务开始不足%s小时不能删除" % config.min_hours_left_when_cancel)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({

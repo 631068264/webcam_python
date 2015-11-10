@@ -35,7 +35,6 @@ def start_task(db, task):
     threading.Thread(target=do_task, args=(db, task)).start()
 
 
-# TODO: 缩略图获取
 # TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
 # TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():

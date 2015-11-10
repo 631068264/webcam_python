@@ -41,6 +41,6 @@ for name in views.__all__:
 
 if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
-    # TODO:启动redis cms 命令行
+    # TODO：列表分页
     threading.Thread(target=shed.start_daily_task, args=("2:05",)).start()
     app.run(host='127.0.0.1', port=config.debug_port)
