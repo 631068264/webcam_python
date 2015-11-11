@@ -376,6 +376,10 @@ def get_device():
     return u4 + m
 
 
+def get_id():
+    return str(uuid.uuid4()).replace('-', '')
+
+
 def get_file_name(file_suffix):
     return str(uuid.uuid4()).replace('-', '') + file_suffix
 
@@ -409,6 +413,7 @@ def sha1OfFile(filepath):
             sha.update(block)
         return sha.hexdigest()
 
+
 def gen_access_token(user_id):
     payload = {
         'user_id': user_id,
@@ -436,6 +441,7 @@ def decode_from_access_token(encoded):
 def get_weekname(dt):
     d = (u"周一", u"周二", u"周三", u"周四", u"周五", u"周六", u"周日")
     return d[dt.weekday()]
+
 
 @cache.memoize(config.cache_memorized_timeout)
 def get_static_file_version(full_filename):

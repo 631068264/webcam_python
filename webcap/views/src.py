@@ -10,7 +10,7 @@ from base.logic import login_required
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
-from base.xform import F_int
+from base.xform import F_int, F_str
 
 src = Blueprint("src", __name__)
 
@@ -31,7 +31,7 @@ def src_list(db_reader):
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "src_id": F_int("资源ID") & "strict" & "required",
+    "src_id": F_str("资源ID") & "strict" & "required",
 })
 def src_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]

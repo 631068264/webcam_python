@@ -7,6 +7,7 @@ import sys
 import threading
 
 import redis
+
 from flask import Flask
 
 from etc import config
@@ -44,8 +45,5 @@ if __name__ == '__main__':
     # TODO：区分手机端和PC端
     # TODO：phonegap
     # TODO：二维码等
-
-    # TODO: 重构数据库 删除外键 建立索引 规范数据类型
-
-    threading.Thread(target=shed.start_daily_task, args=("2:05",)).start()
+    threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()
     app.run(host='127.0.0.1', port=config.debug_port)

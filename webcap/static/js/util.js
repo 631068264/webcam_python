@@ -100,6 +100,7 @@ function Toast(dom, msg, location, dur) {
             console.log("3");
             //延时跳转
             location ? window.location.href = location.split('#')[0] : location = null;
+            console.log(location);
         }, 1000);
         console.log("2");
     }, 1000 * dur);

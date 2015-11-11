@@ -6,12 +6,10 @@
     <table class="table table-striped table-hover table-condensed ">
         <caption><strong><h3>{{ session[const.SESSION.KEY_ADMIN_NAME] }}__任务表</h3></strong></caption>
         <tr>
-            <th>任务ID</th>
             <th>创建日期</th>
             <th>执行时间</th>
             <th>完成时间</th>
             <th>时长</th>
-            {#            <th>时间间隔</th>#}
             <th>当天执行</th>
             <th>资源类型</th>
             <th>目标设备</th>
@@ -20,12 +18,10 @@
         </tr>
         {% for t in tasks %}
             <tr>
-                <td>{{ t.id }}</td>
                 <td>{{ t.create_time | fm_date }}</td>
-                <td>{{ t.execute_time | fm_time('%H:%M:%S') }}</td>
-                <td>{{ t.finish_time | fm_time('%H:%M:%S',default='-') }}</td>
+                <td>{{ t.execute_time | fm_time }}</td>
+                <td>{{ t.finish_time | fm_time }}</td>
                 <td>{{ t.duration | fm_null(default='-') }}</td>
-                {#                <td>{{ t.interval | fm_null(default='-') }}</td>#}
                 <td>{{ const.BOOLEAN.NAME_DICT[t.now] }}</td>
                 <td>{{ const.TYPE.NAME_DICT[t.type] }}</td>
                 <td>
@@ -68,6 +64,7 @@
                                 $(this).removeClass('disabled');
                                 redirect("删除成功");
                             } else {
+                                $(this).removeClass('disabled');
                                 error(resp.message);
                             }
                         }
@@ -92,6 +89,8 @@
                             if (resp.status == 1) {
                                 redirect("修改成功");
                             } else {
+                                //console.log(resp.device_id);
+                                //$(this).val(resp.device_id);
                                 error(resp.message);
                             }
                         }

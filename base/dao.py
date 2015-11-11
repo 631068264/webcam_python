@@ -9,15 +9,16 @@ from base import util
 
 def register(db, username, password):
     hash_pwd = util.hash_password(password, username)
-
-    user_id = QS(db).table(T.account).insert({
+    user_id = util.get_id()
+    QS(db).table(T.account).insert({
+        "id": user_id,
         "username": username,
         "password": hash_pwd,
         "name": None,
         "status": const.ACCOUNT_STATUS.NORMAL,
         "role_id": const.ROLE.NORMAL_ACCOUNT,
     })
-    # user_id重做
+
     msg = {
         "user_id": user_id,
         "role_id": const.ROLE.NORMAL_ACCOUNT,

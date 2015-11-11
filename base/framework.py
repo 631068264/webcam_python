@@ -6,7 +6,9 @@ import random
 from functools import wraps, partial
 
 from attrdict import AttrDict
+
 from flask import make_response
+
 from flask import request, redirect
 
 from flask import url_for as base_url_for
@@ -341,7 +343,13 @@ class OkResponse(JsonResponse):
 
 
 class ErrorResponse(JsonResponse):
-    def __init__(self, message, status=const.STATUS.FAIL):
+    def __init__(self, message, **kwargs):
         if isinstance(message, (list, tuple)):
             message = ", ".join(message)
-        JsonResponse.__init__(self, status=status, message=message)
+        JsonResponse.__init__(self)
+
+        self._json = {
+            "status": const.STATUS.FAIL,
+            "message": message,
+        }
+        self._json.update(kwargs)

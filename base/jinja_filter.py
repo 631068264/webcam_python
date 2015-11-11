@@ -4,7 +4,6 @@
     custom filters for jinja2
 """
 
-import datetime
 import time
 import string
 import random
@@ -96,8 +95,9 @@ def weekname(value):
 # mapping
 
 mapping = {
-    "fm_time": format_datetime,
-    "fm_date": functools.partial(format_datetime, format="%Y-%m-%d"),
+    "fm_time": functools.partial(format_datetime, format="%H:%M:%S", default='-'),
+    "fm_date": functools.partial(format_datetime, format="%Y-%m-%d", default='-'),
+    "fm_datetime": format_datetime,
     "fm_null": format_null,
     "fm_ratio": format_ratio,
     "fen2yuan": fen2yuan,

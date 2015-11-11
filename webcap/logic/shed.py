@@ -38,15 +38,14 @@ def start_task(db, task):
 # TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
 # TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():
-    start, end = get_day_range()
+    now = datetime.date.today()
 
     tasks = QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
-        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__status == const.TASK_STATUS.NORMAL) &
-        (F.t__create_time >= start) & (F.t__create_time <= end)
+        (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__create_time == now) & (
+            F.t__status == const.TASK_STATUS.NORMAL)
     ).order_by(F.t__execute_time).select()
 
     for task in tasks:
-        parm = (db, task)
         kw = {
             "job_fun": do_task,
             "parm": (db, task),
@@ -91,8 +90,9 @@ def do_task(db, task):
 
         # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
         size = os.path.getsize(data["src_path"])
-        # 更新资源
+        # 插入资源
         QS(db).table(T.src).where(F.id == task.id).insert({
+            "id": util.get_id(),
             "create_time": datetime.datetime.now(),
             "src_path": os.path.join(static_url, data["src_name"]),
             "thumbnail": os.path.join(static_url, data["thumbnail_name"]),
