@@ -36,7 +36,7 @@
                 </td>
                 <td>{{ const.TASK_STATUS.NAME_DICT[t.status] }}</td>
                 <td>
-                    <a href="#" type="button" btn_type="delete" class="btn btn-primary" task_id="{{ t.id }}">删除<span
+                    <a href="javascript:void(0)" type="button" btn_type="delete" class="btn btn-primary" task_id="{{ t.id }}">删除<span
                             class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                 </td>
             </tr>
@@ -56,7 +56,7 @@
             if (flag) {
                 $(this).addClass('disabled');
                 console.log(task_id);
-                $.get(
+                $.post(
                         '{{ url_for("task.task_cancel") }}',
                         {task_id: task_id},
                         function (resp) {
@@ -82,15 +82,14 @@
             console.log(device_id + ":" + devive_name);
             var flag = confirm("是否将设备修改为：" + devive_name);
             if (flag) {
-                $.get(
+                $.post(
                         '{{ url_for("task.task_change_device") }}',
                         {device_id: device_id, task_id: task_id},
                         function (resp) {
                             if (resp.status == 1) {
                                 redirect("修改成功");
                             } else {
-                                //console.log(resp.device_id);
-                                //$(this).val(resp.device_id);
+
                                 error(resp.message);
                             }
                         }

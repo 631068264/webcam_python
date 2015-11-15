@@ -45,5 +45,6 @@ if __name__ == '__main__':
     # TODO：区分手机端和PC端
     # TODO：phonegap
     # TODO：二维码等
+    # TODO：首页提示隐藏 Cookie
     threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()
-    app.run(host='127.0.0.1', port=config.debug_port)
+    app.run(host='0.0.0.0', port=config.debug_port)

@@ -24,7 +24,7 @@
                         class="glyphicon glyphicon-time" aria-hidden="true"></span></a></td>
                 <td><a href="{{ url_for('device.device_play',device_id=d.id) }}" type="button" class="btn btn-primary">直播该设备<span
                         class="glyphicon glyphicon-play" aria-hidden="true"></span></a></td>
-                <td><a href="#" type="button" btn_type="delete" class="btn btn-primary" device_id="{{ d.id }}">删除<span
+                <td><a href="javascript:void(0)" type="button" btn_type="delete" class="btn btn-primary" device_id="{{ d.id }}">删除<span
                         class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
 
             </tr>
@@ -49,7 +49,7 @@
                                 <input type="text" class="form-control" id="device_name" name="device_name"
                                        placeholder="请输入设备名" required>
                             </div>
-                            <a href="#" class="pull-right btn btn-primary" id="btn_add">申请</a>
+                            <a href="javascript:void(0)" class="pull-right btn btn-primary" id="btn_add">申请</a>
                         </form>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
             if (flag) {
                 $(this).addClass('disabled');
                 console.log(device_id);
-                $.get(
+                $.post(
                         "{{ url_for('device.device_cancel') }}",
                         {device_id: device_id},
                         function (resp) {
@@ -114,7 +114,7 @@
             console.log(device_id + ":" + device_name);
             var r = confirm("真的要修改为：" + device_name);
             if (r) {
-                $.get(
+                $.post(
                         '{{ url_for("device.device_edit") }}',
                         {device_id: device_id, device_name: device_name},
                         function (resp) {

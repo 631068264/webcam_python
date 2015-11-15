@@ -150,7 +150,7 @@ def task_add(db_writer, safe_vars):
     return OkResponse()
 
 
-@task.route("/task/cancel")
+@task.route("/task/cancel", methods=["POST"])
 @general("任务删除")
 @login_required()
 @db_conn("db_writer")
@@ -180,7 +180,7 @@ def task_cancel(db_writer, safe_vars):
     return OkResponse()
 
 
-@task.route("/task/change/device")
+@task.route("/task/change/device", methods=["POST"])
 @general("改变设备")
 @login_required()
 @db_conn("db_writer")

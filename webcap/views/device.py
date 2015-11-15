@@ -56,7 +56,7 @@ def device_add(db_writer, safe_vars):
     return OkResponse()
 
 
-@device.route("/device/edit")
+@device.route("/device/edit", methods=["POST"])
 @general("设备改名")
 @login_required()
 @db_conn("db_writer")
@@ -76,7 +76,7 @@ def device_edit(db_writer, safe_vars):
     return OkResponse()
 
 
-@device.route("/device/cancel")
+@device.route("/device/cancel", methods=["POST"])
 @general("设备删除")
 @login_required()
 @db_conn("db_writer")
