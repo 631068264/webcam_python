@@ -97,7 +97,7 @@
                                 $(this).removeClass('disabled');
                                 redirect("删除成功");
                             } else {
-
+                                error(resp.message);
                             }
                         }
                 ).fail(function () {
