@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags-->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!-- Your app title -->
+    <title>{% block title %}WebCam{% endblock %}</title>
+    <link rel="stylesheet"
+          href="{{ config.static_url_path }}/css/framework7.ios.min.css?v={{ ver("css/framework7.ios.min.css") }}">
+    <!-- Path to Framework7 iOS related color styles -->
+    <link rel="stylesheet"
+          href="{{ config.static_url_path }}/css/framework7.ios.colors.min.css?v={{ ver("css/framework7.ios.colors.min.css") }}">
+    <!-- Path to your custom app styles-->
+    <link rel="stylesheet"
+          href="{{ config.static_url_path }}/css/my-app.css?v={{ ver("css/my-app.css") }}">
+</head>
+<body>
+<!-- Status bar overlay for full screen mode (PhoneGap) -->
+<div class="statusbar-overlay"></div>
+<!-- Panels overlay-->
+<div class="panel-overlay"></div>
+
+<!-- Left panel with reveal effect-->
+<div class="panel panel-left panel-reveal">
+    <div class="content-block">
+        <p>Left panel content goes here</p>
+    </div>
+</div>
+
+<!-- Views -->
+<div class="views">
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main" id="main-view-content">
+        {% block views %}
+        {% endblock %}
+    </div>
+</div>
+<!-- Path to Framework7 Library JS-->
+<script type="text/javascript"
+        src="{{ config.static_url_path }}/js/framework7.min.js?v={{ ver("js/framework7.min.js") }}"></script>
+<!-- Path to your app js-->
+<script src="{{ config.static_url_path }}/js/jquery.min.js?v={{ ver("js/jquery.min.js") }}"></script>
+<script src="{{ config.static_url_path }}/js/jquery.form.js?v={{ ver("js/jquery.form.js") }}"></script>
+
+<script type="text/javascript"
+        src="{{ config.static_url_path }}/js/my-app.js?v={{ ver("js/my-app.js") }}"></script>
+
+{% block tail_js %}
+{% endblock %}
+</body>
+</html> 

@@ -6,7 +6,7 @@ from flask import Blueprint, session
 
 from base import dao
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
-from base.logic import login_required
+from base.decorator import login_required
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const

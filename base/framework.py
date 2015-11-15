@@ -6,11 +6,8 @@ import random
 from functools import wraps, partial
 
 from attrdict import AttrDict
-
 from flask import make_response
-
 from flask import request, redirect
-
 from flask import url_for as base_url_for
 import flask
 

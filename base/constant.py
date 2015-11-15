@@ -123,8 +123,13 @@ class BOOLEAN(object):
 
 class DEVICE(object):
     # 接入设备
-    APP = "app"
-    PC = "pc"
+    APP = "android"
+    PC = "windows"
+
+    NAME_DICT = {
+        APP: "app",
+        PC: "pc",
+    }
     ALL = (APP, PC)
 
 

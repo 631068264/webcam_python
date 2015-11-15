@@ -43,7 +43,6 @@ if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
     # TODO：列表分页
     # TODO：区分手机端和PC端
-    # TODO：phonegap
     # TODO：二维码等
     # TODO：首页提示隐藏 Cookie
     threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()

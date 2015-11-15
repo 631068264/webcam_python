@@ -3,7 +3,7 @@
 
 from functools import wraps
 
-from flask import session
+from flask import session, request
 
 from base import constant as const
 from base.framework import Redirect
@@ -21,6 +21,19 @@ def login_required(roles=None):
                     return old_handler(*args, **kwargs)
             else:
                 return Redirect(url_for("home.login_load"))
+
+        return new_handler
+
+    return new_deco
+
+
+def recognize_device(var_name="device"):
+    def new_deco(old_handler):
+        @wraps(old_handler)
+        def new_handler(*args, **kwargs):
+            platform = request.user_agent.platform
+            kwargs[var_name] = const.DEVICE.NAME_DICT[platform]
+            return old_handler(*args, **kwargs)
 
         return new_handler
 

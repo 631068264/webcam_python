@@ -5,11 +5,12 @@ import os
 import random
 
 from captcha.image import ImageCaptcha
+
 from flask import Blueprint, session, redirect, send_file, send_from_directory
 
 from base import logger as log, util, constant as const
 from base.framework import general, TempResponse, url_for, form_check, db_conn, ErrorResponse, OkResponse
-from base.logic import login_required
+from base.decorator import login_required, recognize_device
 from base import dao
 from base.poolmysql import transaction
 from base.xform import F_str
@@ -20,22 +21,25 @@ home = Blueprint("home", __name__)
 @home.route("/")
 @home.route("/index")
 @general("主页界面")
-def index():
-    return TempResponse("index.html")
+@recognize_device()
+def index(device):
+    return TempResponse(device + "/index.html")
 
 
 @home.route("/login/load")
 @general("登录界面")
-def login_load():
+@recognize_device()
+def login_load(device):
     if session.get(const.SESSION.KEY_LOGIN):
         return redirect(url_for("home.index"))
-    return TempResponse("login.html")
+    return TempResponse(device + "/login.html")
 
 
 @home.route("/register/load")
 @general('注册页面')
-def register_load():
-    return TempResponse("register.html")
+@recognize_device()
+def register_load(device):
+    return TempResponse(device + "/register.html")
 
 
 @home.route("/register", methods=['POST'])
