@@ -27,7 +27,7 @@ def login_required(roles=None):
     return new_deco
 
 
-def recognize_device(var_name="device"):
+def recognize_device(var_name="device_type"):
     def new_deco(old_handler):
         @wraps(old_handler)
         def new_handler(*args, **kwargs):

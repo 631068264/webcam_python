@@ -22,24 +22,24 @@ home = Blueprint("home", __name__)
 @home.route("/index")
 @general("主页界面")
 @recognize_device()
-def index(device):
-    return TempResponse(device + "/index.html")
+def index(device_type):
+    return TempResponse(device_type + "/index.html")
 
 
 @home.route("/login/load")
 @general("登录界面")
 @recognize_device()
-def login_load(device):
+def login_load(device_type):
     if session.get(const.SESSION.KEY_LOGIN):
         return redirect(url_for("home.index"))
-    return TempResponse(device + "/login.html")
+    return TempResponse(device_type + "/login.html")
 
 
 @home.route("/register/load")
 @general('注册页面')
 @recognize_device()
-def register_load(device):
-    return TempResponse(device + "/register.html")
+def register_load(device_type):
+    return TempResponse(device_type + "/register.html")
 
 
 @home.route("/register", methods=['POST'])

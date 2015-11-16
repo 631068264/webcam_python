@@ -6,7 +6,7 @@ from flask import Blueprint, session
 
 from base import dao, util
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
-from base.decorator import login_required
+from base.decorator import login_required, recognize_device
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
@@ -20,10 +20,11 @@ device = Blueprint("device", __name__)
 @general("设备列表页面")
 @login_required()
 @db_conn("db_reader")
-def device_list_load(db_reader):
+@recognize_device()
+def device_list_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse("device_list.html", devices=devices)
+    return TempResponse(device_type + "/device_list.html", devices=devices)
 
 
 @device.route("/device/add", methods=['POST'])
@@ -112,10 +113,11 @@ def device_cancel(db_writer, safe_vars):
 @form_check({
     "device_id": F_str("设备ID") & "strict" & "required",
 })
-def device_play(db_reader, safe_vars):
+@recognize_device()
+def device_play(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     device = dao.get_device_by_account_id(db_reader, account_id, safe_vars.device_id)
     if not device:
         return ErrorResponse("还没有申请设备")
     device_src = const.LOCAL.get_device_src(device.id)
-    return TempResponse("play_load.html", device=device, device_src=device_src)
+    return TempResponse(device_type + "/play_load.html", device=device, device_src=device_src)

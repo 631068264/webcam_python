@@ -1,6 +1,6 @@
 // Initialize your app
 var myApp = new Framework7({
-    modalTitle: '马上兼职',
+    modalTitle: 'WebCam',
     modalButtonOk: '确定',
     modalButtonCancel: '取消',
     animateNavBackIcon: true,
@@ -50,14 +50,69 @@ function goBack() {
     $$(".back").click();
 }
 
-function my_error(msg) {
+function refreshBack(page, redirect) {
+    page.view.router.back({
+        url: redirect,
+        force: true,
+        ignoreCache: true
+    })
+}
+
+function error(msg) {
     myApp.alert(msg, "出错啦");
 }
-function my_alert(msg) {
+function ok(msg) {
     myApp.alert(msg);
 }
 
-myApp.onPageInit('about', function (page) {
+myApp.onPageInit('login-page', function (page) {
+    var redirect = $("#form_login").data('redirect');
+    $$("#btn_login").on("click", function (e) {
+        $("#btn_login").attr("disabled", true);
+        $('#form_login').submit();
+    });
+
+    $("#form_login").ajaxForm({
+        success: function (resp) {
+            $("#btn_login").attr("disabled", false);
+            console.log(resp);
+            if (resp.status == 1) {
+                ok('登录成功');
+                refreshBack(page, redirect);
+            } else {
+                error(resp.message);
+            }
+        },
+        error: function (resp) {
+            $("#btn_login").attr("disabled", false);
+            ok('网络故障 请检查网络连接!');
+        }
+    });
+
+});
+myApp.onPageInit('register-page', function (page) {
+    var redirect = $("#form_register").data('redirect');
+    $$("#btn_register").on("click", function (e) {
+        $("#btn_register").attr("disabled", true);
+        $('#form_register').submit();
+    });
+
+    $("#form_register").ajaxForm({
+        success: function (resp) {
+            $("#btn_register").attr("disabled", false);
+            console.log(resp);
+            if (resp.status == 1) {
+                ok('注册成功');
+                refreshBack(page, redirect);
+            } else {
+                error(resp.message);
+            }
+        },
+        error: function (resp) {
+            $("#btn_register").attr("disabled", false);
+            ok('网络故障 请检查网络连接!');
+        }
+    });
 
 });
 

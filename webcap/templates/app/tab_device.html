@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="center sliding">设备</div>
+    </div>
+</div>
 
-</body>
-</html>
+
+<div class="pages navbar-through">
+    <div data-page="tab-device" class="page">
+        <div class="page-content">
+
+            <div class="content-block-title">设备管理</div>
+
+
+            {% if not session[const.SESSION.KEY_LOGIN] %}
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <a href="{{ url_for("home.login_load") }}" class="item-link">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">登录</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for("home.register_load") }}" class="item-link">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">注册</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>

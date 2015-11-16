@@ -1,0 +1,46 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">登录</div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="login-page" class="page">
+
+        <div class="page-content">
+            <!-- Login form -->
+            <form id="form_login" action="{{ url_for('home.login') }}" method="POST"
+                  data-redirect="{{ url_for('home.index') }}">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">用户名</div>
+                                <div class="item-input">
+                                    <input type="text" name="username" placeholder="请输入用户名" required>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">密码</div>
+                                <div class="item-input">
+                                    <input type="password" name="password" placeholder="请输入密码" required>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <a id="btn_login" href="javascript:void(0)" class="item-link list-button">登录</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
