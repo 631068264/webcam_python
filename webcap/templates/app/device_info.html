@@ -1,0 +1,57 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">设备详情</div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="device_info" class="page">
+        <div class="page-content">
+            <form id="form_device_info" action="{{ url_for('device.device_edit') }}" method="POST"
+                  data-redirect="{{ url_for('device.device_list_load') }}">
+                <input type="hidden" name="device_id" value="{{ device.id }}">
+
+                <div class="content-block-title">
+                    设备ID:<br><br>
+                    {{ device.id }}
+                </div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">设备名:</div>
+                                    <div class="item-input">
+                                        <input name="device_name" type="text" value="{{ device.name }}">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">创建时间</div>
+                                    <div class="item-input">
+                                        <div>{{ device.create_time|fm_datetime }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-10"></div>
+                        <div class="col-80">
+                            <a id="btn_device_info" href="#" class="button">修改信息</a>
+                        </div>
+                        <div class="col-10"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

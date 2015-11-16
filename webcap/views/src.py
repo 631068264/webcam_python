@@ -6,11 +6,11 @@ from flask import Blueprint, session
 
 from base import dao
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
-from base.decorator import login_required
+from base.decorator import login_required, recognize_device
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
 from base import constant as const
-from base.xform import F_int, F_str
+from base.xform import F_str
 
 src = Blueprint("src", __name__)
 
@@ -19,10 +19,11 @@ src = Blueprint("src", __name__)
 @general("资源列表")
 @login_required()
 @db_conn("db_reader")
-def src_list(db_reader):
+@recognize_device()
+def src_list(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     srcs = dao.get_srcs_by_account_id(db_reader, account_id)
-    return TempResponse("src_list.html", srcs=srcs)
+    return TempResponse(device_type + "/src_list.html", srcs=srcs)
 
 
 # TODO：回收站封禁

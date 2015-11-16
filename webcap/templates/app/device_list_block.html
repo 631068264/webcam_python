@@ -1,0 +1,25 @@
+{% for d in devices %}
+    <div class="card">
+        <a href="{{ url_for("device.device_info", device_id=d.id) }}"
+           class="item-link">
+            <div class="card-header">
+                设备编号：{{ d.id }}
+            </div>
+            <div class="card-header">
+                <span>设备名：{{ d.name }}</span>
+            </div>
+        </a>
+
+        <div class="card-footer">
+            <span>创建时间：{{ d.create_time| fm_datetime }}</span>
+            <span>状态：{{ const.DEVICE_STATUS.NAME_DICT[d.status] }}</span>
+        </div>
+        <div class="card-footer">
+            <a href="javascript:void(0)" class="item-link" btn_type="cancel" device_id="{{ d.id }}"
+               device_name="{{ d.name }}"> <span> <button class="button button-raised">删除</button></span></a>
+            <a href="{{ url_for('device.device_play',device_id=d.id) }}" class="item-link"> <span> <button
+                    class="button button-raised">直播设备
+            </button></span></a>
+        </div>
+    </div>
+{% endfor %}

@@ -147,5 +147,9 @@ class LOCAL(object):
         return LOCAL.PREFIX + device_id + LOCAL.SUFFIX
 
 
+class BLOCK(object):
+    BLOCK = 'block'
+
+
 if __name__ == '__main__':
     print(LOCAL.get_device_src(123))

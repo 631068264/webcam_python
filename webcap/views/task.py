@@ -9,7 +9,7 @@ from base import util
 from etc import config
 from base import dao
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
-from base.decorator import login_required
+from base.decorator import login_required, recognize_device
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, QuerySet as QS
 from base import constant as const
@@ -23,11 +23,12 @@ task = Blueprint("task", __name__)
 @general("任务列表页面")
 @login_required()
 @db_conn("db_reader")
-def task_list_load(db_reader):
+@recognize_device()
+def task_list_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     tasks = dao.get_tasks_by_account_id(db_reader, account_id)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse("task_list.html", tasks=tasks, devices=devices)
+    return TempResponse(device_type + "/task_list.html", tasks=tasks, devices=devices)
 
 
 @task.route("/task/device/list")
@@ -38,11 +39,12 @@ def task_list_load(db_reader):
     "device_id": F_str("设备ID") & "strict" & "required",
     "device_name": F_str("设备名") & "strict" & "required",
 })
-def device_list(db_reader, safe_vars):
+@recognize_device()
+def device_list(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse("task_list.html", tasks=tasks, device_name=safe_vars.device_name,
+    return TempResponse(device_type + "/task_list.html", tasks=tasks, device_name=safe_vars.device_name,
                         device_id=safe_vars.device_id, devices=devices)
 
 
@@ -50,9 +52,10 @@ def device_list(db_reader, safe_vars):
 @general("添加任务页面")
 @login_required()
 @db_conn("db_reader")
-def task_add_load(db_reader):
+@recognize_device()
+def task_add_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    return TempResponse("task_add.html", task_date=date_select_list(), task_type=const.TYPE.NAME_DICT,
+    return TempResponse(device_type + "/task_add.html", task_date=date_select_list(), task_type=const.TYPE.NAME_DICT,
                         devices=dao.get_devices_by_account_id(db_reader, account_id))
 
 

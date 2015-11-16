@@ -12,31 +12,19 @@
             <div class="content-block-title">设备管理</div>
 
 
-            {% if not session[const.SESSION.KEY_LOGIN] %}
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <a href="{{ url_for("home.login_load") }}" class="item-link">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">登录</div>
-                                    </div>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <a href="{{ url_for("device.device_list_load") }}" class="item-link">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title">设备列表</div>
                                 </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for("home.register_load") }}" class="item-link">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">注册</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
         </div>
     </div>

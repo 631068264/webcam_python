@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
+import datetime
 
 from flask import Blueprint, session
 
@@ -21,18 +22,39 @@ device = Blueprint("device", __name__)
 @login_required()
 @db_conn("db_reader")
 @recognize_device()
-def device_list_load(db_reader, device_type):
+@form_check({
+    "type": F_str("请求类型") & "optional",
+})
+def device_list_load(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse(device_type + "/device_list.html", devices=devices)
+    templ_name = "/device_list.html"
+    if safe_vars.type == const.BLOCK.BLOCK:
+        templ_name = '/device_list_block.html'
+    return TempResponse(device_type + templ_name, devices=devices)
+
+
+@device.route("/device/info")
+@general("设备详情")
+@login_required()
+@db_conn("db_reader")
+@recognize_device()
+@form_check({
+    "device_id": F_str("设备ID") & "strict" & "required",
+})
+def device_info(db_reader, safe_vars, device_type):
+    device = QS(db_reader).table(T.device).where(F.id == safe_vars.device_id).select_one()
+    if not device:
+        return ErrorResponse("设备不是你的")
+    return TempResponse(device_type + "/device_info.html", device=device)
 
 
 @device.route("/device/add", methods=['POST'])
-@general("设备设置")
+@general("添加设备")
 @login_required()
 @db_conn("db_writer")
 @form_check({
-    "device_name": F_str("设备名") & "strict" & "required",
+    "device_name": (F_str("设备名") <= 10) & "strict" & "required",
 })
 def device_add(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
@@ -47,6 +69,7 @@ def device_add(db_writer, safe_vars):
             "name": safe_vars.device_name,
             "status": const.DEVICE_STATUS.NORMAL,
             "account_id": account_id,
+            "create_time": datetime.datetime.now(),
         })
 
         QS(db_writer).table(T.account).where(F.id == account_id).update({
@@ -63,7 +86,7 @@ def device_add(db_writer, safe_vars):
 @db_conn("db_writer")
 @form_check({
     "device_id": F_str("设备ID") & "strict" & "required",
-    "device_name": F_str("设备名") & "strict" & "required",
+    "device_name": (F_str("设备名") <= 10) & "strict" & "required",
 })
 def device_edit(db_writer, safe_vars):
     with transaction(db_writer)as trans:
@@ -72,7 +95,9 @@ def device_edit(db_writer, safe_vars):
             return ErrorResponse("没有权限修改该设备")
         device.name = safe_vars.device_name
 
-        QS(db_writer).table(T.device).update(device)
+        QS(db_writer).table(T.device).where(F.id == safe_vars.device_id).update({
+            "name": safe_vars.device_name,
+        })
         trans.finish()
     return OkResponse()
 
