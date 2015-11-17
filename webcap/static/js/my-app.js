@@ -119,7 +119,7 @@ myApp.onPageInit('device_list', function (page) {
     //refresh 监听器
     ptrContent.on('refresh', function (e) {
         $.ajax({
-            url: "/webcap/device/list/load?type=block",
+            url: "/webcam/device/list/load?type=block",
             type: "get",
             success: function (data) {
                 $("#device_list_container").html(data);
@@ -143,7 +143,7 @@ myApp.onPageInit('device_list', function (page) {
                 onClick: function () {
                     $(this).addClass('disabled');
                     $.post(
-                        "/webcap/device/cancel",
+                        "/webcam/device/cancel",
                         {device_id: device_id},
                         function (resp) {
                             if (resp.status == 1) {
