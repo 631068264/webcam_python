@@ -18,6 +18,14 @@ from base.xform import F_str
 home = Blueprint("home", __name__)
 
 
+@home.route("/app")
+@general("app主页界面")
+@login_required()
+@recognize_device()
+def app_index(device_type):
+    return TempResponse(device_type + "/index.html")
+
+
 @home.route("/")
 @home.route("/index")
 @general("主页界面")
@@ -31,6 +39,8 @@ def index(device_type):
 @recognize_device()
 def login_load(device_type):
     if session.get(const.SESSION.KEY_LOGIN):
+        if device_type == const.DEVICE.NAME_DICT[const.DEVICE.ANDOID]:
+            return redirect(url_for("home.app_index"))
         return redirect(url_for("home.index"))
     return TempResponse(device_type + "/login.html")
 
@@ -65,8 +75,7 @@ def register(db_writer, safe_vars):
         session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
         session[const.SESSION.KEY_ADMIN_NAME] = msg["username"]
         session.permanent = True
-
-        log.get("auth").info("%s 注册成功 编号[%s]", safe_vars.username, msg["user_id"])
+        log.get("auth").info(u" %s 注册成功 编号[ %s ]", safe_vars.username, msg["user_id"])
         return OkResponse()
 
 
@@ -91,7 +100,7 @@ def login(db_reader, safe_vars):
     session[const.SESSION.KEY_ROLE_ID] = account.role_id
     session[const.SESSION.KEY_ADMIN_NAME] = account.username
     session.permanent = True
-    log.get("auth").info("%s 登录成功 编号[%s]", safe_vars.username, account.id)
+    log.get("auth").info(u" %s 登录成功 编号[ %s ]", safe_vars.username, account.id)
     return OkResponse()
 
 
@@ -127,7 +136,9 @@ def check_image_captcha(safe_vars):
 @home.route("/logout")
 @general("注销")
 @login_required()
-def logout():
-    log.get("auth").info("%s 注销 编号[%s]", session[const.SESSION.KEY_ADMIN_NAME], session[const.SESSION.KEY_ADMIN_ID])
-    session.clear()
+@recognize_device()
+def logout(device_type):
+    session.pop(const.SESSION.KEY_LOGIN, None)
+    if device_type == const.DEVICE.NAME_DICT[const.DEVICE.ANDOID]:
+        return redirect(url_for("home.app_index"))
     return redirect(url_for("home.index"))

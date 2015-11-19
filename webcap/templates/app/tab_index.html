@@ -11,51 +11,11 @@
         <!-- Scrollable page content-->
         <div class="page-content">
 
-            <div class="content-block">
+            <div class="content-block-title">
                 {% if  session[const.SESSION.KEY_LOGIN] %}
-                    <p>您好，{{ session[const.SESSION.KEY_ADMIN_NAME] }}。</p>
+                    <p><strong>您好，{{ session[const.SESSION.KEY_ADMIN_NAME] }}。</strong></p>
                 {% endif %}
             </div>
-
-            {% if not session[const.SESSION.KEY_LOGIN] %}
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <a href="{{ url_for("home.login_load") }}" class="item-link">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">登录</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for("home.register_load") }}" class="item-link">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">注册</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-            {% if session[const.SESSION.KEY_LOGIN] %}
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <a href="{{ url_for("home.logout") }}" class="item-link">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">注销</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
 
             <div class="content-block-title"><strong>获取设备号</strong></div>
             <!-- Inset content block -->
@@ -73,13 +33,29 @@
                     <p><strong>先获取设备号</strong>，因为根据设备号，设定定时任务</p>
                 </div>
             </div>
-            <div class="content-block-title"><strong>设定定时任务</strong></div>
+            <div class="content-block-title"><strong>查看资源</strong></div>
             <!-- Inset content block -->
             <div class="content-block inset">
                 <div class="content-block-inner">
-                    <p><strong>先获取设备号</strong>，因为根据设备号，设定定时任务</p>
+                    <p><strong>任务完成后</strong>，可以查看相应的资源</p>
                 </div>
             </div>
+
+            {% if session[const.SESSION.KEY_LOGIN] %}
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <a id="btn_logout" href="#" class="item-link">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">注销</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

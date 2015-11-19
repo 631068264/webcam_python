@@ -1,46 +1,94 @@
-<div class="navbar">
-    <div class="navbar-inner">
-        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
-        </div>
-        <div class="center sliding">登录</div>
-    </div>
-</div>
-<div class="pages">
-    <div data-page="login-page" class="page">
+{% extends "/app/base.html" %}
 
-        <div class="page-content">
-            <!-- Login form -->
-            <form id="form_login" action="{{ url_for('home.login') }}" method="POST"
-                  data-redirect="{{ url_for('home.index') }}">
-                <div class="list-block">
-                    <ul>
-                        <li class="item-content">
-                            <div class="item-inner">
-                                <div class="item-title label">用户名</div>
-                                <div class="item-input">
-                                    <input type="text" name="username" placeholder="请输入用户名" required>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="item-content">
-                            <div class="item-inner">
-                                <div class="item-title label">密码</div>
-                                <div class="item-input">
-                                    <input type="password" name="password" placeholder="请输入密码" required>
+{% block views %}
+    <!-- Views -->
+    <div class="views">
+        <!-- Your main view, should have "view-main" class -->
+        <div class="view view-main">
 
-                                </div>
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="center">欢迎使用WebCam</div>
+                </div>
+            </div>
+
+            <div class="pages navbar-through toolbar-through">
+                <!-- Page, "data-page" contains page name -->
+                <div data-page="login-page" class="page">
+                    <!-- Scrollable page content -->
+                    <div class="page-content">
+                        <form id="form_login" action="{{ url_for('home.login') }}" method="POST"
+                              data-redirect="{{ url_for('home.app_index') }}">
+                            <div class="list-block">
+                                <ul>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">用户名</div>
+                                            <div class="item-input">
+                                                <input type="text" name="username" placeholder="请输入用户名" required>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">密码</div>
+                                            <div class="item-input">
+                                                <input type="password" name="password" placeholder="请输入密码" required>
+
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </li>
-                    </ul>
+                            <div class="list-block">
+                                <ul>
+                                    <li>
+                                        <a id="btn_login" href="javascript:void(0)"
+                                           class="item-link list-button">登录</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <a href="{{ url_for('home.register_load') }}" class="item-link list-button">还没有注册？
+                                        点击这里注册</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <a id="btn_login" href="javascript:void(0)" class="item-link list-button">登录</a>
-                        </li>
-                    </ul>
-                </div>
-            </form>
+            </div>
+
         </div>
     </div>
-</div>
+
+{% endblock views %}
+
+{% block tail_js %}
+    <script>
+        $(function () {
+            $$("#btn_login").on("click", function (e) {
+                $("#btn_login").attr("disabled", true);
+                $('#form_login').submit();
+            });
+
+            $("#form_login").ajaxForm({
+                success: function (resp) {
+                    $("#btn_login").attr("disabled", false);
+                    if (resp.status == 1) {
+                        window.location.href = '{{ url_for("home.app_index") }}';
+                    } else {
+                        error(resp.message);
+                    }
+                },
+                error: function (resp) {
+                    $("#btn_login").attr("disabled", false);
+                    ok('网络故障 请检查网络连接!');
+                }
+            });
+        });
+    </script>
+{% endblock %}

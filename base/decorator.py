@@ -33,7 +33,7 @@ def recognize_device(var_name="device_type"):
         def new_handler(*args, **kwargs):
             platform = request.user_agent.platform
             # kwargs[var_name] = const.DEVICE.NAME_DICT[platform]
-            kwargs[var_name] = const.DEVICE.NAME_DICT[const.DEVICE.APP]
+            kwargs[var_name] = const.DEVICE.NAME_DICT[const.DEVICE.ANDOID]
             return old_handler(*args, **kwargs)
 
         return new_handler

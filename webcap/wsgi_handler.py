@@ -46,6 +46,5 @@ if __name__ == '__main__':
     # TODO：首页提示隐藏 Cookie
     # TODO: 注册时字符串锁
     # TODO: gevent 协程
-    # TODO: 重写app登录注册页
     threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()
     app.run(host='0.0.0.0', port=config.debug_port)

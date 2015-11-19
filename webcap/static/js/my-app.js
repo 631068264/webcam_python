@@ -49,6 +49,12 @@ function goBack() {
     $$(".back").click();
 }
 
+$$(document).on('click', '#btn_logout', function () {
+    $.get("/webcam/logout", function (ret) {
+        window.location.reload();
+    });
+});
+
 function refreshBack(page, redirect) {
     page.view.router.back({
         url: redirect,
@@ -75,8 +81,9 @@ myApp.onPageInit('login-page', function (page) {
         success: function (resp) {
             $("#btn_login").attr("disabled", false);
             if (resp.status == 1) {
-                ok('登录成功');
-                refreshBack(page, redirect);
+                console.log("12");
+                //ok('登录成功');
+                window.location.href = redirect;
             } else {
                 error(resp.message);
             }
@@ -100,7 +107,7 @@ myApp.onPageInit('register-page', function (page) {
             $("#btn_register").attr("disabled", false);
             if (resp.status == 1) {
                 ok('注册成功');
-                refreshBack(page, redirect);
+                window.location.href = redirect;
             } else {
                 error(resp.message);
             }

@@ -1,45 +1,61 @@
-<div class="navbar">
-    <div class="navbar-inner">
-        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
-        </div>
-        <div class="center sliding">注册</div>
-    </div>
-</div>
-<div class="pages">
-    <div data-page="register-page" class="page">
+{% extends "/app/base.html" %}
 
-        <div class="page-content">
-            <!-- Login form -->
-            <form id="form_register" action="{{ url_for('home.register') }}" method="POST" data-redirect="{{ url_for('home.index') }}">
-                <div class="list-block">
-                    <ul>
-                        <li class="item-content">
-                            <div class="item-inner">
-                                <div class="item-title label">用户名</div>
-                                <div class="item-input">
-                                    <input type="text" name="username" placeholder="请输入用户名" required>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="item-content">
-                            <div class="item-inner">
-                                <div class="item-title label">密码</div>
-                                <div class="item-input">
-                                    <input type="password" name="password" placeholder="请输入密码" required>
+{% block views %}
+    <!-- Views -->
+    <div class="views">
+        <!-- Your main view, should have "view-main" class -->
+        <div class="view view-main">
 
-                                </div>
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+                    </div>
+                    <div class="center">新用户注册</div>
+                </div>
+            </div>
+
+            <div class="pages navbar-through toolbar-through">
+                <div data-page="register-page" class="page">
+
+                    <div class="page-content">
+                        <!-- Login form -->
+                        <form id="form_register" action="{{ url_for('home.register') }}" method="POST"
+                              data-redirect="{{ url_for('home.app_index') }}">
+                            <div class="list-block">
+                                <ul>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">用户名</div>
+                                            <div class="item-input">
+                                                <input type="text" name="username" placeholder="请输入用户名" required>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">密码</div>
+                                            <div class="item-input">
+                                                <input type="password" name="password" placeholder="请输入密码" required>
+
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </li>
-                    </ul>
+                            <div class="list-block">
+                                <ul>
+                                    <li>
+                                        <a id="btn_register" href="javascript:void(0)"
+                                           class="item-link list-button">注册</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <a id="btn_register" href="javascript:void(0)" class="item-link list-button">注册</a>
-                        </li>
-                    </ul>
-                </div>
-            </form>
+            </div>
+
         </div>
     </div>
-</div>
+
+{% endblock views %}
