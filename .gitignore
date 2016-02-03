@@ -19,3 +19,4 @@ template/*old
 .idea/
 .DS_Store
 config_global/online.py
+webcap/static/
