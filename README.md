@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 使用说明
 
 
@@ -55,6 +54,3 @@ alias grb='git fetch && git rebase origin/develop'
 默认是启动调试模式，只要保存文件，就会自动reload代码。
 
 默认端口5000。
-=======
-Hello webcam
->>>>>>> 3be8052baa33dc4e8783d1c4dcd44cce737287f1
