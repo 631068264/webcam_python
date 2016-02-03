@@ -172,6 +172,117 @@ myApp.onPageInit('device_list', function (page) {
             }]
         });
     });
+
+    $$('#device_add').on('click', function () {
+        myApp.prompt('请输入设备名', function (device_name) {
+            $.post(
+                '/webcam/device/add',
+                {device_name: device_name},
+                function (resp) {
+                    if (resp == 1) {
+                        ok('创建设备成功');
+                    } else {
+                        error(resp.message);
+                    }
+                }
+            ).fail(
+                function () {
+                    error('网络故障 请检查网络连接!');
+                }
+            );
+        });
+    });
+});
+
+myApp.onPageInit('task_list', function (page) {
+    var ptrContent = $$('#task-list-pull-to-refresh-content');
+
+    //refresh 监听器
+    ptrContent.on('refresh', function (e) {
+        $.ajax({
+            url: "/webcam/task/list/load?type=block",
+            type: "get",
+            success: function (data) {
+                $("#task_list_container").html(data);
+                myApp.pullToRefreshDone();
+            },
+            error: function (data) {
+                error("刷新失败");
+                myApp.pullToRefreshDone();
+            }
+        });
+    });
+
+    //删除任务
+    ptrContent.on('click', 'a[btn_type="delete"]', function () {
+        var task_id = $(this).attr("task_id");
+        //var task_name = $(this).attr("task_name");
+        myApp.modal({
+            text: '<div>你要删除的任务：</div><br><div>任务号：' + task_id + '</div><br>',
+            buttons: [{
+                text: '好的',
+                blod: true,
+                onClick: function () {
+                    $(this).addClass('disabled');
+                    $.post(
+                        "/webcam//task/cancel",
+                        {task_id: task_id},
+                        function (resp) {
+                            if (resp.status == 1) {
+                                $(this).removeClass('disabled');
+                                myApp.pullToRefreshTrigger(ptrContent);
+                                ok('删除成功');
+                            } else {
+                                error(resp.message);
+                            }
+                        }
+                    ).fail(function () {
+                            $(this).removeClass('disabled');
+                            error('网络故障 请检查网络连接!');
+                        });
+                }
+            }, {
+                text: '取消',
+                blod: true
+            }]
+        });
+    });
+
+    //改变设备
+    $('select[select_type="change_device"]').change(function () {
+        var task_id = $(this).attr('task_id');
+        var device_id = $(this).val();
+        var device_name = this.options[this.selectedIndex].text;
+
+        myApp.modal({
+            text: '<div>你确定要把执行设备改为：</div><br><div>设备名：' + device_name + '</div><br>',
+            buttons: [{
+                text: '好的',
+                blod: true,
+                onClick: function () {
+                    $.post(
+                        "/webcam//task/change/device",
+                        {task_id: task_id, device_id: device_id},
+                        function (resp) {
+                            if (resp.status == 1) {
+                                myApp.pullToRefreshTrigger(ptrContent);
+                                ok('修改成功');
+                            } else {
+                                error(resp.message);
+                            }
+                        }
+                    ).fail(function () {
+                            error('网络故障 请检查网络连接!');
+                        });
+                }
+            }, {
+                text: '取消',
+                blod: true
+            }]
+        });
+    });
+
+
 });
 
 myApp.onPageInit('device_info', function (page) {
@@ -196,6 +307,46 @@ myApp.onPageInit('device_info', function (page) {
             $("#btn_device_info").attr("disabled", false);
             ok('网络故障 请检查网络连接!');
         }
+    });
+});
+
+
+myApp.onPageInit('task_add', function (page) {
+    var redirect = $("#form_task_add").data('redirect');
+    $$("#btn_task_add").on("click", function (e) {
+        $("#btn_task_add").attr("disabled", true);
+        $('#form_task_add').submit();
+    });
+
+    $("#form_task_add").ajaxForm({
+        success: function (resp) {
+            $("#btn_task_add").attr("disabled", false);
+            console.log(resp);
+            if (resp.status == 1) {
+                ok('新增任务成功');
+                refreshBack(page, redirect);
+            } else {
+                error(resp.message);
+            }
+        },
+        error: function (resp) {
+            $("#btn_task_add").attr("disabled", false);
+            ok('网络故障 请检查网络连接!');
+        }
+    });
+
+
+    //页面设置
+    $("input:checkbox[name = 'now']").change(function () {
+        var flag = $(this).attr('checked');
+        var now = $(this).val();
+        console.log(flag + now);
+        $('#form_task_dates').toggle(!flag);
+        $('#form_execute_time').toggle(!flag);
+    });
+    $("input:radio[name = 'type']").change(function () {
+        var flag = $(this).val();
+        $('#form_duration').toggle(flag);
     });
 
 });

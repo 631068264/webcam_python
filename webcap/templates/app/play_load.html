@@ -1,0 +1,23 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">直播 [{{ device.name }}]</div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="" class="page">
+
+        <div class="page-content">
+            <div class="container" style="text-align:center">
+                <object type='application/x-vlc-plugin' id='vlc' events='True' width="720" height="540">
+                    <param name='mrl' value='{{ device_src }}'/>
+                    <param name='volume' value='50'/>
+                    <param name='autoplay' value='true'/>
+                    <param name='loop' value='false'/>
+                    <param name='fullscreen' value='true'/>
+                </object>
+            </div>
+        </div>
+    </div>
+</div>

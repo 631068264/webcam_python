@@ -125,7 +125,7 @@ class DEVICE(object):
     # 接入设备
     ANDOID = "android"
     PC = "windows"
-    IOS = "ios"
+    IOS = "iphone"
 
     NAME_DICT = {
         ANDOID: "app",
@@ -154,4 +154,4 @@ class BLOCK(object):
 
 
 if __name__ == '__main__':
-    print(LOCAL.get_device_src(123))
+    print(LOCAL.ip)

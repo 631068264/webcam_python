@@ -1,0 +1,39 @@
+{% for t in tasks %}
+    <div class="card">
+        <div class="card-header">
+            <span>任务名：</span>
+            <span> {{ const.TASK_STATUS.NAME_DICT[t.status] }}</span>
+        </div>
+
+
+        <div class="card-footer">
+            <span>时长：{{ t.duration| fm_null }}</span>
+            <span>类型：{{ const.TYPE.NAME_DICT[t.type] }}</span>
+        </div>
+        <div class="card-footer">
+            <span>创建时间：{{ t.create_time| fm_date }}</span>
+            <span>完成时间：{{ t.finish_time|fm_time }}</span>
+        </div>
+
+        <div class="card-footer">
+            <a href="javascript:void(0);" class="item-link" btn_type="delete" task_id="{{ t.id }}"> <span> <button
+                    class="button button-raised">删除
+            </button></span></a>
+
+            <span>
+                <div class="item-input">
+                    <select select_type="change_device" task_id="{{ t.id }}">
+                        {% for d in devices %}
+                            <option value="{{ d.id }}" {% if  d.id == t.device_id %}
+                                    selected
+                            {% endif %} >{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </span>
+
+        </div>
+
+
+    </div>
+{% endfor %}

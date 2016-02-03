@@ -1,0 +1,118 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">新增任务</div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="task_add" class="page">
+
+        <div class="page-content">
+            <form id="form_task_add" action="{{ url_for('task.task_add') }}" method="POST"
+                  data-redirect="{{ url_for('task.task_list_load') }}">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">是否立即执行</div>
+                                    <div class="item-input">
+                                        <label class="label-switch">
+                                            <input type="checkbox" id="now" name="now" checked
+                                                   value="{{ const.BOOLEAN.TRUE }}">
+
+                                            <div class="checkbox"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="disabled" id="form_task_dates">
+                            <a href="#" class="item-link smart-select">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">任务日期(多选)</div>
+                                    </div>
+                                </div>
+                                <select name="task_dates" id="task_dates" multiple>
+                                    {% for d in task_date %}
+                                        <option value="{{ d.key }}">{{ d.value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </a>
+                        </li>
+                        <li id="form_execute_time" class="disabled">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">执行时间</div>
+                                    <div class="item-input">
+                                        <input name="execute_time" id="execute_time" type="time">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="form_duration" class="disabled">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">时长</div>
+                                    <div class="item-input">
+                                        <input type="text" id="duration" name="duration" min="5" max="10">
+                                    </div>
+                                    <div class="item-after label">
+                                        秒
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">设备选择</div>
+                                    <div class="item-input">
+                                        <select name="device_id" id="device">
+                                            <option value=0>请选择设备</option>
+                                            {% for d in devices %}
+                                                <option value="{{ d.id }}">{{ d.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title">资源类型</div>
+                <div class="list-block">
+                    <ul>
+                        {% for k,v in task_type.iteritems() %}
+                            <li>
+                                <label class="label-radio item-content">
+                                    <input type="radio" id="type" name="type" value="{{ k }}"
+                                            {% if k == const.TYPE.PHOTOGRAPH %}
+                                           checked
+                                            {% endif %}>
+
+                                    <div class="item-inner">
+                                        <div class="item-title">{{ v }}</div>
+                                    </div>
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-10"></div>
+                        <div class="col-80">
+                            <a id="btn_task_add" href="#" class="button">新增任务</a>
+                        </div>
+                        <div class="col-10"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
