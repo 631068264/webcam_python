@@ -12,7 +12,7 @@ from base import logger as log, util, constant as const
 from base.framework import general, TempResponse, url_for, form_check, db_conn, ErrorResponse, OkResponse
 from base.decorator import login_required, recognize_device
 from base import dao
-from base.poolmysql import transaction
+from base.poolmysql import transaction, lock_str
 from base.xform import F_str
 
 home = Blueprint("home", __name__)
@@ -60,23 +60,26 @@ def register_load(device_type):
     "password": F_str("密码") & "strict" & "required",
 })
 def register(db_writer, safe_vars):
-    account = dao.get_account_by_username(db_writer, safe_vars.username)
-    if account:
-        return ErrorResponse("您，已经注册了!")
-    with transaction(db_writer) as trans:
-        is_ok, msg = dao.register(db_writer, safe_vars.username, safe_vars.password)
-        if not is_ok:
+    with lock_str(db_writer, "register_account.%s" % (safe_vars.username,)) as locked:
+        if not locked:
+            log.error("register_account lock failed ,[%s]" % (safe_vars.username,))
+            return ErrorResponse("系统繁忙，请稍后再试")
+        account = dao.get_account_by_username(db_writer, safe_vars.username)
+        if account:
+            return ErrorResponse("您，已经注册了!")
+        with transaction(db_writer) as trans:
+            is_ok, msg = dao.register(db_writer, safe_vars.username, safe_vars.password)
+            if not is_ok:
+                ErrorResponse(msg)
             trans.finish()
-            ErrorResponse(msg)
-        trans.finish()
 
-        session[const.SESSION.KEY_LOGIN] = is_ok
-        session[const.SESSION.KEY_ADMIN_ID] = msg["user_id"]
-        session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
-        session[const.SESSION.KEY_ADMIN_NAME] = msg["username"]
-        session.permanent = True
-        log.get("auth").info(u" %s 注册成功 编号[ %s ]", safe_vars.username, msg["user_id"])
-        return OkResponse()
+            session[const.SESSION.KEY_LOGIN] = is_ok
+            session[const.SESSION.KEY_ADMIN_ID] = msg["user_id"]
+            session[const.SESSION.KEY_ROLE_ID] = msg["role_id"]
+            session[const.SESSION.KEY_ADMIN_NAME] = msg["username"]
+            session.permanent = True
+            log.get("auth").info(u" %s 注册成功 编号[ %s ]", safe_vars.username, msg["user_id"])
+            return OkResponse()
 
 
 @home.route("/login", methods=['POST'])
@@ -114,14 +117,6 @@ def get_image_captcha():
     return send_file(image)
 
 
-@home.route("/download/client")
-@general("采集客户端下载")
-def download():
-    path = os.path.join(os.path.dirname(home.root_path), 'upload')
-    print(path)
-    return send_from_directory(path, 'EasyDSS_v7.0.2.rar', as_attachment=True)
-
-
 @home.route("/captcha/image/check")
 @general("图片验证码验证")
 @form_check({
@@ -131,6 +126,14 @@ def check_image_captcha(safe_vars):
     if safe_vars.image_captcha == session.get(const.SESSION.KEY_CAPTCHA):
         return OkResponse()
     return ErrorResponse("图片验证码错误，请重新输入")
+
+
+@home.route("/download/client")
+@general("采集客户端下载")
+def download():
+    path = os.path.join(os.path.dirname(home.root_path), 'upload')
+    print(path)
+    return send_from_directory(path, 'EasyDSS_v7.0.2.rar', as_attachment=True)
 
 
 @home.route("/logout")
