@@ -55,7 +55,9 @@ def device_list(db_reader, safe_vars, device_type):
 @recognize_device()
 def task_add_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    return TempResponse(device_type + "/task_add.html", task_date=date_select_list(), task_type=const.TYPE.NAME_DICT,
+    return TempResponse(device_type + "/task_add.html",
+                        task_date=date_select_list(),
+                        task_type=const.TYPE.NAME_DICT,
                         devices=dao.get_devices_by_account_id(db_reader, account_id))
 
 

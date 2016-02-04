@@ -125,12 +125,10 @@ class DEVICE(object):
     # 接入设备
     ANDOID = "android"
     PC = "windows"
-    IOS = "iphone"
 
     NAME_DICT = {
         ANDOID: "app",
         PC: "pc",
-        IOS: "app",
     }
     ALL = NAME_DICT.keys()
 
