@@ -55,6 +55,7 @@ def device_list(db_reader, safe_vars, device_type):
 @recognize_device()
 def task_add_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
+    # TODO:添加循环任务 添加循环任务列表 循环任务新建一个表
     return TempResponse(device_type + "/task_add.html",
                         task_date=date_select_list(),
                         task_type=const.TYPE.NAME_DICT,
@@ -125,6 +126,7 @@ def task_add(db_writer, safe_vars):
         return ErrorResponse("用户的资源空间有限")
 
     data = {
+        "id": util.get_id(),
         "create_time": today,
         "execute_time": now,
         "duration": safe_vars.duration,
@@ -138,17 +140,21 @@ def task_add(db_writer, safe_vars):
     # 非即时
     if not safe_vars.now:
         with transaction(db_writer) as trans:
+            data_list = []
             for task_date in raw_dates:
-                data["id"] = util.get_id()
                 data["create_time"] = task_date
                 data["execute_time"] = safe_vars.execute_time.replace(1970, 1, 1)
-                QS(db_writer).table(T.task).insert(data)
+                data_list.append(data)
+            field_list = (
+                "id", "create_time", "execute_time", "duration", "now", "type", "status", "account_id", "device_id")
+            QS(db_writer).table(T.task).insert_many(
+                field_list,
+                [[d[key] for key in field_list] for d in data_list])
             trans.finish()
         return OkResponse()
 
     # 即时
-    if safe_vars.now:
-        data["id"] = util.get_id()
+    elif safe_vars.now:
         QS(db_writer).table(T.task).insert(data)
         task = dao.get_task_device(db_writer, data["id"])
         shed.do_task(db_writer, task)
