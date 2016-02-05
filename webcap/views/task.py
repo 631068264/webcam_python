@@ -157,7 +157,7 @@ def task_add(db_writer, safe_vars):
     elif safe_vars.now:
         QS(db_writer).table(T.task).insert(data)
         task = dao.get_task_device(db_writer, data["id"])
-        shed.do_task(db_writer, task)
+        shed.start_task(db_writer, task)
     return OkResponse()
 
 

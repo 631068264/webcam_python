@@ -134,11 +134,11 @@ class DEVICE(object):
 
 
 class LOCAL(object):
-    ip = socket.gethostbyname(socket.gethostname())
-    port = 554
-    protocol = 'rtsp://'
+    IP = socket.gethostbyname(socket.gethostname())
+    PORT = str(554)
+    PROTOCOL = 'rtsp://'
     SUFFIX = '.sdp'
-    PREFIX = protocol + ip + ':' + str(port) + "/"
+    PREFIX = PROTOCOL + IP + ':' + PORT + "/"
 
     @staticmethod
     def get_device_src(device_id):
@@ -152,4 +152,4 @@ class BLOCK(object):
 
 
 if __name__ == '__main__':
-    print(LOCAL.ip)
+    print(LOCAL.IP)

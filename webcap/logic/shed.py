@@ -57,7 +57,7 @@ def daily_task():
 def do_task(db, task):
     with transaction(db) as trans:
         # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-        real_device = get_real_device(task.device_id)
+        real_device = get_device_url(task.device_id)
         path, static_url = get_src_path(task.device_id)
 
         data = {}
@@ -69,7 +69,8 @@ def do_task(db, task):
             data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
 
             src_cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 500x650 ' + data["src_path"]
-            thumbnail_cmd = 'ffmpeg -y -i ' + data['src_path'] + ' -f image2 -s 300x200 ' + data["thumbnail_path"]
+            thumbnail_cmd = 'ffmpeg -y -i ' + data['src_path'] + ' -f image2 -t 0.001 -s 300x200 ' + data[
+                "thumbnail_path"]
             kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True))
             kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
 
@@ -88,7 +89,6 @@ def do_task(db, task):
             kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
             kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True), kill_time=task.duration + config.lazy)
 
-        # change_format = 'ffmpeg -y -i ' + src + ' -c:v libx264 -c:a acc ' + src
         size = os.path.getsize(data["src_path"])
         # 插入资源
         QS(db).table(T.src).where(F.id == task.id).insert({
@@ -134,7 +134,12 @@ def get_src_path(device_id):
     return device_path, url_path
 
 
-def get_real_device(device_id):
+def get_device_url(device_id):
+    """
+    获取设备rstp地址
+    :param device_id:
+    :return:
+    """
     return const.LOCAL.get_device_src(device_id)
 
 
