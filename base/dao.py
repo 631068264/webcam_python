@@ -91,3 +91,9 @@ def get_tasks_by_account_and_device(db, account_id, device_id):
     return QS(db).table(T.task).where(
         (F.account_id == account_id) & (F.device_id == device_id) & (F.status != const.TASK_STATUS.DELETED)
     ).select()
+
+
+def get_device_by_accountId_and_name(db, account_id, device_name):
+    return QS(db).table(T.device).where(
+        (F.account_id == account_id) & (F.name == device_name)
+    ).select_one()

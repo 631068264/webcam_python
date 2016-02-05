@@ -134,6 +134,7 @@ class DEVICE(object):
 
 
 class LOCAL(object):
+    # TODO:移到util
     IP = socket.gethostbyname(socket.gethostname())
     PORT = str(554)
     PROTOCOL = 'rtsp://'

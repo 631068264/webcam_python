@@ -64,6 +64,9 @@ def device_add(db_writer, safe_vars):
     device_num = dao.get_account_by_id(db_writer, account_id).device_num
     if device_num >= const.ROLE.DEVICE[session[const.SESSION.KEY_ROLE_ID]]:
         return ErrorResponse("用户设备过多,不能再增加")
+    is_ok, msg = device_name_check(db_writer, account_id, safe_vars.device_name)
+    if not is_ok:
+        ErrorResponse(msg)
 
     with transaction(db_writer) as trans:
         QS(db_writer).table(T.device).insert({
@@ -92,16 +95,26 @@ def device_add(db_writer, safe_vars):
 })
 def device_edit(db_writer, safe_vars):
     with transaction(db_writer)as trans:
-        device = dao.update_device_by_account_id(db_writer, session[const.SESSION.KEY_ADMIN_ID], safe_vars.device_id)
+        account_id = session[const.SESSION.KEY_ADMIN_ID]
+        device = dao.update_device_by_account_id(db_writer, account_id, safe_vars.device_id)
         if not device:
             return ErrorResponse("没有权限修改该设备")
-        device.name = safe_vars.device_name
+        is_ok, msg = device_name_check(db_writer, account_id, safe_vars.device_name)
+        if not is_ok:
+            ErrorResponse(msg)
 
         QS(db_writer).table(T.device).where(F.id == safe_vars.device_id).update({
             "name": safe_vars.device_name,
         })
         trans.finish()
     return OkResponse()
+
+
+def device_name_check(db, account_id, device_name):
+    device = dao.get_device_by_accountId_and_name(db, account_id, device_name)
+    if device:
+        return False, "该名字已经被您的其他设备使用，请使用其他名字"
+    return True, ""
 
 
 @device.route("/device/cancel", methods=["POST"])
