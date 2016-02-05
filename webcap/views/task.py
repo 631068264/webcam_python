@@ -171,19 +171,9 @@ def task_add(db_writer, safe_vars):
 def task_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     with transaction(db_writer) as trans:
-        task = dao.update_task_by_account_id(db_writer, account_id, safe_vars.task_id)
-        if not task:
-            return ErrorResponse("该任务不是你的")
-        now = datetime.datetime.now()
-        _now = now.replace(year=task.create_time.year,
-                           month=task.create_time.month,
-                           day=task.create_time.day,
-                           hour=task.execute_time.hour,
-                           minute=task.execute_time.minute,
-                           second=task.execute_time.second)
-        if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
-                hours=config.min_hours_left_when_cancel) > _now:
-            return ErrorResponse("距离任务开始不足%s小时不能删除" % config.min_hours_left_when_cancel)
+        is_ok, msg = task_change_check(db_writer, account_id, safe_vars.task_id)
+        if not is_ok:
+            return ErrorResponse(msg)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
             "status": const.TASK_STATUS.DELETED,
         })
@@ -201,26 +191,32 @@ def task_cancel(db_writer, safe_vars):
 })
 def task_change_device(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-
     with transaction(db_writer) as trans:
-        task = dao.update_task_by_account_id(db_writer, account_id, safe_vars.task_id)
-        if not task:
-            return ErrorResponse("该任务不是你的")
-        if task.status == const.TASK_STATUS.FINISHED:
-            return ErrorResponse("任务已完成不能修改设备")
-        now = datetime.datetime.now()
-        _now = now.replace(year=task.create_time.year,
-                           month=task.create_time.month,
-                           day=task.create_time.day,
-                           hour=task.execute_time.hour,
-                           minute=task.execute_time.minute,
-                           second=task.execute_time.second)
-
-        if now + datetime.timedelta(hours=config.min_hours_left_when_cancel) > _now:
-            return ErrorResponse("距离任务开始不足%s小时不能修改设备" % config.min_hours_left_when_cancel)
-
+        is_ok, msg = task_change_check(db_writer, account_id, safe_vars.task_id)
+        if not is_ok:
+            return ErrorResponse(msg)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
             "device_id": safe_vars.device_id,
         })
         trans.finish()
     return OkResponse()
+
+
+def task_change_check(db, account_id, task_id):
+    task = dao.update_task_by_account_id(db, account_id, task_id)
+    if not task:
+        return False, "该任务不是你的"
+    if task.status == const.TASK_STATUS.FINISHED:
+        return False, "任务已完成不能修改设备"
+    now = datetime.datetime.now()
+    _now = now.replace(year=task.create_time.year,
+                       month=task.create_time.month,
+                       day=task.create_time.day,
+                       hour=task.execute_time.hour,
+                       minute=task.execute_time.minute,
+                       second=task.execute_time.second)
+
+    if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
+            hours=config.min_hours_left_when_cancel) > _now:
+        return False, "距离任务开始不足%s小时不能修改设备" % config.min_hours_left_when_cancel
+    return True, ""
