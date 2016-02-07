@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-
+import calendar
 import datetime
 import hashlib
 import os
@@ -116,15 +116,51 @@ def get_day_end_time(time):
     return time.replace(hour=23, minute=59, second=59, microsecond=0)
 
 
-def safe_strptime(data, format="%Y-%m-%d %H:%M:%S"):
+def get_week_begin_time(time=None):
+    """
+    @params time: datetime
+
+    @return: datetime, begin time of a week
+    """
+    if time is None:
+        time = datetime.datetime.now()
+    return (time - datetime.timedelta(days=time.weekday())).replace(hour=0, minute=0, second=0)
+
+
+def get_week_end_time(time=None):
+    """
+    @params time: datetime
+
+    @return: datetime, end time of a week
+    """
+    if time is None:
+        time = datetime.datetime.now()
+    return (time + datetime.timedelta(days=6 - time.weekday())).replace(hour=23, minute=59, second=59)
+
+
+def get_month_begin_time(time=None):
+    if time is None:
+        time = datetime.datetime.now()
+    return (time - datetime.timedelta(days=int(time.strftime('%d')) - 1)).replace(hour=0, minute=0, second=0)
+
+
+def get_month_end_time(time=None):
+    if time is None:
+        time = datetime.datetime.now()
+    today_in_month = int(time.strftime('%d'))
+    day_of_month = calendar.monthrange(int(time.strftime('%Y')), int(time.strftime('%m')))[1]
+    return (time + datetime.timedelta(days=day_of_month - today_in_month)).replace(hour=0, minute=0, second=0)
+
+
+def str_to_time(str_date, format="%Y-%m-%d %H:%M:%S"):
     try:
-        return datetime.datetime.strptime(data, format)
+        return datetime.datetime.strptime(str_date, format)
     except:
-        return None
+        return datetime.datetime.now()
 
 
 def safe_strpdate(data):
-    parsed = safe_strptime(data, "%Y-%m-%d")
+    parsed = str_to_time(data, "%Y-%m-%d")
     return None if parsed is None else parsed.date()
 
 

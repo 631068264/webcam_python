@@ -4,12 +4,12 @@
     <div class="container" style="padding: 70px">
 
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#common" data-toggle="tab">日常任务</a></li>
-            <li><a href="#cycle" data-toggle="tab">循环任务</a></li>
+            <li class="active"><a href="#common_task" data-toggle="tab">日常任务</a></li>
+            <li><a href="#cycle_task" data-toggle="tab">循环任务</a></li>
         </ul>
         <div class="tab-content" style="padding: 50px;">
-            <div class="tab-pane" id="common">
-                <form class="form-horizontal" action="{{ url_for('task.task_add') }}" method="post"
+            <div class="tab-pane" id="common_task">
+                <form class="form-horizontal" action="{{ url_for('task.common_task_add') }}" method="post"
                       id="form_add_common_task">
                     <div class="form-group">
                         <label for="now" class="col-md-2 control-label">是否立即执行</label>
@@ -40,7 +40,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="form_duration" style="display: none;">
+                    <div class="form-group form_duration" style="display: none;">
                         <label for="duration" class="col-md-2 control-label">时长</label>
 
                         <div class="col-md-2 input-group">
@@ -82,14 +82,68 @@
 
 
                     <div class="form-group">
-                        <a href="javascript:void(0)" class="col-lg-offset-8 btn btn-primary " id="btn_add_task">申请任务</a>
+                        <a href="javascript:void(0)" class="col-lg-offset-8 btn btn-primary " id="btn_add_common_task">申请任务</a>
                     </div>
 
 
                 </form>
             </div>
-            <div class="tab-pane" id="cycle">
+            <div class="tab-pane" id="cycle_task">
+                <form class="form-horizontal" action="{{ url_for('task.cycle_task_add') }}" method="post"
+                      id="form_add_cycle_task">
+                    <input type="hidden" id="cycle" name="cycle" value="{{ const.BOOLEAN.TRUE }}">
 
+                    <div class="form-group" id="form_execute_time">
+                        <label for="execute_time" class="col-md-2 control-label">执行时间</label>
+
+                        <div class="col-md-2">
+                            <input type="time" class="form-control" id="execute_time" name="execute_time" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group form_duration" style="display: none;">
+                        <label for="duration" class="col-md-2 control-label">时长</label>
+
+                        <div class="col-md-2 input-group">
+                            <input type="number" class="form-control" id="duration" name="duration" min="5"
+                                   max="10">
+
+                            <div class="input-group-addon">秒</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="device" class="col-md-2 control-label">选择设备</label>
+
+                        <div class="col-md-5">
+                            <select name="device_id" id="device">
+                                <option value=0>请选择设备</option>
+                                {% for d in devices %}
+                                    <option value="{{ d.id }}">{{ d.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 control-label">资源类型</label>
+
+                        <div class="col-md-3">
+                            {% for k,v in task_type.iteritems() %}
+                                <label class="radio-inline">
+                                    <input type="radio" id="type" name="type" value="{{ k }}"
+                                            {% if k == const.TYPE.PHOTOGRAPH %}
+                                           checked
+                                            {% endif %} >{{ v }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <a href="javascript:void(0)" class="col-lg-offset-8 btn btn-primary " id="btn_add_cycle_task">申请任务</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -99,7 +153,6 @@
     <script>
         //tab active
         var active_id = $('.active a').attr('href');
-        console.log(active_id);
         $("" + active_id).addClass('active');
 
         //页面设置
@@ -110,18 +163,17 @@
         });
         $("input:radio[name = 'type']").change(function () {
             var flag = $(this).val();
-            $('#form_duration').toggle(flag);
+            $('.form_duration').toggle(flag);
         });
-
-        //添加任务
-        $('#btn_add_task').click(function () {
+        //添加日常任务
+        $('#btn_add_common_task').click(function () {
             $(this).addClass('disabled');
-            $('#form_add_task').submit();
+            $('#form_add_common_task').submit();
         });
-        $('#form_add_task').ajaxForm({
+        $('#form_add_common_task').ajaxForm({
             success: function (resp) {
                 console.log(resp);
-                $('#btn_add_task').removeClass('disabled');
+                $('#btn_add_common_task').removeClass('disabled');
                 if (resp.status == 1) {
                     redirect("任务添加成功", '{{ url_for("task.task_list_load") }}');
                 } else {
@@ -129,7 +181,33 @@
                 }
             },
             error: function (resp) {
-                $('#btn_add_task').removeClass('disabled');
+                $('#btn_add_common_task').removeClass('disabled');
+                error('网络故障 请检查网络连接!');
+            }
+        });
+        //添加循环任务
+        $('#btn_add_cycle_task').click(function () {
+            $(this).addClass('disabled');
+            var flag = confirm("循环任务明天才开始执行\n 确认创建循环任务吗？");
+            if (flag) {
+                $('#form_add_cycle_task').submit();
+            } else {
+                $(this).removeClass('disabled');
+            }
+
+        });
+        $('#form_add_cycle_task').ajaxForm({
+            success: function (resp) {
+                console.log(resp);
+                $('#btn_add_cycle_task').removeClass('disabled');
+                if (resp.status == 1) {
+                    redirect("任务添加成功", '{{ url_for("task.task_list_load") }}');
+                } else {
+                    error(resp.message);
+                }
+            },
+            error: function (resp) {
+                $('#btn_add_cycle_task').removeClass('disabled');
                 error('网络故障 请检查网络连接!');
             }
         });

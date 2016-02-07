@@ -69,11 +69,14 @@ class TASK_STATUS(object):
     DELETED = 1
     # 任务完成
     FINISHED = 2
+    # 循环中
+    CYCLE = 3
 
     NAME_DICT = {
-        NORMAL: "正常",
+        NORMAL: "待执行",
         DELETED: "删除",
         FINISHED: "完成",
+        CYCLE: "上一个任务已完成，循环中",
     }
 
     ALL = NAME_DICT.keys()

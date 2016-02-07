@@ -69,9 +69,10 @@ def get_device_by_account_id(db, account_id, device_id):
     ).select_one()
 
 
-def get_tasks_by_account_id(db, account_id):
+def get_tasks(db, account_id, is_cycle):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.status != const.TASK_STATUS.DELETED)
+        (F.account_id == account_id) & (F.status != const.TASK_STATUS.DELETED) &
+        (F.cycle == is_cycle)
     ).order_by(F.create_time, desc=True).select()
 
 

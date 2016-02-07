@@ -26,9 +26,13 @@ task = Blueprint("task", __name__)
 @recognize_device()
 def task_list_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    tasks = dao.get_tasks_by_account_id(db_reader, account_id)
+    common_tasks = dao.get_tasks(db_reader, account_id, const.BOOLEAN.FALSE)
+    cycle_tasks = dao.get_tasks(db_reader, account_id, const.BOOLEAN.TRUE)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse(device_type + "/task_list.html", tasks=tasks, devices=devices)
+    return TempResponse(device_type + "/task_list.html",
+                        common_tasks=common_tasks,
+                        cycle_tasks=cycle_tasks,
+                        devices=devices)
 
 
 @task.route("/task/device/list")
@@ -78,8 +82,8 @@ def date_select_list():
     return days
 
 
-@task.route("/task/add", methods=["POST"])
-@general("添加任务")
+@task.route("/task/commen/add", methods=["POST"])
+@general("添加日常任务")
 @login_required()
 @db_conn("db_writer")
 @form_check({
@@ -90,7 +94,7 @@ def date_select_list():
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
-def task_add(db_writer, safe_vars):
+def common_task_add(db_writer, safe_vars):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
     today = datetime.date.today()
@@ -154,10 +158,50 @@ def task_add(db_writer, safe_vars):
         return OkResponse()
 
     # 即时
-    elif safe_vars.now:
+    else:
         QS(db_writer).table(T.task).insert(data)
         task = dao.get_task_device(db_writer, data["id"])
         shed.start_task(db_writer, task)
+    return OkResponse()
+
+
+@task.route("/task/cycle/add", methods=["POST"])
+@general("添加循环任务")
+@login_required()
+@db_conn("db_writer")
+@form_check({
+    "cycle": F_int("是否循环任务") & "strict" & "required" & (lambda v: (v in const.BOOLEAN.ALL, v)),
+    "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "required",
+    "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "optional",
+    "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
+    "device_id": F_str("设备ID") & "strict" & "required",
+})
+def cycle_task_add(db_writer, safe_vars):
+    if safe_vars.device_id == '0':
+        return ErrorResponse("请选择设备")
+    today = datetime.date.today()
+    now = datetime.datetime.now()
+
+    # 检验非即时信息
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    size = dao.get_account_by_id(db_writer, account_id).size
+    if const.ROLE.SIZE[session[const.SESSION.KEY_ROLE_ID]] <= size:
+        return ErrorResponse("用户的资源空间有限")
+
+    data = {
+        "id": util.get_id(),
+        "create_time": (today + datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
+        "execute_time": safe_vars.execute_time.replace(1970, 1, 1),
+        "duration": safe_vars.duration,
+        "now": const.BOOLEAN.FALSE,
+        "type": safe_vars.type,
+        "cycle": safe_vars.cycle,
+        "status": const.TASK_STATUS.NORMAL,
+        "account_id": account_id,
+        "device_id": safe_vars.device_id,
+    }
+    # 即时
+    QS(db_writer).table(T.task).insert(data)
     return OkResponse()
 
 

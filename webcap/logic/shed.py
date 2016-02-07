@@ -42,7 +42,7 @@ def daily_task():
 
     tasks = QS(db).table((T.task__t * T.device__d).on(F.t__device_id == F.d__id)).where(
         (F.d__status == const.DEVICE_STATUS.NORMAL) & (F.t__create_time == now) & (
-            F.t__status == const.TASK_STATUS.NORMAL)
+            F.t__status == (const.TASK_STATUS.NORMAL, const.TASK_STATUS.CYCLE))
     ).order_by(F.t__execute_time).select()
 
     for task in tasks:
@@ -109,10 +109,19 @@ def do_task(db, task):
         })
 
         # 更新任务属性
-        QS(db).table(T.task).where(F.id == task.id).update({
-            "finish_time": datetime.datetime.now(),
-            "status": const.TASK_STATUS.FINISHED,
-        })
+        if task.cycle == const.BOOLEAN.TRUE:
+            QS(db).table(T.task).where(F.id == task.id).update({
+                "create_time":
+                    (util.str_to_time(task.create_time, format='%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
+                        '%Y-%m-%d'),
+                "finish_time": datetime.datetime.now(),
+                "status": const.TASK_STATUS.CYCLE,
+            })
+        else:
+            QS(db).table(T.task).where(F.id == task.id).update({
+                "finish_time": datetime.datetime.now(),
+                "status": const.TASK_STATUS.FINISHED,
+            })
         trans.finish()
     return schedule.CancelJob
 
