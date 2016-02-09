@@ -149,7 +149,7 @@ def get_device_url(device_id):
     :param device_id:
     :return:
     """
-    return const.LOCAL.get_device_src(device_id)
+    return util.get_device_src(device_id)
 
 
 def kill(proc, kill_time=None):

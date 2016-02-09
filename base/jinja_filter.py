@@ -82,7 +82,9 @@ def text_filter(value):
     return util.text_filter(value).strip()
 
 
-def limit_str_len(value, max_len=10):
+def limit_str_len(value, max_len=10, tail_len=0):
+    if tail_len > 0 and len(value) > max_len + tail_len:
+        return value[:max_len] + "....." + value[-tail_len:]
     if len(value) > max_len:
         return value[:max_len] + "..."
     return value

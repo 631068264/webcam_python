@@ -1,0 +1,25 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">任务管理</div>
+        <div class="right">
+            <a href="{{ url_for('task.task_add_load') }}" class="link">新增</a>
+        </div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="task_list" class="page">
+
+        <div id="task-list-pull-to-refresh-content" class="page-content pull-to-refresh-content">
+            <div class="pull-to-refresh-layer">
+                <div class="preloader"></div>
+                <div class="pull-to-refresh-arrow"></div>
+            </div>
+            <div id="task_list_container" class="list-block">
+                {% include 'app/task_list_block.html' %}
+            </div>
+
+        </div>
+    </div>
+</div>

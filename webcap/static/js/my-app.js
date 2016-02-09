@@ -18,6 +18,8 @@ var myApp = new Framework7({
     }
 });
 
+var app_location = "/webcam";
+
 jQuery.ajaxSetup({
     beforeSend: function (xhr) {
         xhr.setRequestHeader('x-json', 'true');
@@ -44,16 +46,17 @@ $$(document).on('pageInit', function (e) {
         }
     });
 });
+//首页js
+$$(document).on('click', '#btn_logout', function () {
+    $.get(app_location + "/logout", function (ret) {
+        window.location.reload();
+    });
+});
+
 
 function goBack() {
     $$(".back").click();
 }
-
-$$(document).on('click', '#btn_logout', function () {
-    $.get("/webcam/logout", function (ret) {
-        window.location.reload();
-    });
-});
 
 function refreshBack(page, redirect) {
     page.view.router.back({
@@ -64,7 +67,7 @@ function refreshBack(page, redirect) {
 }
 
 function error(msg) {
-    myApp.alert(msg, "出错啦");
+    myApp.alert(msg, "请注意！");
 }
 function ok(msg) {
     myApp.alert(msg);
@@ -81,8 +84,7 @@ myApp.onPageInit('login-page', function (page) {
         success: function (resp) {
             $("#btn_login").attr("disabled", false);
             if (resp.status == 1) {
-                console.log("12");
-                //ok('登录成功');
+                ok('登录成功');
                 window.location.href = redirect;
             } else {
                 error(resp.message);
@@ -126,7 +128,7 @@ myApp.onPageInit('device_list', function (page) {
     //refresh 监听器
     ptrContent.on('refresh', function (e) {
         $.ajax({
-            url: "/webcam/device/list/load?type=block",
+            url: app_location + "/device/list/load?type=block",
             type: "get",
             success: function (data) {
                 $("#device_list_container").html(data);
@@ -138,7 +140,7 @@ myApp.onPageInit('device_list', function (page) {
             }
         });
     });
-
+    //删除设备
     ptrContent.on('click', 'a[btn_type="cancel"]', function () {
         var device_id = $(this).attr("device_id");
         var device_name = $(this).attr("device_name");
@@ -150,7 +152,7 @@ myApp.onPageInit('device_list', function (page) {
                 onClick: function () {
                     $(this).addClass('disabled');
                     $.post(
-                        "/webcam/device/cancel",
+                        app_location + "/device/cancel",
                         {device_id: device_id},
                         function (resp) {
                             if (resp.status == 1) {
@@ -200,7 +202,7 @@ myApp.onPageInit('task_list', function (page) {
     //refresh 监听器
     ptrContent.on('refresh', function (e) {
         $.ajax({
-            url: "/webcam/task/list/load?type=block",
+            url: app_location + "/task/list/load?type=block",
             type: "get",
             success: function (data) {
                 $("#task_list_container").html(data);
@@ -216,7 +218,7 @@ myApp.onPageInit('task_list', function (page) {
     //删除任务
     ptrContent.on('click', 'a[btn_type="delete"]', function () {
         var task_id = $(this).attr("task_id");
-        //var task_name = $(this).attr("task_name");
+
         myApp.modal({
             text: '<div>你要删除的任务：</div><br><div>任务号：' + task_id + '</div><br>',
             buttons: [{
@@ -225,7 +227,7 @@ myApp.onPageInit('task_list', function (page) {
                 onClick: function () {
                     $(this).addClass('disabled');
                     $.post(
-                        "/webcam//task/cancel",
+                        app_location + "/task/cancel",
                         {task_id: task_id},
                         function (resp) {
                             if (resp.status == 1) {
@@ -261,7 +263,7 @@ myApp.onPageInit('task_list', function (page) {
                 blod: true,
                 onClick: function () {
                     $.post(
-                        "/webcam//task/change/device",
+                        app_location + "/task/change/device",
                         {task_id: task_id, device_id: device_id},
                         function (resp) {
                             if (resp.status == 1) {
@@ -312,25 +314,50 @@ myApp.onPageInit('device_info', function (page) {
 
 
 myApp.onPageInit('task_add', function (page) {
-    var redirect = $("#form_task_add").data('redirect');
-    $$("#btn_task_add").on("click", function (e) {
-        $("#btn_task_add").attr("disabled", true);
-        $('#form_task_add').submit();
+    //日常任务
+    var redirect = $("#form_add_common_task").data('redirect');
+    $$("#btn_add_common_task").on("click", function (e) {
+        $("#btn_add_common_task").attr("disabled", true);
+        $('#form_add_common_task').submit();
     });
 
-    $("#form_task_add").ajaxForm({
+    $("#form_add_common_task").ajaxForm({
         success: function (resp) {
-            $("#btn_task_add").attr("disabled", false);
+            $("#btn_add_common_task").attr("disabled", false);
             console.log(resp);
             if (resp.status == 1) {
-                ok('新增任务成功');
+                ok('新增日常任务成功');
                 refreshBack(page, redirect);
             } else {
                 error(resp.message);
             }
         },
         error: function (resp) {
-            $("#btn_task_add").attr("disabled", false);
+            $("#btn_add_common_task").attr("disabled", false);
+            ok('网络故障 请检查网络连接!');
+        }
+    });
+
+    //循环任务
+    var redirect = $("#form_add_common_task").data('redirect');
+    $$("#btn_add_cycle_task").on("click", function (e) {
+        $("#btn_add_cycle_task").attr("disabled", true);
+        $('#form_add_cycle_task').submit();
+    });
+
+    $("#form_add_cycle_task").ajaxForm({
+        success: function (resp) {
+            $("#btn_add_cycle_task").attr("disabled", false);
+            console.log(resp);
+            if (resp.status == 1) {
+                ok('新增循环任务成功');
+                refreshBack(page, redirect);
+            } else {
+                error(resp.message);
+            }
+        },
+        error: function (resp) {
+            $("#btn_add_cycle_task").attr("disabled", false);
             ok('网络故障 请检查网络连接!');
         }
     });
@@ -338,15 +365,14 @@ myApp.onPageInit('task_add', function (page) {
 
     //页面设置
     $("input:checkbox[name = 'now']").change(function () {
-        var flag = $(this).attr('checked');
         var now = $(this).val();
-        console.log(flag + now);
-        $('#form_task_dates').toggle(!flag);
-        $('#form_execute_time').toggle(!flag);
+        $('#form_task_dates').toggle(now);
+        $('#form_execute_time').toggle(now);
     });
     $("input:radio[name = 'type']").change(function () {
         var flag = $(this).val();
-        $('#form_duration').toggle(flag);
+        console.log(flag);
+        $('.form_duration').toggle(flag);
     });
 
 });

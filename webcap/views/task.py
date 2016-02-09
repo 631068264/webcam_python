@@ -24,12 +24,19 @@ task = Blueprint("task", __name__)
 @login_required()
 @db_conn("db_reader")
 @recognize_device()
-def task_list_load(db_reader, device_type):
+@form_check({
+    "type": F_str("请求类型") & "optional",
+})
+def task_list_load(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     common_tasks = dao.get_tasks(db_reader, account_id, const.BOOLEAN.FALSE)
     cycle_tasks = dao.get_tasks(db_reader, account_id, const.BOOLEAN.TRUE)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse(device_type + "/task_list.html",
+
+    templ_name = "/task_list.html"
+    if safe_vars.type == const.BLOCK.BLOCK:
+        templ_name = "/task_list_block.html"
+    return TempResponse(device_type + templ_name,
                         common_tasks=common_tasks,
                         cycle_tasks=cycle_tasks,
                         devices=devices)
@@ -42,14 +49,22 @@ def task_list_load(db_reader, device_type):
 @form_check({
     "device_id": F_str("设备ID") & "strict" & "required",
     "device_name": F_str("设备名") & "strict" & "required",
+    "type": F_str("请求类型") & "optional",
 })
 @recognize_device()
 def device_list(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id)
+    common_tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id, const.BOOLEAN.FALSE)
+    cycle_tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id, const.BOOLEAN.TRUE)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
-    return TempResponse(device_type + "/task_list.html", tasks=tasks, device_name=safe_vars.device_name,
-                        device_id=safe_vars.device_id, devices=devices)
+    templ_name = "/task_list.html"
+    if safe_vars.type == const.BLOCK.BLOCK:
+        templ_name = "/task_list_block.html"
+    return TempResponse(device_type + templ_name,
+                        common_tasks=common_tasks,
+                        cycle_tasks=cycle_tasks,
+                        device_id=safe_vars.device_id,
+                        devices=devices)
 
 
 @task.route("/task/add/load")
@@ -59,7 +74,6 @@ def device_list(db_reader, safe_vars, device_type):
 @recognize_device()
 def task_add_load(db_reader, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    # TODO:添加循环任务 添加循环任务列表 循环任务新建一个表
     return TempResponse(device_type + "/task_add.html",
                         task_date=date_select_list(),
                         task_type=const.TYPE.NAME_DICT,

@@ -9,110 +9,200 @@
     <div data-page="task_add" class="page">
 
         <div class="page-content">
-            <form id="form_task_add" action="{{ url_for('task.task_add') }}" method="POST"
-                  data-redirect="{{ url_for('task.task_list_load') }}">
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">是否立即执行</div>
-                                    <div class="item-input">
-                                        <label class="label-switch">
-                                            <input type="checkbox" id="now" name="now" checked
-                                                   value="{{ const.BOOLEAN.TRUE }}">
+            <div class="content-block">
+                <div class="buttons-row">
+                    <a href="#common_task_add" class="tab-link active button">日常任务</a>
+                    <a href="#cycle_task_add" class="tab-link button">循环任务</a>
+                </div>
+            </div>
+            <div class="tabs">
+                <div id="common_task_add" class="tab active">
+                    <form id="form_add_common_task" action="{{ url_for('task.common_task_add') }}" method="POST"
+                          data-redirect="{{ url_for('task.task_list_load') }}">
+                        <div class="list-block">
+                            <ul>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">立即执行</div>
+                                            <div class="item-input">
+                                                <label class="label-switch">
+                                                    <input type="checkbox" id="now" name="now" checked
+                                                           value="{{ const.BOOLEAN.TRUE }}">
 
-                                            <div class="checkbox"></div>
-                                        </label>
+                                                    <div class="checkbox"></div>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </li>
+                                </li>
 
-                        <li class="disabled" id="form_task_dates">
-                            <a href="#" class="item-link smart-select">
-                                <div class="item-content">
-                                    <div class="item-inner">
-                                        <div class="item-title">任务日期(多选)</div>
-                                    </div>
-                                </div>
-                                <select name="task_dates" id="task_dates" multiple>
-                                    {% for d in task_date %}
-                                        <option value="{{ d.key }}">{{ d.value }}</option>
-                                    {% endfor %}
-                                </select>
-                            </a>
-                        </li>
-                        <li id="form_execute_time" class="disabled">
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">执行时间</div>
-                                    <div class="item-input">
-                                        <input name="execute_time" id="execute_time" type="time">
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li id="form_duration" class="disabled">
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">时长</div>
-                                    <div class="item-input">
-                                        <input type="text" id="duration" name="duration" min="5" max="10">
-                                    </div>
-                                    <div class="item-after label">
-                                        秒
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">设备选择</div>
-                                    <div class="item-input">
-                                        <select name="device_id" id="device">
-                                            <option value=0>请选择设备</option>
-                                            {% for d in devices %}
-                                                <option value="{{ d.id }}">{{ d.name }}</option>
+                                <li id="form_task_dates" style="display: none;">
+                                    <a href="#" class="item-link smart-select">
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-title">任务日期(多选)</div>
+                                            </div>
+                                        </div>
+                                        <select name="task_dates" id="task_dates" multiple>
+                                            {% for d in task_date %}
+                                                <option value="{{ d.key }}">{{ d.value }}</option>
                                             {% endfor %}
                                         </select>
+                                    </a>
+                                </li>
+                                <li id="form_execute_time" style="display: none;">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">执行时间</div>
+                                            <div class="item-input">
+                                                <input name="execute_time" id="execute_time" type="time">
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="content-block-title">资源类型</div>
-                <div class="list-block">
-                    <ul>
-                        {% for k,v in task_type.iteritems() %}
-                            <li>
-                                <label class="label-radio item-content">
-                                    <input type="radio" id="type" name="type" value="{{ k }}"
-                                            {% if k == const.TYPE.PHOTOGRAPH %}
-                                           checked
-                                            {% endif %}>
-
-                                    <div class="item-inner">
-                                        <div class="item-title">{{ v }}</div>
+                                </li>
+                                <li class="form_duration" style="display: none;">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">时长</div>
+                                            <div class="item-input">
+                                                <input type="text" id="duration" name="duration" min="5" max="10">
+                                            </div>
+                                            <div class="item-after label">
+                                                秒
+                                            </div>
+                                        </div>
                                     </div>
-                                </label>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div class="content-block">
-                    <div class="row">
-                        <div class="col-10"></div>
-                        <div class="col-80">
-                            <a id="btn_task_add" href="#" class="button">新增任务</a>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">设备选择</div>
+                                            <div class="item-input">
+                                                <select name="device_id" id="device">
+                                                    <option value=0>请选择设备</option>
+                                                    {% for d in devices %}
+                                                        <option value="{{ d.id }}">{{ d.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="col-10"></div>
-                    </div>
+                        <div class="content-block-title">资源类型</div>
+                        <div class="list-block">
+                            <ul>
+                                {% for k,v in task_type.iteritems() %}
+                                    <li>
+                                        <label class="label-radio item-content">
+                                            <input type="radio" id="type" name="type" value="{{ k }}"
+                                                    {% if k == const.TYPE.PHOTOGRAPH %}
+                                                   checked
+                                                    {% endif %}>
+
+                                            <div class="item-inner">
+                                                <div class="item-title">{{ v }}</div>
+                                            </div>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="content-block">
+                            <div class="row">
+                                <div class="col-10"></div>
+                                <div class="col-80">
+                                    <a id="btn_add_common_task" href="#" class="button">新增任务</a>
+                                </div>
+                                <div class="col-10"></div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+                <div id="cycle_task_add" class="tab ">
+                    <form id="form_add_cycle_task" action="{{ url_for('task.cycle_task_add') }}" method="POST"
+                          data-redirect="{{ url_for('task.task_list_load') }}">
+                        <input type="hidden" id="cycle" name="cycle" value="{{ const.BOOLEAN.TRUE }}">
+
+                        <div class="list-block">
+                            <ul>
+
+                                <li id="form_execute_time">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">执行时间</div>
+                                            <div class="item-input">
+                                                <input name="execute_time" id="execute_time" type="time">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="form_duration" style="display: none;">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">时长</div>
+                                            <div class="item-input">
+                                                <input type="text" id="duration" name="duration" min="5" max="10">
+                                            </div>
+                                            <div class="item-after label">
+                                                秒
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">设备选择</div>
+                                            <div class="item-input">
+                                                <select name="device_id" id="device">
+                                                    <option value=0>请选择设备</option>
+                                                    {% for d in devices %}
+                                                        <option value="{{ d.id }}">{{ d.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-block-title">资源类型</div>
+                        <div class="list-block">
+                            <ul>
+                                {% for k,v in task_type.iteritems() %}
+                                    <li>
+                                        <label class="label-radio item-content">
+                                            <input type="radio" id="type" name="type" value="{{ k }}"
+                                                    {% if k == const.TYPE.PHOTOGRAPH %}
+                                                   checked
+                                                    {% endif %}>
+
+                                            <div class="item-inner">
+                                                <div class="item-title">{{ v }}</div>
+                                            </div>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="content-block">
+                            <div class="row">
+                                <div class="col-10"></div>
+                                <div class="col-80">
+                                    <a id="btn_add_cycle_task" href="#" class="button">新增任务</a>
+                                </div>
+                                <div class="col-10"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

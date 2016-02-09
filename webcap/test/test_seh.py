@@ -36,7 +36,7 @@ def daily_task():
 
 
 def get_real_device(device_id):
-    return const.LOCAL.get_device_src(device_id)
+    return util.get_device_src(device_id)
 
 
 def do_task(db, task):

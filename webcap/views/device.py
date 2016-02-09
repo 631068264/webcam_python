@@ -16,7 +16,6 @@ from base.xform import F_str
 device = Blueprint("device", __name__)
 
 
-# TODO:设备封禁
 @device.route("/device/list/load")
 @general("设备列表页面")
 @login_required()
@@ -29,7 +28,7 @@ def device_list_load(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     devices = dao.get_devices_by_account_id(db_reader, account_id)
     for d in devices:
-        d.device_src = util.safe_json_dumps(const.LOCAL.get_device_src(d.id), encoding='utf-8')
+        d.device_src = util.safe_json_dumps(util.get_device_src(d.id), encoding='utf-8')
     templ_name = "/device_list.html"
     if safe_vars.type == const.BLOCK.BLOCK:
         templ_name = '/device_list_block.html'
@@ -159,6 +158,6 @@ def device_play(db_reader, safe_vars, device_type):
     device = dao.get_device_by_account_id(db_reader, account_id, safe_vars.device_id)
     if not device:
         return ErrorResponse("还没有申请设备")
-    device_src = const.LOCAL.get_device_src(device.id)
+    device_src = util.get_device_src(device.id)
     print(device_src)
     return TempResponse(device_type + "/play_load.html", device=device, device_src=device_src)

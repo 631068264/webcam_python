@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import socket
 
 
 class ACCOUNT_STATUS(object):
@@ -128,27 +127,14 @@ class DEVICE(object):
     # 接入设备
     ANDOID = "android"
     PC = "windows"
+    IPHONE = "iphone"
 
     NAME_DICT = {
         ANDOID: "app",
         PC: "pc",
+        IPHONE: "app",
     }
     ALL = NAME_DICT.keys()
-
-
-class LOCAL(object):
-    # TODO:移到util
-    IP = socket.gethostbyname(socket.gethostname())
-    PORT = str(554)
-    PROTOCOL = 'rtsp://'
-    SUFFIX = '.sdp'
-    PREFIX = PROTOCOL + IP + ':' + PORT + "/"
-
-    @staticmethod
-    def get_device_src(device_id):
-        if not isinstance(device_id, str):
-            device_id = str(device_id)
-        return LOCAL.PREFIX + device_id + LOCAL.SUFFIX
 
 
 class BLOCK(object):
@@ -156,4 +142,4 @@ class BLOCK(object):
 
 
 if __name__ == '__main__':
-    print(LOCAL.IP)
+    print(1)

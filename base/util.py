@@ -486,5 +486,19 @@ def get_static_file_version(full_filename):
     return sha1
 
 
+class LOCAL(object):
+    IP = socket.gethostbyname(socket.gethostname())
+    PORT = str(554)
+    PROTOCOL = 'rtsp://'
+    SUFFIX = '.sdp'
+    PREFIX = PROTOCOL + IP + ':' + PORT + "/"
+
+
+def get_device_src(device_id):
+    if not isinstance(device_id, str):
+        device_id = str(device_id)
+    return LOCAL.PREFIX + device_id + LOCAL.SUFFIX
+
+
 if __name__ == '__main__':
-    print(get_file_name(".mp4"))
+    print(get_device_src(12111313121))

@@ -1,24 +1,34 @@
-{% for t in tasks %}
-    <div class="card">
-        <div class="card-header">
-            <span>任务名：</span>
-            <span> {{ const.TASK_STATUS.NAME_DICT[t.status] }}</span>
-        </div>
+<div class="content-block">
+    <div class="buttons-row">
+        <a href="#common_task" class="tab-link active button">日常任务</a>
+        <a href="#cycle_task" class="tab-link button">循环任务</a>
+    </div>
+</div>
+<div class="tabs">
+    <div id="common_task" class="tab active">
+        {% for t in common_tasks %}
+            <div class="card">
+                <div class="card-header">
+                    <span> 任务编号：{{ t.id|limit_str_len(max_len=9,tail_len=4) }}</span>
+                </div>
 
 
-        <div class="card-footer">
-            <span>时长：{{ t.duration| fm_null }}</span>
-            <span>类型：{{ const.TYPE.NAME_DICT[t.type] }}</span>
-        </div>
-        <div class="card-footer">
-            <span>创建时间：{{ t.create_time| fm_date }}</span>
-            <span>完成时间：{{ t.finish_time|fm_time }}</span>
-        </div>
+                <div class="card-footer">
+                    <span>时长：{{ t.duration| fm_null }}</span>
+                    <span>状态：{{ const.TASK_STATUS.NAME_DICT[t.status] }}</span>
+                </div>
+                <div class="card-footer">
+                    <span>创建时间：{{ t.create_time| fm_date }}</span>
+                    <span>类型：{{ const.TYPE.NAME_DICT[t.type] }}</span>
+                </div>
+                <div class="card-footer">
+                    <span>完成时间：{{ t.finish_time|fm_time }}</span>
+                </div>
 
-        <div class="card-footer">
-            <a href="javascript:void(0);" class="item-link" btn_type="delete" task_id="{{ t.id }}"> <span> <button
-                    class="button button-raised">删除
-            </button></span></a>
+                <div class="card-footer">
+                    <a href="javascript:void(0);" class="item-link" btn_type="delete" task_id="{{ t.id }}"> <span> <button
+                            class="button button-raised">删除
+                    </button></span></a>
 
             <span>
                 <div class="item-input">
@@ -32,8 +42,50 @@
                 </div>
             </span>
 
-        </div>
-
-
+                </div>
+            </div>
+        {% endfor %}
     </div>
-{% endfor %}
+    <div id="cycle_task" class="tab">
+        {% for t in cycle_tasks %}
+            <div class="card">
+                <div class="card-header">
+                    <span> 任务编号：{{ t.id|limit_str_len(max_len=9,tail_len=4) }}</span>
+                </div>
+
+
+                <div class="card-footer">
+                    <span>时长：{{ t.duration| fm_null }}</span>
+                    <span>状态：{{ const.TASK_STATUS.NAME_DICT[t.status] }}</span>
+                </div>
+                <div class="card-footer">
+                    <span>创建时间：{{ t.create_time| fm_date }}</span>
+                    <span>类型：{{ const.TYPE.NAME_DICT[t.type] }}</span>
+                </div>
+                <div class="card-footer">
+                    <span>完成时间：{{ t.finish_time|fm_time }}</span>
+                </div>
+
+                <div class="card-footer">
+                    <a href="javascript:void(0);" class="item-link" btn_type="delete" task_id="{{ t.id }}"> <span> <button
+                            class="button button-raised">删除
+                    </button></span></a>
+
+            <span>
+                <div class="item-input">
+                    <select select_type="change_device" task_id="{{ t.id }}">
+                        {% for d in devices %}
+                            <option value="{{ d.id }}" {% if  d.id == t.device_id %}
+                                    selected
+                            {% endif %} >{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </span>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+

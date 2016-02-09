@@ -88,9 +88,10 @@ def get_srcs_by_account_id(db, account_id):
     ).order_by(F.create_time, desc=True).select()
 
 
-def get_tasks_by_account_and_device(db, account_id, device_id):
+def get_tasks_by_account_and_device(db, account_id, device_id, is_cycle):
     return QS(db).table(T.task).where(
-        (F.account_id == account_id) & (F.device_id == device_id) & (F.status != const.TASK_STATUS.DELETED)
+        (F.account_id == account_id) & (F.device_id == device_id) &
+        (F.status != const.TASK_STATUS.DELETED) & (F.cycle == is_cycle)
     ).select()
 
 
