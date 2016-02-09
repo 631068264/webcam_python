@@ -283,8 +283,6 @@ myApp.onPageInit('task_list', function (page) {
             }]
         });
     });
-
-
 });
 
 myApp.onPageInit('device_info', function (page) {
@@ -374,5 +372,27 @@ myApp.onPageInit('task_add', function (page) {
         console.log(flag);
         $('.form_duration').toggle(flag);
     });
+
+});
+
+myApp.onPageInit('src_list', function (page) {
+    var ptrContent = $$('#src-list-pull-to-refresh-content');
+
+    //refresh 监听器
+    ptrContent.on('refresh', function (e) {
+        $.ajax({
+            url: app_location + "/src/list/load?type=block",
+            type: "get",
+            success: function (data) {
+                $("#src_list_container").html(data);
+                myApp.pullToRefreshDone();
+            },
+            error: function (data) {
+                error("刷新失败");
+                myApp.pullToRefreshDone();
+            }
+        });
+    });
+
 
 });

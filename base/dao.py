@@ -88,6 +88,13 @@ def get_srcs_by_account_id(db, account_id):
     ).order_by(F.create_time, desc=True).select()
 
 
+def get_video_srcs(db, account_id, type):
+    return QS(db).table(T.src).where(
+        (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL) &
+        (F.type == type)
+    ).order_by(F.create_time, desc=True).select()
+
+
 def get_tasks_by_account_and_device(db, account_id, device_id, is_cycle):
     return QS(db).table(T.task).where(
         (F.account_id == account_id) & (F.device_id == device_id) &

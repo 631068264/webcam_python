@@ -1,0 +1,54 @@
+<div class="content-block">
+    <div class="buttons-row">
+        <a href="#video" class="tab-link active button">视频</a>
+        <a href="#photo" class="tab-link button">图片</a>
+    </div>
+</div>
+<div class="tabs">
+    <div id="video" class="tab active">
+
+        <div class="list-block media-list">
+            <ul>
+                {% for s in video_srcs %}
+                    <li>
+                        <a href="#" class="item-link item-content">
+                            <div class="item-content">
+                                <div class="item-media"><img src="{{ s.thumbnail }}" width="44"></div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{ s.create_time|fm_datetime }}</div>
+                                    </div>
+                                    <div class="item-subtitle">{{ const.TYPE.NAME_DICT[s.type] }}</div>
+                                </div>
+                            </div>
+
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+    <div id="photo" class="tab ">
+        <div class="list-block media-list">
+            <ul>
+                {% for s in photo_srcs %}
+                    <li>
+                        <a href="#" class="item-link item-content">
+                            <div class="item-content">
+                                <div class="item-media"><img src="{{ s.thumbnail }}" width="50px" height="50px"></div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title">{{ s.create_time|fm_datetime }}</div>
+                                    </div>
+                                    <div class="item-subtitle">{{ const.TYPE.NAME_DICT[s.type] }}</div>
+                                </div>
+                            </div>
+
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

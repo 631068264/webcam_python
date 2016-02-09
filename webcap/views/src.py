@@ -20,10 +20,26 @@ src = Blueprint("src", __name__)
 @login_required()
 @db_conn("db_reader")
 @recognize_device()
-def src_list(db_reader, device_type):
+@form_check({
+    "type": F_str("请求类型") & "optional",
+})
+def src_list(db_reader, safe_vars, device_type):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
-    srcs = dao.get_srcs_by_account_id(db_reader, account_id)
-    return TempResponse(device_type + "/src_list.html", srcs=srcs)
+    srcs = None
+    video_srcs = None
+    photo_srcs = None
+    if device_type == const.DEVICE.PC:
+        srcs = dao.get_srcs_by_account_id(db_reader, account_id)
+    elif device_type == const.DEVICE.APP:
+        video_srcs = dao.get_video_srcs(db_reader, account_id, const.TYPE.VIDEO)
+        photo_srcs = dao.get_video_srcs(db_reader, account_id, const.TYPE.PHOTOGRAPH)
+    templ_name = "/src_list.html"
+    if safe_vars.type == const.BLOCK.BLOCK:
+        templ_name = "/src_list_block.html"
+    return TempResponse(device_type + templ_name,
+                        srcs=srcs,
+                        video_srcs=video_srcs,
+                        photo_srcs=photo_srcs)
 
 
 # TODO：回收站封禁

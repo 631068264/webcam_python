@@ -1,0 +1,22 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left"><a href="#" class="back link"> <i class="icon icon-back"></i><span>返回</span></a>
+        </div>
+        <div class="center sliding">资源管理</div>
+    </div>
+</div>
+<div class="pages">
+    <div data-page="src_list" class="page">
+
+        <div id="src-list-pull-to-refresh-content" class="page-content pull-to-refresh-content">
+            <div class="pull-to-refresh-layer">
+                <div class="preloader"></div>
+                <div class="pull-to-refresh-arrow"></div>
+            </div>
+            <div id="src_list_container" class="list-block">
+                {% include 'app/src_list_block.html' %}
+            </div>
+
+        </div>
+    </div>
+</div>

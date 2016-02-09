@@ -126,13 +126,16 @@ class BOOLEAN(object):
 class DEVICE(object):
     # 接入设备
     ANDOID = "android"
-    PC = "windows"
+    WINDOWS = "windows"
     IPHONE = "iphone"
 
+    APP = "app"
+    PC = "pc"
+
     NAME_DICT = {
-        ANDOID: "app",
-        PC: "pc",
-        IPHONE: "app",
+        ANDOID: APP,
+        WINDOWS: PC,
+        IPHONE: APP,
     }
     ALL = NAME_DICT.keys()
 
