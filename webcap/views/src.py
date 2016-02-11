@@ -62,7 +62,7 @@ def src_cancel(db_writer, safe_vars):
         })
 
         QS(db_writer).table(T.account).where(F.id == account_id).update({
-            "size": E("IF((size - %d ) < 0,0,size - %d)" % src.size),
+            "size": E("IF((size - %d ) < 0,0,size - %d)" % (src.size, src.size)),
         })
         trans.finish()
     return OkResponse()

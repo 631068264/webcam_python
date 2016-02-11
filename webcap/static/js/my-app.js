@@ -267,8 +267,8 @@ myApp.onPageInit('task_list', function (page) {
                         {task_id: task_id, device_id: device_id},
                         function (resp) {
                             if (resp.status == 1) {
-                                myApp.pullToRefreshTrigger(ptrContent);
                                 ok('修改成功');
+                                myApp.pullToRefreshTrigger(ptrContent);
                             } else {
                                 error(resp.message);
                             }
@@ -374,10 +374,8 @@ myApp.onPageInit('task_add', function (page) {
     });
 
 });
-
 myApp.onPageInit('src_list', function (page) {
     var ptrContent = $$('#src-list-pull-to-refresh-content');
-
     //refresh 监听器
     ptrContent.on('refresh', function (e) {
         $.ajax({
@@ -394,5 +392,107 @@ myApp.onPageInit('src_list', function (page) {
         });
     });
 
+    //图片浏览
+    $$(".photo_src").on('click', function (e) {
+        var photos = [];
+        var src = $(this).data('src');
+        var caption = $(this).data('caption');
+        var src_id = $(this).attr('src_id');
+        var data = {
+            url: src,
+            caption: caption
+        };
+        photos.push(data);
 
+        var photo_browser = myApp.photoBrowser({
+            photos: photos,
+            backLinkText: "返回",
+            toolbar: false,
+            exposition: false,
+            onTap: function (swiper, event) {
+                console.log(src_id);
+                myApp.modal({
+                    text: '<div>你确定要删除的资源吗？</div><br>',
+                    buttons: [{
+                        text: '好的',
+                        blod: true,
+                        onClick: function () {
+                            $.post(
+                                app_location + "/src/cancel",
+                                {src_id: src_id},
+                                function (resp) {
+                                    if (resp.status == 1) {
+                                        ok('删除成功');
+                                        $$('.close-popup').click();
+                                        myApp.pullToRefreshTrigger(ptrContent);
+                                    } else {
+                                        error(resp.message);
+                                    }
+                                }
+                            ).fail(function () {
+                                    error('网络故障 请检查网络连接!');
+                                });
+                        }
+                    }, {
+                        text: '取消',
+                        blod: true
+                    }]
+                });
+            }
+        });
+
+        photo_browser.open();
+    });
+
+    //视频浏览
+    $$(".video_src").on('click', function () {
+        var videos = [];
+        var src = $(this).data('src');
+        console.log(src);
+        var caption = $(this).data('caption');
+        var src_id = $(this).attr('src_id');
+        var data = {
+            html: '<video src="' + src + '" controls autoplay width="300px" height="200px"></video>',
+            caption: caption
+        };
+        videos.push(data);
+
+        var video_browser = myApp.photoBrowser({
+            photos: videos,
+            backLinkText: "返回",
+            toolbar: false,
+            onDoubleTap: function (swiper, event) {
+                console.log(src_id);
+                myApp.modal({
+                    text: '<div>你确定要删除的资源吗？</div><br>',
+                    buttons: [{
+                        text: '好的',
+                        blod: true,
+                        onClick: function () {
+                            $.post(
+                                app_location + "/src/cancel",
+                                {src_id: src_id},
+                                function (resp) {
+                                    if (resp.status == 1) {
+                                        ok('删除成功');
+                                        $$('.close-popup').click();
+                                        myApp.pullToRefreshTrigger(ptrContent);
+                                    } else {
+                                        error(resp.message);
+                                    }
+                                }
+                            ).fail(function () {
+                                    error('网络故障 请检查网络连接!');
+                                });
+                        }
+                    }, {
+                        text: '取消',
+                        blod: true
+                    }]
+                });
+            }
+        });
+
+        video_browser.open();
+    });
 });

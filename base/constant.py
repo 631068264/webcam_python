@@ -96,7 +96,7 @@ class TYPE(object):
 class SRC_STATUS(object):
     # 正常状态
     NORMAL = 0
-    # 账号删除
+    # 删除
     DELETED = 1
 
 
