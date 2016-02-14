@@ -11,7 +11,7 @@
             <ul>
                 {% for s in video_srcs %}
                     <li>
-                        <a href="javascript:void(0);" class="item-link item-content video_src"
+                        <a href="javascript:ANDROIDAPI.playVideo({{ s.src_path|fm_json }})" class="item-link item-content"
                            data-src="{{ s.src_path }}" src_id="{{ s.id }}"
                            data-caption="{{ s.create_time|fm_datetime }}">
                             <div class="item-content">

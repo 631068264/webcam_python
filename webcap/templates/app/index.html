@@ -12,27 +12,23 @@
                 {% include "/app/tab_index.html" %}
             </div>
             <!-- Second view (for second wrap)-->
-            <div id="device" class="view tab">
-                {% include "/app/tab_device.html" %}
+            <div id="manage" class="view tab">
+                {% include "/app/tab_manage.html" %}
             </div>
-            <div id="task" class="view tab">
-                {% include "/app/tab_task.html" %}
+            <div id="my" class="view tab">
+                {% include "/app/tab_my.html" %}
             </div>
-            <div id="src" class="view tab">
-                {% include "/app/tab_src.html" %}
-            </div>
+
 
             <!-- Bottom Tabbar-->
             <div class="toolbar tabbar tabbar-labels">
                 <div class="toolbar-inner">
-                    <a href="#index" class="tab-link active"><i class="icon tabbar-demo-icon-1"></i><span
-                            class="tabbar-label">首页</span></a>
-                    <a href="#device" class="tab-link"><i class="icon tabbar-demo-icon-2"></i><span
-                            class="tabbar-label">设备</span></a>
-                    <a href="#task" class="tab-link"><i class="icon tabbar-demo-icon-3"></i><span
-                            class="tabbar-label">任务</span></a>
-                    <a href="#src" class="tab-link"><i class="icon tabbar-demo-icon-4"></i><span
-                            class="tabbar-label">资源</span></a>
+                    <a href="#index" class="tab-link active"><i class="icon tabbar-demo-icon-2"></i><span
+                            class="tabbar-label">主页</span></a>
+                    <a href="#manage" class="tab-link"><i class="icon tabbar-demo-icon-3"></i><span
+                            class="tabbar-label">管理</span></a>
+                    <a href="#my" class="tab-link"><i class="icon tabbar-demo-icon-1"></i><span
+                            class="tabbar-label">个人中心</span></a>
                 </div>
             </div>
         </div>
@@ -47,15 +43,11 @@
             // Because we use fixed-through navbar we can enable dynamic navbar
             dynamicNavbar: true
         });
-        var view2 = myApp.addView('#device', {
+        var view2 = myApp.addView('#manage', {
             // Because we use fixed-through navbar we can enable dynamic navbar
             dynamicNavbar: true
         });
-        var view3 = myApp.addView('#task', {
-            // Because we use fixed-through navbar we can enable dynamic navbar
-            dynamicNavbar: true
-        });
-        var view4 = myApp.addView('#src', {
+        var view3 = myApp.addView('#my', {
             // Because we use fixed-through navbar we can enable dynamic navbar
             dynamicNavbar: true
         });

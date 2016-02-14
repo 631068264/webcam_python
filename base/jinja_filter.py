@@ -94,6 +94,10 @@ def weekname(value):
     return util.get_weekname(value)
 
 
+def format_json(value):
+    return util.safe_json_dumps(util.LOCAL.REALM + value, encoding='utf-8')
+
+
 # mapping
 
 mapping = {
@@ -101,6 +105,7 @@ mapping = {
     "fm_date": functools.partial(format_datetime, format="%Y-%m-%d", default='-'),
     "fm_datetime": format_datetime,
     "fm_null": format_null,
+    "fm_json": format_json,
     "fm_ratio": format_ratio,
     "fen2yuan": fen2yuan,
     "inet_ntoa": inet_ntoa,

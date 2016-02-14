@@ -56,6 +56,21 @@ $$(document).on('click', '#btn_logout', function () {
 
 function goBack() {
     $$(".back").click();
+    if (typeof ANDROIDAPI !== 'undefined' && ANDROIDAPI.onBackButtonPress) {
+        ANDROIDAPI.onBackButtonPress(!!$$(".back").length);
+    }
+    return !!$$(".back").length;
+}
+
+function clearCache() {
+    console.log("clearCache");
+    if (typeof ANDROIDAPI !== 'undefined' && ANDROIDAPI.clearCache) {
+        console.log("load Android clearCache");
+        ANDROIDAPI.clearCache();
+    }
+    else {
+        alert("运行的环境不支持");
+    }
 }
 
 function refreshBack(page, redirect) {
@@ -444,55 +459,4 @@ myApp.onPageInit('src_list', function (page) {
         photo_browser.open();
     });
 
-    //视频浏览
-    $$(".video_src").on('click', function () {
-        var videos = [];
-        var src = $(this).data('src');
-        console.log(src);
-        var caption = $(this).data('caption');
-        var src_id = $(this).attr('src_id');
-        var data = {
-            html: '<video src="' + src + '" controls autoplay width="300px" height="200px"></video>',
-            caption: caption
-        };
-        videos.push(data);
-
-        var video_browser = myApp.photoBrowser({
-            photos: videos,
-            backLinkText: "返回",
-            toolbar: false,
-            onDoubleTap: function (swiper, event) {
-                console.log(src_id);
-                myApp.modal({
-                    text: '<div>你确定要删除的资源吗？</div><br>',
-                    buttons: [{
-                        text: '好的',
-                        blod: true,
-                        onClick: function () {
-                            $.post(
-                                app_location + "/src/cancel",
-                                {src_id: src_id},
-                                function (resp) {
-                                    if (resp.status == 1) {
-                                        ok('删除成功');
-                                        $$('.close-popup').click();
-                                        myApp.pullToRefreshTrigger(ptrContent);
-                                    } else {
-                                        error(resp.message);
-                                    }
-                                }
-                            ).fail(function () {
-                                    error('网络故障 请检查网络连接!');
-                                });
-                        }
-                    }, {
-                        text: '取消',
-                        blod: true
-                    }]
-                });
-            }
-        });
-
-        video_browser.open();
-    });
 });

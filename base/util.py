@@ -492,6 +492,7 @@ class LOCAL(object):
     PROTOCOL = 'rtsp://'
     SUFFIX = '.sdp'
     PREFIX = PROTOCOL + IP + ':' + PORT + "/"
+    REALM = "http://" + IP
 
 
 def get_device_src(device_id):

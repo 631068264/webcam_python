@@ -1,0 +1,37 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="center sliding">个人中心</div>
+    </div>
+</div>
+
+
+<div class="pages navbar-through">
+    <div data-page="tab-my" class="page">
+        <div class="page-content">
+            <div class="list-block">
+                <ul>
+                    {% if session[const.SESSION.KEY_LOGIN] %}
+                        <li>
+                            <a id="btn_logout" href="#" class="item-link">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title">注销</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li><a href="javascript: clearCache();" class="item-link">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">清除缓存</div>
+                            </div>
+                        </div>
+                    </a></li>
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
