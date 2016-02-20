@@ -46,14 +46,16 @@ $$(document).on('pageInit', function (e) {
         }
     });
 });
-//首页js
+
+
+//注销
 $$(document).on('click', '#btn_logout', function () {
     $.get(app_location + "/logout", function (ret) {
         window.location.reload();
     });
 });
 
-
+//返回
 function goBack() {
     $$(".back").click();
     if (typeof ANDROIDAPI !== 'undefined' && ANDROIDAPI.onBackButtonPress) {
@@ -62,10 +64,11 @@ function goBack() {
     return !!$$(".back").length;
 }
 
+//清除缓存
 function clearCache() {
-    console.log("clearCache");
+    log("clearCache");
     if (typeof ANDROIDAPI !== 'undefined' && ANDROIDAPI.clearCache) {
-        console.log("load Android clearCache");
+        log("load Android clearCache");
         ANDROIDAPI.clearCache();
     }
     else {
@@ -73,6 +76,7 @@ function clearCache() {
     }
 }
 
+//刷新返回
 function refreshBack(page, redirect) {
     page.view.router.back({
         url: redirect,
@@ -86,6 +90,10 @@ function error(msg) {
 }
 function ok(msg) {
     myApp.alert(msg);
+}
+
+function log(msg) {
+    console.log(msg);
 }
 
 myApp.onPageInit('login-page', function (page) {
@@ -310,7 +318,7 @@ myApp.onPageInit('device_info', function (page) {
     $("#form_device_info").ajaxForm({
         success: function (resp) {
             $("#btn_device_info").attr("disabled", false);
-            console.log(resp);
+            log(resp);
             if (resp.status == 1) {
                 ok('修改成功');
                 refreshBack(page, redirect);
@@ -337,7 +345,7 @@ myApp.onPageInit('task_add', function (page) {
     $("#form_add_common_task").ajaxForm({
         success: function (resp) {
             $("#btn_add_common_task").attr("disabled", false);
-            console.log(resp);
+            log(resp);
             if (resp.status == 1) {
                 ok('新增日常任务成功');
                 refreshBack(page, redirect);
@@ -361,7 +369,7 @@ myApp.onPageInit('task_add', function (page) {
     $("#form_add_cycle_task").ajaxForm({
         success: function (resp) {
             $("#btn_add_cycle_task").attr("disabled", false);
-            console.log(resp);
+            log(resp);
             if (resp.status == 1) {
                 ok('新增循环任务成功');
                 refreshBack(page, redirect);
@@ -384,7 +392,7 @@ myApp.onPageInit('task_add', function (page) {
     });
     $("input:radio[name = 'type']").change(function () {
         var flag = $(this).val();
-        console.log(flag);
+        log(flag);
         $('.form_duration').toggle(flag);
     });
 
@@ -408,7 +416,7 @@ myApp.onPageInit('src_list', function (page) {
     });
 
     //图片浏览
-    $$(".photo_src").on('click', function (e) {
+    ptrContent.on('click', ".photo_src", function () {
         var photos = [];
         var src = $(this).data('src');
         var caption = $(this).data('caption');
@@ -418,6 +426,7 @@ myApp.onPageInit('src_list', function (page) {
             caption: caption
         };
         photos.push(data);
+        log("图片浏览");
 
         var photo_browser = myApp.photoBrowser({
             photos: photos,
@@ -425,7 +434,7 @@ myApp.onPageInit('src_list', function (page) {
             toolbar: false,
             exposition: false,
             onTap: function (swiper, event) {
-                console.log(src_id);
+                log(src_id);
                 myApp.modal({
                     text: '<div>你确定要删除的资源吗？</div><br>',
                     buttons: [{
@@ -457,6 +466,37 @@ myApp.onPageInit('src_list', function (page) {
         });
 
         photo_browser.open();
+    });
+
+    ptrContent.on('click', 'a[btn_type="delete"]', function () {
+        var src_id = $(this).attr("src_id");
+
+        myApp.modal({
+            text: '<div>你确定要删除的资源吗？</div><br>',
+            buttons: [{
+                text: '好的',
+                blod: true,
+                onClick: function () {
+                    $.post(
+                        app_location + "/src/cancel",
+                        {src_id: src_id},
+                        function (resp) {
+                            if (resp.status == 1) {
+                                ok('删除成功');
+                                myApp.pullToRefreshTrigger(ptrContent);
+                            } else {
+                                error(resp.message);
+                            }
+                        }
+                    ).fail(function () {
+                            error('网络故障 请检查网络连接!');
+                        });
+                }
+            }, {
+                text: '取消',
+                blod: true
+            }]
+        });
     });
 
 });
