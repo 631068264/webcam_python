@@ -3,10 +3,12 @@
 # __author__ = 'wuyuxi'
 import os
 import random
+from cStringIO import StringIO
 
 from captcha.image import ImageCaptcha
 
 from flask import Blueprint, session, redirect, send_file, send_from_directory
+import qrcode
 
 from base import logger as log, util, constant as const
 from base.framework import general, TempResponse, url_for, form_check, db_conn, ErrorResponse, OkResponse
@@ -130,10 +132,36 @@ def check_image_captcha(safe_vars):
 
 @home.route("/download/client")
 @general("采集客户端下载")
-def download():
+def download_client():
     path = os.path.join(os.path.dirname(home.root_path), 'upload')
-    print(path)
     return send_from_directory(path, 'EasyDSS_v7.0.2.rar', as_attachment=True)
+
+
+@home.route("/download/apk")
+@general("apk下载")
+def download_apk():
+    path = os.path.join(os.path.dirname(home.root_path), 'upload')
+    return send_from_directory(path, 'Webcam_release-v1.0.0-c9.apk', as_attachment=True)
+
+
+@home.route("/apk/qrcode")
+@general("apk二维码")
+def apk_qrcode():
+    apk_location = util.LOCAL.REALM + "/download/apk"
+
+    qr = qrcode.QRCode(
+        version=2,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=16,
+        border=4
+    )
+    qr.add_data(apk_location)
+    img = qr.make_image().convert("RGBA")
+
+    img_io = StringIO()
+    img.save(img_io, 'PNG', quality=70)
+    img_io.seek(0)
+    return send_file(img_io, mimetype="image/png")
 
 
 @home.route("/logout")

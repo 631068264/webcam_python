@@ -8,9 +8,19 @@
 
             <p>使用前请先下载本站的PC客户端,然后根据提示运行客户端 客户端只能在Windows版使用</p>
 
-            <p><a id="download" class="btn btn-primary btn-lg pull-right" href="{{ url_for('home.download') }}"
-                  role="button">客户端下载
-                <span class="glyphicon glyphicon-save" aria-hidden="true"></span></a></p>
+            <p>点击二维码 或者 扫码 可以获取APP</p>
+
+            <div class="pull-right row">
+                <div class="col-md-5">
+                    <a href="{{ url_for('home.download_apk') }}"><img src="{{ url_for('home.apk_qrcode') }}"
+                                                                      width="100px" height="100px"/></a>
+                </div>
+
+                <a id="download" class="btn btn-primary btn-lg pull-right" href="{{ url_for('home.download_apk') }}"
+                   role="button">客户端下载
+                    <span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
+            </div>
+
         </div>
     </div>
 

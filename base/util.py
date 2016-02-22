@@ -488,11 +488,13 @@ def get_static_file_version(full_filename):
 
 class LOCAL(object):
     IP = socket.gethostbyname(socket.gethostname())
-    PORT = str(554)
-    PROTOCOL = 'rtsp://'
+    RTSP_PORT = str(554)
+    RTSP_PROTOCOL = 'rtsp://'
     SUFFIX = '.sdp'
-    PREFIX = PROTOCOL + IP + ':' + PORT + "/"
-    REALM = "http://" + IP
+    PREFIX = RTSP_PROTOCOL + IP + ':' + RTSP_PORT + "/"
+
+    LOCAL_PORT = str(config.debug_port)
+    REALM = "http://" + IP + ":" + LOCAL_PORT + config.app_path
 
 
 def get_device_src(device_id):

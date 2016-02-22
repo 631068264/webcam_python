@@ -274,7 +274,7 @@ def task_change_check(db, account_id, task_id):
                        minute=task.execute_time.minute,
                        second=task.execute_time.second)
 
-    if task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
+    if task.now == const.BOOLEAN.FALSE and task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
             hours=config.min_hours_left_when_cancel) > _now:
         return False, "距离任务开始不足%s小时不能修改设备" % config.min_hours_left_when_cancel
     return True, ""
