@@ -20,3 +20,4 @@ template/*old
 .DS_Store
 config_global/online.py
 webcap/static/download/
+/webcap/test/

@@ -42,9 +42,7 @@ for name in views.__all__:
 if __name__ == '__main__':
     os.environ['WSGI_CONFIG_MODULE'] = 'local'
     # TODO：列表分页
-    # TODO：二维码等
     # TODO：首页提示隐藏 Cookie
-    # TODO: 注册时字符串锁
     # TODO: gevent 协程
     threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()
     app.run(host='0.0.0.0', port=config.debug_port)
