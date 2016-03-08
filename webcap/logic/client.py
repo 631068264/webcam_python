@@ -12,7 +12,10 @@ import subprocess
 
 from PIL import Image
 
+from etc import config
 
+
+# TODO：提示向上抛
 class ACTION(object):
     BEGIN = "begin"
     FINISH = "finish"
@@ -25,13 +28,12 @@ class ACTION(object):
     CONNECTION_DROP = "Connection drop"
 
 
-server_address = ('localhost', 10218)
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client_socket.settimeout(5)
-
-data_buffer = 1024 * 10
-
+client_socket = None
 is_need = True
+host = config.client_port
+data_buffer = config.data_buffer
+remote_address = None
+server_address = (remote_address, host)
 
 
 def stop():
@@ -40,8 +42,14 @@ def stop():
     is_need = False
 
 
-def begin():
+def begin(address="localhost"):
     while True:
+        global client_socket, remote_address, server_address
+        # http://stackoverflow.com/questions/15958026/getting-errno-9-bad-file-descriptor-in-python-socket
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client_socket.settimeout(5)
+        remote_address = "localhost" if address == '127.0.0.1' else address
+        server_address = (remote_address, host)
         client_socket.sendto(ACTION.BEGIN, server_address)
         try:
             message, address = client_socket.recvfrom(data_buffer)
@@ -89,7 +97,7 @@ def kill(proc):
 res = (300, 200)
 
 
-def get_photo(photo_path, thumbnail_path):
+def get_photo(photo_path, thumbnail_path, address):
     begin()
     client_socket.sendto(ACTION.PHOTO, server_address)
     save_file(photo_path)
@@ -99,9 +107,9 @@ def get_photo(photo_path, thumbnail_path):
     client_socket.close()
 
 
-def get_video(video_path, thumbnail_path, second):
+def get_video(video_path, thumbnail_path, second, address):
     begin()
-    data = "%s:%d" % (ACTION.VIDEO, second)
+    data = "%s:%s" % (ACTION.VIDEO, second)
     client_socket.sendto(data, server_address)
     save_file(video_path)
     # 缩略图
@@ -110,9 +118,10 @@ def get_video(video_path, thumbnail_path, second):
     client_socket.close()
 
 
-def do_task(src_path, thumbnail_path, second):
+def do_task(src_path, thumbnail_path, second=None, address=None):
     src_path = src_path.replace("\\", os.sep)
     thumbnail_path = thumbnail_path.replace("\\", os.sep)
     if second:
-        get_photo(src_path, thumbnail_path)
-    get_video(src_path, thumbnail_path, second)
+        get_video(src_path, thumbnail_path, second, address)
+    else:
+        get_photo(src_path, thumbnail_path, address)

@@ -121,3 +121,7 @@ function redirect(msg, location) {
     }
     Toast('#msg', msg, location, 1);
 }
+
+function refresh() {
+    window.location.href = window.location.href.split('#')[0];
+}

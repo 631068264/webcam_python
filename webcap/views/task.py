@@ -3,7 +3,7 @@
 # __author__ = 'wuyuxi'
 import datetime
 
-from flask import Blueprint, session
+from flask import Blueprint, session, request
 
 from base import util
 from etc import config
@@ -96,10 +96,19 @@ def date_select_list():
     return days
 
 
+def update_remote_addr(db, device_type):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    account = dao.get_account_by_id(db, account_id)
+    if device_type == const.DEVICE.PC and \
+            (account.remote_addr or account.remote_addr != request.remote_addr):
+        dao.update_remote_addr(db, account_id, request.remote_addr)
+
+
 @task.route("/task/commen/add", methods=["POST"])
 @general("添加日常任务")
 @login_required()
 @db_conn("db_writer")
+@recognize_device()
 @form_check({
     "now": F_int("是否即时") & "strict" & "optional" & (lambda v: (v in const.BOOLEAN.ALL, v)),
     "task_dates": (F_datetime("任务日期", format="%Y-%m-%d") & "strict" & "optional" & "multiple"),
@@ -108,9 +117,10 @@ def date_select_list():
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
-def common_task_add(db_writer, safe_vars):
+def common_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
+    update_remote_addr(db_writer, device_type)
     today = datetime.date.today()
     now = datetime.datetime.now()
 
@@ -183,6 +193,7 @@ def common_task_add(db_writer, safe_vars):
 @general("添加循环任务")
 @login_required()
 @db_conn("db_writer")
+@recognize_device()
 @form_check({
     "cycle": F_int("是否循环任务") & "strict" & "required" & (lambda v: (v in const.BOOLEAN.ALL, v)),
     "execute_time": (F_datetime("执行时间", format='%H:%M')) & "strict" & "required",
@@ -190,9 +201,10 @@ def common_task_add(db_writer, safe_vars):
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
 })
-def cycle_task_add(db_writer, safe_vars):
+def cycle_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
+    update_remote_addr(db_writer, device_type)
     today = datetime.date.today()
     now = datetime.datetime.now()
 
@@ -229,7 +241,7 @@ def cycle_task_add(db_writer, safe_vars):
 def task_cancel(db_writer, safe_vars):
     account_id = session[const.SESSION.KEY_ADMIN_ID]
     with transaction(db_writer) as trans:
-        is_ok, msg = task_change_check(db_writer, account_id, safe_vars.task_id)
+        is_ok, msg = task_del_check(db_writer, account_id, safe_vars.task_id)
         if not is_ok:
             return ErrorResponse(msg)
         QS(db_writer).table(T.task).where(F.id == safe_vars.task_id).update({
@@ -277,4 +289,11 @@ def task_change_check(db, account_id, task_id):
     if task.now == const.BOOLEAN.FALSE and task.status != const.TASK_STATUS.FINISHED and now + datetime.timedelta(
             hours=config.min_hours_left_when_cancel) > _now:
         return False, "距离任务开始不足%s小时不能修改设备" % config.min_hours_left_when_cancel
+    return True, ""
+
+
+def task_del_check(db, account_id, task_id):
+    task = dao.update_task_by_account_id(db, account_id, task_id)
+    if not task:
+        return False, "该任务不是你的"
     return True, ""

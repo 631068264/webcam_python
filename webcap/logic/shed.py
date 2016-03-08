@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 # __author__ = 'wuyuxi'
 import os
-import shlex
 import threading
 import time
 import datetime
-import subprocess
 
 import schedule
 
@@ -14,8 +12,10 @@ from etc import config
 from base import smartpool
 from base import util
 from base import constant as const
+from base import dao
 from base.poolmysql import transaction
 from base.smartsql import Table as T, Field as F, Expr as E, QuerySet as QS
+from webcap.logic import client
 
 db = smartpool.ConnectionProxy("db_writer")
 
@@ -35,8 +35,6 @@ def start_task(db, task):
     threading.Thread(target=do_task, args=(db, task)).start()
 
 
-# TODO：延迟截取 -ss staart_time -c:a -c:v output 为保证质量
-# TODO: ffmpeg -i dump.mp4 -ss 20 -t 0.001 -s 380x300 -f image2 xxx.jpg
 def daily_task():
     now = datetime.date.today()
 
@@ -57,7 +55,8 @@ def daily_task():
 def do_task(db, task):
     with transaction(db) as trans:
         # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
-        real_device = get_device_url(task.device_id)
+
+        account = dao.get_account_by_id(db, task.account_id)
         path, static_url = get_src_path(task.device_id)
 
         data = {}
@@ -68,11 +67,7 @@ def do_task(db, task):
             data["thumbnail_name"] = util.get_file_name('.jpg')
             data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
 
-            src_cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 500x650 ' + data["src_path"]
-            thumbnail_cmd = 'ffmpeg -y -i ' + data['src_path'] + ' -f image2 -t 0.001 -s 300x200 ' + data[
-                "thumbnail_path"]
-            kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True))
-            kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
+            client.do_task(data["src_path"], data["thumbnail_path"], address=account.remote_addr)
 
         elif task.type == const.TYPE.VIDEO:
             data["src_name"] = util.get_file_name('.mp4')
@@ -81,21 +76,16 @@ def do_task(db, task):
             data["thumbnail_name"] = util.get_file_name('.jpg')
             data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
 
-            src_cmd = 'ffmpeg -y -i ' + real_device + ' -c:v libx264 -c:a libvo_aacenc -t ' + \
-                      str(task.duration) + ' ' + data["src_path"]
-
-            thumbnail_cmd = 'ffmpeg -y -i ' + real_device + ' -f image2 -t 0.001 -s 300x200 ' + data["thumbnail_path"]
-
-            kill(subprocess.Popen(shlex.split(thumbnail_cmd, posix=False), shell=True))
-            kill(subprocess.Popen(shlex.split(src_cmd, posix=False), shell=True), kill_time=task.duration + config.lazy)
+            client.do_task(data["src_path"], data["thumbnail_path"],
+                           second=task.duration, address=account.remote_addr)
 
         size = os.path.getsize(data["src_path"])
         # 插入资源
         QS(db).table(T.src).where(F.id == task.id).insert({
             "id": util.get_id(),
             "create_time": datetime.datetime.now(),
-            "src_path": os.path.join(static_url, data["src_name"]),
-            "thumbnail": os.path.join(static_url, data["thumbnail_name"]),
+            "src_path": os.path.join(static_url, data["src_name"]).replace('\\', "/"),
+            "thumbnail": os.path.join(static_url, data["thumbnail_name"]).replace('\\', "/"),
             "size": size,
             "status": const.SRC_STATUS.NORMAL,
             "type": task.type,
@@ -136,7 +126,7 @@ def get_src_path(device_id):
     save_root_path = os.path.join("webcap", config.static_path.replace('/', '') + os.sep + "download")
     download_path = os.path.join(root_path, save_root_path)
     device_path = os.path.join(download_path, device_id)
-    url_path = os.path.join(os.path.join(config.static_path, "download"), device_id).replace('\\', '/')
+    url_path = os.path.join(os.path.join(config.static_path, "download"), device_id).replace('\\', os.sep)
     if not os.path.exists(device_path):
         os.makedirs(device_path)
 

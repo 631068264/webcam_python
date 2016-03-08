@@ -25,6 +25,8 @@ home = Blueprint("home", __name__)
 @login_required()
 @recognize_device()
 def app_index(device_type):
+    if device_type == const.DEVICE.NAME_DICT[const.DEVICE.WINDOWS]:
+        return redirect(url_for("home.index"))
     return TempResponse(device_type + "/index.html")
 
 

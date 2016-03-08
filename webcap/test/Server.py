@@ -106,6 +106,7 @@ def send_file(file_name):
     :param file_name:
     :return:
     """
+    file_name = file_name.replace("\\", os.sep)
     with open(file_name, 'rb') as f:
         while True:
             data = f.read(data_buffer)
@@ -195,7 +196,7 @@ def send_video(video_name):
 
         kill(subprocess.Popen(shlex.split(cmd, posix=False), shell=True))
 
-        send_file(video_path.replace("\\", os.sep))
+        send_file(video_path)
 
         remove(temp_dir)
 

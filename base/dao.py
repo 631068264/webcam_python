@@ -45,6 +45,12 @@ def get_devices_by_account_id(db, account_id):
     ).select()
 
 
+def update_remote_addr(db, account_id, remote_addr):
+    return QS(db).table(T.account).where(F.id == account_id).update({
+        "remote_addr": remote_addr,
+    })
+
+
 def update_device_by_account_id(db, account_id, device_id):
     return QS(db).table(T.device).where(
         (F.account_id == account_id) & (F.id == device_id) & (F.status == const.DEVICE_STATUS.NORMAL)
@@ -73,7 +79,7 @@ def get_tasks(db, account_id, is_cycle):
     return QS(db).table(T.task).where(
         (F.account_id == account_id) & (F.status != const.TASK_STATUS.DELETED) &
         (F.cycle == is_cycle)
-    ).order_by(F.create_time, desc=True).select()
+    ).order_by(F.execute_time, desc=True).select()
 
 
 def get_task_device(db, task_id):

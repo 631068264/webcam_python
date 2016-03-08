@@ -2,10 +2,6 @@ base/*.pyc
 etc/*.pyc
 tools/*.pyc
 etc/config/*.pyc
-config_global/my.py
-config_global/local.py
-etc/local.py
-etc/my.py
 views/*.pyc
 *.pyc
 reload
