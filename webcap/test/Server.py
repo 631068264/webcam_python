@@ -66,6 +66,7 @@ class UdpReceiver(Thread):
 
             if message == ACTION.BEGIN:
                 is_sending = True
+                print ACTION.SERVICE_BEGIN_FLAG
                 server_socket.sendto(ACTION.SERVICE_BEGIN_FLAG, address)
             elif message == ACTION.FINISH:
                 is_sending = False

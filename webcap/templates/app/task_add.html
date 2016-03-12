@@ -128,8 +128,42 @@
                         <input type="hidden" id="cycle" name="cycle" value="{{ const.BOOLEAN.TRUE }}">
 
                         <div class="list-block">
+                            <div class="content-block-title">可选 <strong>默认每天循环</strong></div>
                             <ul>
-
+                                <li id="form_begin_date">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">起始日期</div>
+                                            <div class="item-input">
+                                                <input name="begin_date" id="begin_date" type="date">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li id="form_end_date">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">截止日期</div>
+                                            <div class="item-input">
+                                                <input name="end_date" id="end_date" type="date">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="list-block">
+                            <ul>
+                                <li id="form_execute_time">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">执行时间</div>
+                                            <div class="item-input">
+                                                <input name="execute_time" id="execute_time" type="time">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
                                 <li id="form_execute_time">
                                     <div class="item-content">
                                         <div class="item-inner">
@@ -145,7 +179,8 @@
                                         <div class="item-inner">
                                             <div class="item-title label">时长</div>
                                             <div class="item-input">
-                                                <input type="text" id="duration" name="duration" min="5" max="10">
+                                                <input type="text" id="duration" name="duration" min="5"
+                                                       max="10">
                                             </div>
                                             <div class="item-after label">
                                                 秒
@@ -170,8 +205,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="content-block-title">资源类型</div>
                         <div class="list-block">
+                            <div class="content-block-title">资源类型</div>
                             <ul>
                                 {% for k,v in task_type.iteritems() %}
                                     <li>

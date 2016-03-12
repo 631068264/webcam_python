@@ -98,12 +98,14 @@ def safe_inet_aton(ip):
     return n
 
 
-def get_day_begin_time(time):
+def get_day_begin_time(time=None):
     """
     @params time: datatime
 
     @return: datetime, begin time of a day
     """
+    if not time:
+        time = datetime.datetime.now()
     return time.replace(hour=0, minute=0, second=0, microsecond=0)
 
 

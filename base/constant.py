@@ -26,7 +26,7 @@ class ROLE(object):
         ADMIN: 52428800,  # 50M
         NORMAL_ACCOUNT: 20971520,  # 20M
     }
-
+    # 设备个数
     DEVICE = {
         ADMIN: 10,  # 50M
         NORMAL_ACCOUNT: 2,  # 20M

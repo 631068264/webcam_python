@@ -189,6 +189,19 @@ def common_task_add(db_writer, safe_vars, device_type):
     return OkResponse()
 
 
+def check_date(begin_date, end_date, today):
+    if not begin_date and not end_date:
+        return "", True
+    elif begin_date and not end_date:
+        return "请填写截止日期", False
+    elif end_date and not begin_date:
+        return "请填写起始日期", False
+    elif begin_date <= today or end_date <= begin_date:
+        return "检查日期是否合理", False
+    else:
+        return "", True
+
+
 @task.route("/task/cycle/add", methods=["POST"])
 @general("添加循环任务")
 @login_required()
@@ -200,6 +213,8 @@ def common_task_add(db_writer, safe_vars, device_type):
     "duration": (5 <= F_int("持续时间") <= 10) & "strict" & "optional",
     "type": F_int("资源类型") & "strict" & "required" & (lambda v: (v in const.TYPE.ALL, v)),
     "device_id": F_str("设备ID") & "strict" & "required",
+    "end_date": F_datetime("截止日期", format='%Y-%m-%d') & "strict" & "optional",
+    "begin_date": F_datetime("起始日期", format='%Y-%m-%d') & "strict" & "optional",
 })
 def cycle_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
@@ -207,6 +222,9 @@ def cycle_task_add(db_writer, safe_vars, device_type):
     update_remote_addr(db_writer, device_type)
     today = datetime.date.today()
     now = datetime.datetime.now()
+    msg, is_ok = check_date(safe_vars.begin_date, safe_vars.end_date, util.get_day_begin_time(now))
+    if not is_ok:
+        return ErrorResponse(msg)
 
     # 检验非即时信息
     account_id = session[const.SESSION.KEY_ADMIN_ID]
@@ -225,6 +243,8 @@ def cycle_task_add(db_writer, safe_vars, device_type):
         "status": const.TASK_STATUS.NORMAL,
         "account_id": account_id,
         "device_id": safe_vars.device_id,
+        "begin_date": safe_vars.begin_date if safe_vars.begin_date else None,
+        "end_date": safe_vars.end_date if safe_vars.end_date else None,
     }
     # 即时
     QS(db_writer).table(T.task).insert(data)

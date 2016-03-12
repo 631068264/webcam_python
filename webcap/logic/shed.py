@@ -105,7 +105,9 @@ def do_task(db, task):
                     (util.str_to_time(task.create_time, format='%Y-%m-%d') + datetime.timedelta(days=1)).strftime(
                         '%Y-%m-%d'),
                 "finish_time": datetime.datetime.now(),
-                "status": const.TASK_STATUS.CYCLE,
+                "status": const.TASK_STATUS.FINISHED
+                if task.end_time and util.get_day_begin_time() == util.str_to_time(task.end_date, format='%Y-%m-%d')
+                else const.TASK_STATUS.CYCLE,
             })
         else:
             QS(db).table(T.task).where(F.id == task.id).update({
