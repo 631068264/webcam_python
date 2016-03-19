@@ -112,3 +112,7 @@ def get_device_by_accountId_and_name(db, account_id, device_name):
     return QS(db).table(T.device).where(
         (F.account_id == account_id) & (F.name == device_name)
     ).select_one()
+
+
+def get_device_by_device_id(db, device_id):
+    return QS(db).table(T.device).where(F.id == device_id).select_one()

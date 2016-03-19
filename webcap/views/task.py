@@ -57,6 +57,7 @@ def device_list(db_reader, safe_vars, device_type):
     common_tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id, const.BOOLEAN.FALSE)
     cycle_tasks = dao.get_tasks_by_account_and_device(db_reader, account_id, safe_vars.device_id, const.BOOLEAN.TRUE)
     devices = dao.get_devices_by_account_id(db_reader, account_id)
+    device = dao.get_device_by_device_id(db_reader, safe_vars.device_id)
     templ_name = "/task_list.html"
     if safe_vars.type == const.BLOCK.BLOCK:
         templ_name = "/task_list_block.html"
@@ -64,7 +65,8 @@ def device_list(db_reader, safe_vars, device_type):
                         common_tasks=common_tasks,
                         cycle_tasks=cycle_tasks,
                         device_id=safe_vars.device_id,
-                        devices=devices)
+                        devices=devices,
+                        device=device)
 
 
 @task.route("/task/add/load")

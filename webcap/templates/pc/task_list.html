@@ -12,6 +12,9 @@
     <div class="tab-content" style="padding: 50px;">
         <div class="tab-pane" id="common_task">
             <table class="table table-striped table-hover table-condensed ">
+                {% if device %}
+                    <caption><strong><h3>{{ device.name }}__任务</h3></strong></caption>
+                {% endif %}
                 <tr>
                     <th>创建日期</th>
                     <th>执行时间</th>
@@ -55,6 +58,9 @@
         </div>
         <div class="tab-pane" id="cycle_task">
             <table class="table table-striped table-hover table-condensed ">
+                {% if device %}
+                    <caption><strong><h3>{{ device.name }}__任务</h3></strong></caption>
+                {% endif %}
                 <tr>
                     <th>创建日期</th>
                     <th>起始日期</th>

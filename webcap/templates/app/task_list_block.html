@@ -63,6 +63,10 @@
                     <span>类型：{{ const.TYPE.NAME_DICT[t.type] }}</span>
                 </div>
                 <div class="card-footer">
+                    <span>起始日期：{{ t.begin_date| fm_date }}</span>
+                    <span>截止日期：{{ t.end_date| fm_date }}</span>
+                </div>
+                <div class="card-footer">
                     <span>完成时间：{{ t.finish_time|fm_time }}</span>
                 </div>
 
