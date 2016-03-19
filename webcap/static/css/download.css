@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+    zoom: 1;
+}
+
+.app-download {
+    width: 50px;
+    height: 152px;
+    cursor: pointer;
+    left: 95%;
+    top: 77%;
+    position: fixed;
+}
+
+.app-download ul li {
+    width: 51px;
+    display: block;
+    height: 57px;
+    padding: 2px;
+}
+
+.app {
+    background: url(../images/f08_elevator.png) no-repeat;
+    background-position: 0 55%;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+}
+
+.app:hover {
+    background-position: 0 61%;
+}
+
+.app:hover .app-logo {
+    width: 200px;
+    height: 200px;
+}
+
+.app-logo {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    position: absolute;
+
+    top: -60px;
+    left: -213px;
+
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+}

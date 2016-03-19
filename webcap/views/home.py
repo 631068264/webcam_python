@@ -143,7 +143,7 @@ def download_client():
 @general("apk下载")
 def download_apk():
     path = os.path.join(os.path.dirname(home.root_path), 'upload')
-    return send_from_directory(path, 'Webcam_release-v1.0.0-c9.apk', as_attachment=True)
+    return send_from_directory(path, 'Webcam_debug-v1.0.0-c9.apk', as_attachment=True)
 
 
 @home.route("/apk/qrcode")

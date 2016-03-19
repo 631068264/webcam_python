@@ -10,6 +10,12 @@ function getAppPath() {
     return getRoot() + window.location.pathname;
 }
 
+function goTo(href) {
+    if (href != null) {
+        window.location.href = href
+    }
+}
+
 //返回顶部
 function GoUp(dom, image_path, min_height) {
     //预定义返回顶部的html代码，它的css样式默认为不显示

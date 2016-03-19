@@ -123,15 +123,15 @@
 
         //退出
         $('#logout').click(function () {
-            window.location.href = '{{ url_for("home.logout") }}';
+            goTo('{{ url_for("home.logout") }}');
         });
         //登录
         $('#login').click(function () {
-            window.location.href = '{{ url_for("home.login_load") }}';
+            goTo('{{ url_for("home.login_load") }}');
         });
         //注册
         $('#register').click(function () {
-            window.location.href = '{{ url_for("home.register_load") }}';
+            goTo('{{ url_for("home.register_load") }}');
         });
 
     </script>
