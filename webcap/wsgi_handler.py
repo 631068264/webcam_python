@@ -44,7 +44,6 @@ if __name__ == '__main__':
     # TODO：列表分页
     # TODO: gevent 协程
 
-    # TODO: ip与设备关联
     # TODO: 资源筛选条件 /删除条件
     # TODO: 图像服务器的exe化
     threading.Thread(target=shed.start_daily_task, args=("0:24",)).start()

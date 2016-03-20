@@ -45,8 +45,8 @@ def get_devices_by_account_id(db, account_id):
     ).select()
 
 
-def update_remote_addr(db, account_id, remote_addr):
-    return QS(db).table(T.account).where(F.id == account_id).update({
+def update_remote_addr(db, device_id, remote_addr):
+    return QS(db).table(T.device).where(F.id == device_id).update({
         "remote_addr": remote_addr,
     })
 

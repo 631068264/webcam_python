@@ -98,12 +98,11 @@ def date_select_list():
     return days
 
 
-def update_remote_addr(db, device_type):
-    account_id = session[const.SESSION.KEY_ADMIN_ID]
-    account = dao.get_account_by_id(db, account_id)
+def update_remote_addr(db, device_type, device_id):
+    device = dao.get_device_by_device_id(db, device_id)
     if device_type == const.DEVICE.PC and \
-            (account.remote_addr or account.remote_addr != request.remote_addr):
-        dao.update_remote_addr(db, account_id, request.remote_addr)
+            (device.remote_addr or device.remote_addr != request.remote_addr):
+        dao.update_remote_addr(db, device_id, request.remote_addr)
 
 
 @task.route("/task/commen/add", methods=["POST"])
@@ -122,7 +121,7 @@ def update_remote_addr(db, device_type):
 def common_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
-    update_remote_addr(db_writer, device_type)
+    update_remote_addr(db_writer, device_type, safe_vars.device_id)
     today = datetime.date.today()
     now = datetime.datetime.now()
 
@@ -221,7 +220,7 @@ def check_date(begin_date, end_date, today):
 def cycle_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
-    update_remote_addr(db_writer, device_type)
+    update_remote_addr(db_writer, device_type, safe_vars.device_id)
     today = datetime.date.today()
     now = datetime.datetime.now()
     msg, is_ok = check_date(safe_vars.begin_date, safe_vars.end_date, util.get_day_begin_time(now))

@@ -56,7 +56,7 @@ def do_task(db, task):
     with transaction(db) as trans:
         # real_device = 'rtsp://218.204.223.237:554/live/1/66251FC11353191F/e7ooqwcfbqjoo80j.sdp'
 
-        account = dao.get_account_by_id(db, task.account_id)
+        device = dao.get_device_by_device_id(db, task.device_id)
         path, static_url = get_src_path(task.device_id)
 
         data = {}
@@ -67,7 +67,7 @@ def do_task(db, task):
             data["thumbnail_name"] = util.get_file_name('.jpg')
             data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
 
-            client.do_task(data["src_path"], data["thumbnail_path"], address=account.remote_addr)
+            client.do_task(data["src_path"], data["thumbnail_path"], address=device.remote_addr)
 
         elif task.type == const.TYPE.VIDEO:
             data["src_name"] = util.get_file_name('.mp4')
@@ -77,7 +77,7 @@ def do_task(db, task):
             data["thumbnail_path"] = os.path.join(path, data["thumbnail_name"])
 
             client.do_task(data["src_path"], data["thumbnail_path"],
-                           second=task.duration, address=account.remote_addr)
+                           second=task.duration, address=device.remote_addr)
 
         size = os.path.getsize(data["src_path"])
         # 插入资源
