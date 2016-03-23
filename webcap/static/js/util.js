@@ -131,3 +131,7 @@ function redirect(msg, location) {
 function refresh() {
     window.location.href = window.location.href.split('#')[0];
 }
+
+function log(msg) {
+    console.log(msg);
+}

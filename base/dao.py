@@ -88,13 +88,20 @@ def get_task_device(db, task_id):
     ).select_one("t.*", for_update=True)
 
 
-def get_srcs_by_account_id(db, account_id):
-    return QS(db).table(T.src).where(
-        (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)
-    ).order_by(F.create_time, desc=True).select()
+def search_srcs(db, account_id, begin_time=None, end_time=None, device_id=None):
+    qs = QS(db).table(T.src)
+    qs.wheres &= (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL)
+
+    if begin_time and end_time:
+        qs.wheres &= (F.create_time < end_time) & (F.create_time > begin_time)
+
+    if device_id:
+        qs.wheres &= (F.device_id == device_id)
+
+    return qs.order_by(F.create_time, desc=True).select()
 
 
-def get_video_srcs(db, account_id, type):
+def get_srcs_by_type(db, account_id, type):
     return QS(db).table(T.src).where(
         (F.account_id == account_id) & (F.status == const.SRC_STATUS.NORMAL) &
         (F.type == type)

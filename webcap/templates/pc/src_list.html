@@ -17,47 +17,86 @@
             <a class="photography" href="#">图片</a>
         </div>
     </div>
-    <div class="postExcerpts">
-        {% for s in srcs %}
-            {% if s.type == const.TYPE.VIDEO %}
-                <div class="postExcerpt video">
-                    <div class="postExcerptInner">
-                        <button class="close" aria-label="Close" src_id= {{ s.id }}><span
-                                aria-hidden="true">&times;</span></button>
-                        <div class="titleAndCat">
-                            <h2>{{ s.create_time }}</h2>
-                            <em class="cat">Video</em>
-                        </div>
-                        <div class="imgWrap">
-                            <img src="{{ s.thumbnail }}">
-                        </div>
-                        <div id="{{ s.id }}" style="display:none;">
-                            <video src="{{ s.src_path }}" controls></video>
-                        </div>
-                        <a class="playVideo" href="#TB_inline?height=500&width=650&background=#FFF&inlineId={{ s.id }}"
-                           rel="sexylightbox[video]" title="{{ s.create_time }}"></a>
-                    </div>
-                </div>
-            {% else %}
-                <div class="postExcerpt photography">
-                    <div class="postExcerptInner">
-                        <button class="close" aria-label="Close" src_id= {{ s.id }}><span
-                                aria-hidden="true">&times;</span></button>
-                        <div class="titleAndCat">
-                            <h2>{{ s.create_time }}</h2>
-                            <em class="cat">Photography</em>
-                        </div>
-                        <div class="imgWrap">
-                            <img src="{{ s.thumbnail }}">
-                        </div>
-                        <a class="view" href="{{ s.src_path }}?height=500&width=700" rel="sexylightbox[photography]"
-                           title="{{ s.create_time }}"></a>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+
+    <div class="row">
+        <div class="col-md-offset-3">
+            <form id="form_search" action="{{ url_for('src.src_list') }}" method="post">
+                <input type="datetime-local" name="begin_time" id="begin_time" value='{{ begin_time }}'/>&nbsp;&nbsp;--
+                &nbsp;&nbsp;<input type="datetime-local" name="end_time" id="end_time" value='{{ end_time }}'/>&nbsp;&nbsp;
+
+                <select name="device_id" id="device">
+                    <option value="">请选择设备</option>
+                    {% for d in devices %}
+                        <option value="{{ d.id }}"
+                                {% if d.id== device_id %} selected {% endif %}
+                                >{{ d.name }}</option>
+                    {% endfor %}
+                </select>&nbsp;&nbsp;
+
+                <input type="submit" class="btn btn-primary" value="查找"/>&nbsp;&nbsp;
+
+                <a href="javascript:void(0)" class="btn btn-primary " id="btn_clear">清除条件</a>
+            </form>
+        </div>
     </div>
+
+    {% if error_msg %}
+        <div style="padding: 70px;">
+            <div class="row">
+                <div class="col-md-offset-5">
+                    <strong class="text-danger">{{ error_msg }}</strong>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if srcs %}
+        <div class="postExcerpts">
+            {% for s in srcs %}
+                {% if s.type == const.TYPE.VIDEO %}
+                    <div class="postExcerpt video">
+                        <div class="postExcerptInner">
+                            <button class="close" aria-label="Close" src_id= {{ s.id }}><span
+                                    aria-hidden="true">&times;</span></button>
+                            <div class="titleAndCat">
+                                <h2>{{ s.create_time }}</h2>
+                                <em class="cat">Video</em>
+                            </div>
+                            <div class="imgWrap">
+                                <img src="{{ s.thumbnail }}">
+                            </div>
+                            <div id="{{ s.id }}" style="display:none;">
+                                <video src="{{ s.src_path }}" controls></video>
+                            </div>
+                            <a class="playVideo"
+                               href="#TB_inline?height=500&width=650&background=#FFF&inlineId={{ s.id }}"
+                               rel="sexylightbox[video]" title="{{ s.create_time }}"></a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="postExcerpt photography">
+                        <div class="postExcerptInner">
+                            <button class="close" aria-label="Close" src_id= {{ s.id }}><span
+                                    aria-hidden="true">&times;</span></button>
+                            <div class="titleAndCat">
+                                <h2>{{ s.create_time }}</h2>
+                                <em class="cat">Photography</em>
+                            </div>
+                            <div class="imgWrap">
+                                <img src="{{ s.thumbnail }}">
+                            </div>
+                            <a class="view" href="{{ s.src_path }}?height=500&width=700"
+                               rel="sexylightbox[photography]"
+                               title="{{ s.create_time }}"></a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div id="go_up"></div>
+
 {% endblock body %}
 {% block tail_js %}
     {{ super() }}
@@ -69,7 +108,10 @@
 
     <script>
         SexyLightbox.initialize({color: 'white', imagesdir: '{{config.static_url_path}}/images/sexyimages'});
+
         GoUp('#go_up', '{{config.static_url_path}}/images/gotoTop.png');
+
+        //资源删除
         $('.close').click(function () {
             var src_id = $(this).attr('src_id');
             var flag = confirm("真的要删除?");
@@ -90,7 +132,14 @@
                             error('网络故障 请检查网络连接!');
                         });
             }
-
         });
+
+        //清除条件
+        $("#btn_clear").click(function () {
+            $("#begin_time").val("");
+            $("#end_time").val("");
+            $("#device").val("");
+        });
+
     </script>
 {% endblock tail_js %}
