@@ -93,6 +93,36 @@ def src_cancel(db_writer, safe_vars):
     return OkResponse()
 
 
+@src.route("/batch/delete/src", methods=["POST"])
+@general("资源批量删除")
+@login_required()
+@db_conn("db_writer")
+@form_check({
+    "src_id": F_str("资源ID") & "strict" & "required" & "multiple",
+})
+def batch_delete_src(db_writer, safe_vars):
+    account_id = session[const.SESSION.KEY_ADMIN_ID]
+    srcs_id = safe_vars.src_id
+    with transaction(db_writer) as trans:
+        srcs = dao.update_srcs(db_writer, account_id, srcs_id)
+        if not srcs or len(srcs_id) != len(srcs):
+            return ErrorResponse("该资源不是你的")
+
+        QS(db_writer).table(T.src).where(F.id == srcs_id).update({
+            "status": const.SRC_STATUS.DELETED,
+        })
+
+        size = 0
+        for src in srcs:
+            size += src.size
+
+        QS(db_writer).table(T.account).where(F.id == account_id).update({
+            "size": E("IF((size - %d ) < 0,0,size - %d)" % (size, size)),
+        })
+        trans.finish()
+    return OkResponse()
+
+
 def check_condition(var):
     begin_time = var.begin_time
     end_time = var.end_time

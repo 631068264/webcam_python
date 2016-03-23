@@ -123,3 +123,9 @@ def get_device_by_accountId_and_name(db, account_id, device_name):
 
 def get_device_by_device_id(db, device_id):
     return QS(db).table(T.device).where(F.id == device_id).select_one()
+
+
+def update_srcs(db, account_id, src_id):
+    return QS(db).table(T.src).where(
+        (F.account_id == account_id) & (F.status == const.TASK_STATUS.NORMAL) & (F.id == src_id)
+    ).select(for_update=True)

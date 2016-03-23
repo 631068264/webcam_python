@@ -60,7 +60,7 @@ function GoUp(dom, image_path, min_height) {
 var time = null;
 var display = null;
 
-function Toast(dom, msg, location, dur) {
+function Toast(dom, msg, location, dur, func) {
     //默认显示秒数
     dur ? dur = dur : dur = 2;
 
@@ -104,8 +104,9 @@ function Toast(dom, msg, location, dur) {
         display = setTimeout(function () {
             node.css("display", "none");
             console.log("3");
-            //延时跳转
+            //延时操作
             location ? window.location.href = location.split('#')[0] : location = null;
+            func();
             console.log(location);
         }, 1000);
         console.log("2");
@@ -127,6 +128,14 @@ function redirect(msg, location) {
     }
     Toast('#msg', msg, location, 1);
 }
+
+function handler(msg, func) {
+    if (func && (typeof func == "function")) {
+        Toast("#msg", msg, null, 1, func);
+    }
+
+}
+
 
 function refresh() {
     window.location.href = window.location.href.split('#')[0];

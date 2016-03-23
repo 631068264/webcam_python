@@ -19,8 +19,13 @@
     </div>
 
     <div class="row">
-        <div class="col-md-offset-3">
+        <div class="col-md-offset-2">
+
             <form id="form_search" action="{{ url_for('src.src_list') }}" method="post">
+
+                <a href="javascript:void(0)" type="button" id="batch_delete" class="btn btn-primary">批量删除&nbsp;<span
+                        class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>&nbsp;&nbsp;
+
                 <input type="datetime-local" name="begin_time" id="begin_time" value='{{ begin_time }}'/>&nbsp;&nbsp;--
                 &nbsp;&nbsp;<input type="datetime-local" name="end_time" id="end_time" value='{{ end_time }}'/>&nbsp;&nbsp;
 
@@ -122,7 +127,10 @@
                         function (resp) {
                             if (resp.status == 1) {
                                 $(this).removeClass('disabled');
-                                redirect("删除成功");
+                                func = function () {
+                                    $("#form_search").submit();
+                                };
+                                handler("删除成功", func);
                             } else {
                                 error(resp.message);
                             }
@@ -139,6 +147,45 @@
             $("#begin_time").val("");
             $("#end_time").val("");
             $("#device").val("");
+        });
+
+
+        //批量删除
+        $('#batch_delete').click(function () {
+            srcs_id = $(".postExcerptInner .close");
+            if (srcs_id.length == 0) {
+                return;
+            }
+
+            var params = "src_id=";
+            var data = params + $(srcs_id[0]).attr("src_id");
+            for (var i = 1; i < srcs_id.length; i++) {
+                data += "&" + params + $(srcs_id[i]).attr("src_id");
+            }
+
+            if (confirm("真的要全部删除吗？")) {
+                $.post(
+                        '{{ url_for("src.batch_delete_src") }}',
+                        data,
+                        function (resp) {
+                            if (resp.status == 1) {
+                                $(this).removeClass('disabled');
+                                func = function () {
+                                    $("#form_search").submit();
+                                };
+                                handler("删除成功", func);
+                            } else {
+                                error(resp.message);
+                            }
+                        }
+                ).fail(function () {
+                            $(this).removeClass('disabled');
+                            error('网络故障 请检查网络连接!');
+                        });
+
+            }
+
+
         });
 
     </script>
