@@ -393,7 +393,12 @@ myApp.onPageInit('task_add', function (page) {
     $("input:radio[name = 'type']").change(function () {
         var flag = $(this).val();
         log(flag);
-        $('.form_duration').toggle(flag);
+        if (flag==1) {
+            $('.form_duration').show();
+        }else {
+            $('.form_duration').hide();
+        }
+        //$('.form_duration').toggle(flag);
     });
 
 });
