@@ -3,7 +3,7 @@
 # __author__ = 'wuyuxi'
 import datetime
 
-from flask import Blueprint, session
+from flask import Blueprint, session, request
 
 from base import dao, util
 from base.framework import general, TempResponse, db_conn, form_check, OkResponse, ErrorResponse
@@ -74,6 +74,7 @@ def device_add(db_writer, safe_vars):
             "status": const.DEVICE_STATUS.NORMAL,
             "account_id": account_id,
             "create_time": datetime.datetime.now(),
+            "remote_addr":request.remote_addr,
         })
 
         QS(db_writer).table(T.account).where(F.id == account_id).update({

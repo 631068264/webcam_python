@@ -121,7 +121,7 @@ def update_remote_addr(db, device_type, device_id):
 def common_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
-    update_remote_addr(db_writer, device_type, safe_vars.device_id)
+    #update_remote_addr(db_writer, device_type, safe_vars.device_id)
     today = datetime.date.today()
     now = datetime.datetime.now()
 
@@ -220,7 +220,7 @@ def check_date(begin_date, end_date, today):
 def cycle_task_add(db_writer, safe_vars, device_type):
     if safe_vars.device_id == '0':
         return ErrorResponse("请选择设备")
-    update_remote_addr(db_writer, device_type, safe_vars.device_id)
+    #update_remote_addr(db_writer, device_type, safe_vars.device_id)
     today = datetime.date.today()
     now = datetime.datetime.now()
     msg, is_ok = check_date(safe_vars.begin_date, safe_vars.end_date, util.get_day_begin_time(now))
