@@ -25,7 +25,7 @@ class ACTION(object):
 
 # 主机地址 和 端口
 # host = socket.gethostbyname(socket.gethostname())
-host = 'localhost'
+host = '0.0.0.0'
 port = 10218
 
 data_buffer = 1024 * 10
