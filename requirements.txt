@@ -48,7 +48,7 @@ pytz==2015.4
 pywin32==219
 queuelib==1.4.2
 redis==2.10.3
-requests==2.7.0
+requests==2.20.1
 scrapy==1.0.3
 selection==0.0.11
 service-identity==14.0.0
